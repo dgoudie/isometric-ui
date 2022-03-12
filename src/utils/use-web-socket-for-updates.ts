@@ -16,7 +16,7 @@ const useWebSocketSingleton = singletonHook<
         websocketUri = 'ws:';
     }
     websocketUri += '//' + loc.host;
-    websocketUri += loc.pathname + '/api';
+    websocketUri += '/api';
     const pageVisible: boolean = usePageVisibility();
     const {
         lastJsonMessage: message,

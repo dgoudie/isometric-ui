@@ -1,7 +1,7 @@
 import './App.scss';
 
+import { Navigate, Route, Routes } from 'react-router-dom';
 import React, { FC } from 'react';
-import { Route, Routes } from 'react-router-dom';
 
 import Exercise from './pages/exercise';
 import Exercises from './pages/exercises';
@@ -16,6 +16,7 @@ const App: FC = () => (
         <Route path='exercises/:exerciseName' element={<Exercise />} />
         <Route path='workouts' element={<Workouts />} />
         <Route path='settings' element={<Settings />} />
+        <Route path='*' element={<Navigate replace to='/home' />} />
     </Routes>
 );
 
