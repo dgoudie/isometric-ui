@@ -33,10 +33,30 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-    const cacheKey = precacheController.getCacheKeyForURL(event.request.url);
-    if (!!cacheKey) {
-        //@ts-ignore
-        event.respondWith(caches.match(cacheKey));
+    const { request } = event;
+    const url = new URL(request.url);
+    if (url.origin === location.origin && url.pathname === '/index.html') {
+        fetch(request).then((fetchResponse) => {
+            if (fetchResponse.redirected) {
+                event.respondWith(fetchResponse);
+            } else {
+                const cacheKey = precacheController.getCacheKeyForURL(
+                    event.request.url
+                );
+                if (!!cacheKey) {
+                    //@ts-ignore
+                    event.respondWith(caches.match(cacheKey));
+                }
+            }
+        });
+    } else {
+        const cacheKey = precacheController.getCacheKeyForURL(
+            event.request.url
+        );
+        if (!!cacheKey) {
+            //@ts-ignore
+            event.respondWith(caches.match(cacheKey));
+        }
     }
 });
 
