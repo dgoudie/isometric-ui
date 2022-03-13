@@ -8,20 +8,11 @@
 // You can also remove this file if you'd prefer not to use a
 // service worker, and the Workbox build step will be skipped.
 
-import {
-    NetworkFirst,
-    StaleWhileRevalidate,
-    Strategy,
-    StrategyHandler,
-} from 'workbox-strategies';
-import {
-    PrecacheController,
-    createHandlerBoundToURL,
-    precacheAndRoute,
-} from 'workbox-precaching';
+import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
 import { cacheNames, clientsClaim } from 'workbox-core';
 
 import { ExpirationPlugin } from 'workbox-expiration';
+import { PrecacheController } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 
 declare const self: ServiceWorkerGlobalScope;
@@ -41,10 +32,10 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(precacheController.activate(event));
 });
 
-self.addEventListener('fetch', async (event) => {
+self.addEventListener('fetch', (event) => {
     const cacheKey = precacheController.getCacheKeyForURL(event.request.url);
-    const response = await caches.match(cacheKey!);
-    event.respondWith(response!);
+    //@ts-ignore
+    event.respondWith(caches.match(cacheKey));
 });
 
 // Set up App Shell-style routing, so that all navigation requests
