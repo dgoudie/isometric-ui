@@ -14,8 +14,9 @@
         },
         {
             "src": "images/isometric.png",
-            "sizes": "500x500",
-            "type": "image/png"
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ],
     "theme_color": "#E14658",
@@ -31,8 +32,8 @@
             "url": "/exercises"
         },
         {
-            "name": "Workouts",
-            "url": "/workouts"
+            "name": "History",
+            "url": "/history"
         }
     ]
 }

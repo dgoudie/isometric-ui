@@ -2,13 +2,17 @@ import AppBarLayout from '../AppBarLayout/AppBarLayout';
 import { NavLink } from 'react-router-dom';
 import styles from './AppBarWithAppHeaderLayout.module.scss';
 
-type Props = {};
+type Props = {
+    pageTitle: string;
+};
 
 export default function AppBarWithAppHeaderLayout({
     children,
+    pageTitle,
 }: React.PropsWithChildren<Props>) {
     return (
         <AppBarLayout
+            pageTitle={pageTitle}
             header={
                 <header className={styles.topBar}>
                     <div className={styles.topBarTitle}>ISOMETRIC</div>

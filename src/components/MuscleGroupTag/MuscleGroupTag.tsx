@@ -9,7 +9,16 @@ import styles from './MuscleGroupTag.module.scss';
 import { useMemo } from 'react';
 
 const colorScale = chroma
-    .scale(['#e14658', 'skyblue', 'orange'])
+    .scale([
+        '#DE3163',
+        '#FF7F50',
+        '#FFBF00',
+        '#DFFF00',
+        '#9FE2BF',
+        '#40E0D0',
+        '#6495ED',
+        '#CCCCFF',
+    ])
     .mode('lch')
     .colors(ExerciseMuscleGroups.length);
 
@@ -24,7 +33,7 @@ export default function MuscleGroupTag({ muscleGroup, className }: Props) {
         [muscleGroup]
     );
     let color = 'black';
-    if (contrast(backgroundColor, color) < 9) {
+    if (contrast(backgroundColor, color) < 7) {
         color = 'white';
     }
     return (

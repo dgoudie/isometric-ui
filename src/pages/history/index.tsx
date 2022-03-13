@@ -1,15 +1,11 @@
-import React, { useEffect } from 'react';
-
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
+import React from 'react';
 
 type Props = {};
 
-const Workouts: React.FC<Props> = () => {
-    useEffect(() => {
-        document.title = `Workouts | ISOMETRIC`;
-    }, []);
+const History: React.FC<Props> = () => {
     return (
-        <AppBarWithAppHeaderLayout>
+        <AppBarWithAppHeaderLayout pageTitle='History'>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
             eiusmod tempor incididunt ut labore et dolore magna aliqua.
             Scelerisque viverra mauris in aliquam sem. Odio euismod lacinia at
@@ -71,4 +67,4 @@ const Workouts: React.FC<Props> = () => {
     );
 };
 
-export default Workouts;
+export default History;

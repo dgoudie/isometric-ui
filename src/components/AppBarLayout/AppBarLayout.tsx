@@ -1,16 +1,22 @@
+import React, { useEffect } from 'react';
+
 import { NavLink } from 'react-router-dom';
-import React from 'react';
 import classNames from 'classnames';
 import styles from './AppBarLayout.module.scss';
 
 type Props = {
     header?: React.ReactNode;
+    pageTitle: string;
 };
 
 export default function AppBarLayout({
     children,
     header,
+    pageTitle,
 }: React.PropsWithChildren<Props>) {
+    useEffect(() => {
+        document.title = `${pageTitle} | ISOMETRIC`;
+    }, [pageTitle]);
     return (
         <div className={styles.root}>
             {header}
@@ -28,8 +34,8 @@ export default function AppBarLayout({
                         iconClass='fa-dumbbell'
                     />
                     <AppBarButton
-                        href='/workouts'
-                        text='Workouts'
+                        href='/history'
+                        text='History'
                         iconClass='fa-list-check'
                     />
                 </div>

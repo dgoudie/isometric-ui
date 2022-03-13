@@ -14,7 +14,7 @@ const ExerciseDetail = () => {
     );
 
     return (
-        <AppBarWithAppHeaderLayout>
+        <AppBarWithAppHeaderLayout pageTitle={exerciseName!}>
             <pre style={{ whiteSpace: 'pre-wrap' }}>
                 {JSON.stringify(response?.data, null, 2)}
             </pre>

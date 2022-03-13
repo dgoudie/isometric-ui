@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
+import React from 'react';
 
 const Settings: React.FC = () => {
-    useEffect(() => {
-        document.title = `Settings | ISOMETRIC`;
-    }, []);
-    return <AppBarWithAppHeaderLayout>Some Settings</AppBarWithAppHeaderLayout>;
+    return (
+        <AppBarWithAppHeaderLayout pageTitle='Settings'>
+            Some Settings
+        </AppBarWithAppHeaderLayout>
+    );
 };
 export default Settings;

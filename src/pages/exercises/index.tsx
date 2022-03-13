@@ -1,17 +1,12 @@
-import { useEffect, useMemo } from 'react';
-
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import { IExercise } from '@dgoudie/isometric-types';
 import { Link } from 'react-router-dom';
 import MuscleGroupTag from '../../components/MuscleGroupTag/MuscleGroupTag';
 import styles from './index.module.scss';
 import { useFetchFromApi } from '../../utils/fetch-from-api';
+import { useMemo } from 'react';
 
 const Exercises = () => {
-    useEffect(() => {
-        document.title = `Exercises | ISOMETRIC`;
-    }, []);
-
     const [response] = useFetchFromApi<IExercise[]>(
         `/api/exercises`,
         null,
@@ -28,7 +23,7 @@ const Exercises = () => {
     );
 
     return (
-        <AppBarWithAppHeaderLayout>
+        <AppBarWithAppHeaderLayout pageTitle='Exercises'>
             <div className={styles.root}>
                 <div className={styles.items}>{items}</div>
             </div>

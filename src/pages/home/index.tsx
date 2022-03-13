@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react';
-
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
+import React from 'react';
 
 type Props = {};
 
 const Home: React.FC<Props> = () => {
-    useEffect(() => {
-        document.title = `Home | ISOMETRIC`;
-    }, []);
-    return <AppBarWithAppHeaderLayout>hello</AppBarWithAppHeaderLayout>;
+    return (
+        <AppBarWithAppHeaderLayout pageTitle='Home'>
+            hello
+        </AppBarWithAppHeaderLayout>
+    );
 };
 
 export default Home;
