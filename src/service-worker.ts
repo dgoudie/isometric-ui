@@ -8,12 +8,17 @@
 // You can also remove this file if you'd prefer not to use a
 // service worker, and the Workbox build step will be skipped.
 
-import { NavigationRoute, registerRoute } from 'workbox-routing';
-import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import {
+    NetworkFirst,
+    StaleWhileRevalidate,
+    Strategy,
+    StrategyHandler,
+} from 'workbox-strategies';
+import { cacheNames, clientsClaim } from 'workbox-core';
 import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 
 import { ExpirationPlugin } from 'workbox-expiration';
-import { clientsClaim } from 'workbox-core';
+import { registerRoute } from 'workbox-routing';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -25,15 +30,81 @@ clientsClaim();
 // even if you decide not to use precaching. See https://cra.link/PWA
 precacheAndRoute(self.__WB_MANIFEST);
 
-const handler = createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html');
-const navigationRoute = new NavigationRoute(handler);
-registerRoute(navigationRoute);
+// Set up App Shell-style routing, so that all navigation requests
+// are fulfilled with your index.html shell. Learn more at
+// https://developers.google.com/web/fundamentals/architecture/app-shell
+const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$');
+registerRoute(
+    // Return false to exempt requests from being fulfilled by index.html.
+    ({ request, url }: { request: Request; url: URL }) => {
+        // If this isn't a navigation, skip.
+        if (request.mode !== 'navigate') {
+            return false;
+        }
+
+        // If this is a URL that starts with /_, skip.
+        if (url.pathname.startsWith('/_')) {
+            return false;
+        }
+
+        // If this looks like a URL for a resource, because it contains
+        // a file extension, skip.
+        if (url.pathname.match(fileExtensionRegexp)) {
+            return false;
+        }
+
+        // Return true to signal that we want to use the handler.
+        return true;
+    },
+    createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
+);
 
 registerRoute(
-    /.*\.(?:ico|png)$/gi,
-    new StaleWhileRevalidate({
-        cacheName: 'images',
-        plugins: [new ExpirationPlugin({ maxEntries: 50 })],
+    // Return false to exempt requests from being fulfilled by index.html.
+    ({ request, url }: { request: Request; url: URL }) => {
+        // If this isn't a navigation, skip.
+        if (request.mode !== 'navigate') {
+            return false;
+        }
+
+        // If this is a URL that starts with /_, skip.
+        if (url.pathname.startsWith('/_')) {
+            return false;
+        }
+
+        // If this looks like a URL for a resource, because it contains
+        // a file extension, skip.
+        if (url.pathname.match(fileExtensionRegexp)) {
+            return false;
+        }
+
+        // Return true to signal that we want to use the handler.
+        return true;
+    },
+    createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
+);
+
+class IndexHtmlStrategy extends Strategy {
+    protected async _handle(
+        request: Request,
+        handler: StrategyHandler
+    ): Promise<Response | undefined> {
+        try {
+            let response = await handler.fetch(request);
+            console.log(response.status);
+            return response;
+        } catch (e) {
+            console.log('e', e);
+            throw e;
+        }
+    }
+}
+
+registerRoute(
+    /.index\.html$/gi,
+    new IndexHtmlStrategy({
+        cacheName: 'index.html',
+        plugins: [new ExpirationPlugin({ maxEntries: 1 })],
     })
 );
 
@@ -68,6 +139,10 @@ self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
     }
+});
+
+self.addEventListener('activate', (event) => {
+    event.waitUntil(caches.delete(cacheNames.precache));
 });
 
 // Any other custom service worker logic can go here.
