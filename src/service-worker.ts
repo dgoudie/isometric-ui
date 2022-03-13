@@ -8,25 +8,39 @@
 // You can also remove this file if you'd prefer not to use a
 // service worker, and the Workbox build step will be skipped.
 
+import {
+    CacheKeyWillBeUsedCallback,
+    RouteMatchCallback,
+    WorkboxPlugin,
+    cacheNames,
+    clientsClaim,
+} from 'workbox-core';
 import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
-import { cacheNames, clientsClaim } from 'workbox-core';
+import { PrecacheController, precacheAndRoute } from 'workbox-precaching';
 
+import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import { ExpirationPlugin } from 'workbox-expiration';
-import { PrecacheController } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 
 declare const self: ServiceWorkerGlobalScope;
 
 clientsClaim();
 
-const precacheController = new PrecacheController();
-precacheController.precache(self.__WB_MANIFEST);
+const assetsFromBuildWithoutIndexHtml = self.__WB_MANIFEST.filter((asset) => {
+    if (typeof asset === 'string') {
+        return asset !== '/index.html';
+    } else {
+        return asset.url !== '/index.html';
+    }
+});
+
+precacheAndRoute(assetsFromBuildWithoutIndexHtml);
 
 // Set up App Shell-style routing, so that all navigation requests
 // are fulfilled with your index.html shell. Learn more at
 // https://developers.google.com/web/fundamentals/architecture/app-shell
 const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$');
-const shouldBeRoutedToIndexHtml = (request: Request, url: URL) => {
+const shouldBeRoutedToIndexHtml: RouteMatchCallback = ({ request, url }) => {
     if (url.pathname === '/index.html') {
         return true;
     }
@@ -50,33 +64,21 @@ const shouldBeRoutedToIndexHtml = (request: Request, url: URL) => {
     return true;
 };
 
-self.addEventListener('fetch', (event) => {
-    const { request } = event;
-    const url = new URL(request.url);
-    if (shouldBeRoutedToIndexHtml(request, url)) {
-        fetch(request, { mode: 'no-cors' }).then((fetchResponse) => {
-            if (fetchResponse.redirected) {
-                event.respondWith(fetchResponse);
-            } else {
-                const cacheKey = precacheController.getCacheKeyForURL(
-                    process.env.PUBLIC_URL + '/index.html'
-                );
-                if (!!cacheKey) {
-                    //@ts-ignore
-                    event.respondWith(caches.match(cacheKey));
-                }
-            }
-        });
-    } else {
-        const cacheKey = precacheController.getCacheKeyForURL(
-            event.request.url
-        );
-        if (!!cacheKey) {
-            //@ts-ignore
-            event.respondWith(caches.match(cacheKey));
-        }
-    }
-});
+class RewriteCacheKeyPlugin implements WorkboxPlugin {
+    constructor(private keyName: string) {}
+    cacheKeyWillBeUsed = async () => this.keyName;
+}
+
+registerRoute(
+    shouldBeRoutedToIndexHtml,
+    new NetworkFirst({
+        cacheName: 'index.html',
+        plugins: [
+            new CacheableResponsePlugin({ statuses: [200] }),
+            new RewriteCacheKeyPlugin('/index.html'),
+        ],
+    })
+);
 
 registerRoute(
     ({ url, sameOrigin }) => sameOrigin && url.pathname === '/api/exercises',
