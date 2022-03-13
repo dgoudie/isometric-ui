@@ -8,20 +8,11 @@ import useWebSocket from 'react-use-websocket';
 const useWebSocketSingleton = singletonHook<
     [WsBroadcastMessage | null, boolean]
 >([null, false], () => {
-    let loc = window.location;
-    let websocketUri: string;
-    if (loc.protocol === 'https:') {
-        websocketUri = 'wss:';
-    } else {
-        websocketUri = 'ws:';
-    }
-    websocketUri += '//' + loc.host;
-    websocketUri += '/api';
     const pageVisible: boolean = usePageVisibility();
     const {
         lastJsonMessage: message,
     }: { lastJsonMessage: WsBroadcastMessage } = useWebSocket(
-        websocketUri,
+        process.env.REACT_APP_WS!,
         {
             shouldReconnect: () => true,
         },
