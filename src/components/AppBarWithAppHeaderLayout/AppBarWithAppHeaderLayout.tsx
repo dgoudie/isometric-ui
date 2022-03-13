@@ -1,4 +1,5 @@
 import AppBarLayout from '../AppBarLayout/AppBarLayout';
+import { NavLink } from 'react-router-dom';
 import styles from './AppBarWithAppHeaderLayout.module.scss';
 
 type Props = {};
@@ -11,9 +12,16 @@ export default function AppBarWithAppHeaderLayout({
             header={
                 <header className={styles.topBar}>
                     <div className={styles.topBarTitle}>ISOMETRIC</div>
-                    <a className={styles.topBarSettingsLink} href='/settings'>
+                    <NavLink
+                        className={({ isActive }) =>
+                            isActive
+                                ? styles.topBarSettingsLinkActive
+                                : styles.topBarSettingsLink
+                        }
+                        to='/settings'
+                    >
                         <i className='fa-solid fa-gear'></i>
-                    </a>
+                    </NavLink>
                 </header>
             }
         >

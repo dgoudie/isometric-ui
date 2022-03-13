@@ -30,6 +30,10 @@
         &:focus {
             transform: scale(0.9);
         }
+
+        &Active {
+            display: none;
+        }
     }
 }
 .body {
