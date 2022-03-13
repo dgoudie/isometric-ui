@@ -60,55 +60,6 @@ registerRoute(
 );
 
 registerRoute(
-    // Return false to exempt requests from being fulfilled by index.html.
-    ({ request, url }: { request: Request; url: URL }) => {
-        // If this isn't a navigation, skip.
-        if (request.mode !== 'navigate') {
-            return false;
-        }
-
-        // If this is a URL that starts with /_, skip.
-        if (url.pathname.startsWith('/_')) {
-            return false;
-        }
-
-        // If this looks like a URL for a resource, because it contains
-        // a file extension, skip.
-        if (url.pathname.match(fileExtensionRegexp)) {
-            return false;
-        }
-
-        // Return true to signal that we want to use the handler.
-        return true;
-    },
-    createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
-);
-
-class IndexHtmlStrategy extends Strategy {
-    protected async _handle(
-        request: Request,
-        handler: StrategyHandler
-    ): Promise<Response | undefined> {
-        try {
-            let response = await handler.fetch(request);
-            console.log(response.status);
-            return response;
-        } catch (e) {
-            console.log('e', e);
-            throw e;
-        }
-    }
-}
-
-registerRoute(
-    /.index\.html$/gi,
-    new IndexHtmlStrategy({
-        cacheName: 'index.html',
-        plugins: [new ExpirationPlugin({ maxEntries: 1 })],
-    })
-);
-
-registerRoute(
     ({ url, sameOrigin }) => sameOrigin && url.pathname === '/api/exercises',
     new NetworkFirst({
         cacheName: 'exercise',
