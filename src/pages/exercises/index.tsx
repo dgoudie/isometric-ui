@@ -7,7 +7,7 @@ import { useFetchFromApi } from '../../utils/fetch-from-api';
 import { useMemo } from 'react';
 
 const Exercises = () => {
-    const [response] = useFetchFromApi<IExercise[]>(
+    const [response, error, loading] = useFetchFromApi<IExercise[]>(
         `/api/exercises`,
         null,
         null,
@@ -23,7 +23,7 @@ const Exercises = () => {
     );
 
     return (
-        <AppBarWithAppHeaderLayout pageTitle='Exercises'>
+        <AppBarWithAppHeaderLayout pageTitle='Exercises' showLoading={loading}>
             <div className={styles.root}>
                 <div className={styles.items}>{items}</div>
             </div>

@@ -4,14 +4,17 @@ import styles from './AppBarWithAppHeaderLayout.module.scss';
 
 type Props = {
     pageTitle: string;
+    showLoading?: boolean;
 };
 
 export default function AppBarWithAppHeaderLayout({
     children,
     pageTitle,
+    showLoading = false,
 }: React.PropsWithChildren<Props>) {
     return (
         <AppBarLayout
+            showLoading={showLoading}
             pageTitle={pageTitle}
             header={
                 <header className={styles.topBar}>

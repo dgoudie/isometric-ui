@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 const ExerciseDetail = () => {
     const { exerciseName } = useParams();
 
-    const [response] = useFetchFromApi<IExercise>(
+    const [response, error, loading] = useFetchFromApi<IExercise>(
         `/api/exercise/${exerciseName}`,
         null,
         null,
@@ -14,7 +14,10 @@ const ExerciseDetail = () => {
     );
 
     return (
-        <AppBarWithAppHeaderLayout pageTitle={exerciseName!}>
+        <AppBarWithAppHeaderLayout
+            pageTitle={exerciseName!}
+            showLoading={loading}
+        >
             <pre style={{ whiteSpace: 'pre-wrap' }}>
                 {JSON.stringify(response?.data, null, 2)}
             </pre>
