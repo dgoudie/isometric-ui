@@ -20,17 +20,7 @@ declare const self: ServiceWorkerGlobalScope;
 clientsClaim();
 
 const precacheController = new PrecacheController();
-precacheController.addToCacheList(self.__WB_MANIFEST);
-
-self.addEventListener('install', (event) => {
-    // Passing in event is required in Workbox v6+
-    event.waitUntil(precacheController.install(event));
-});
-
-self.addEventListener('activate', (event) => {
-    // Passing in event is required in Workbox v6+
-    event.waitUntil(precacheController.activate(event));
-});
+precacheController.precache(self.__WB_MANIFEST);
 
 self.addEventListener('fetch', (event) => {
     const { request } = event;
