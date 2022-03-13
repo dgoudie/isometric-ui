@@ -9,46 +9,21 @@
 // service worker, and the Workbox build step will be skipped.
 
 import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import {
+    PrecacheController,
+    createHandlerBoundToURL,
+    precacheAndRoute,
+} from 'workbox-precaching';
 import { cacheNames, clientsClaim } from 'workbox-core';
 
 import { ExpirationPlugin } from 'workbox-expiration';
-import { PrecacheController } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 
 declare const self: ServiceWorkerGlobalScope;
 
 clientsClaim();
 
-const precacheController = new PrecacheController();
-precacheController.precache(self.__WB_MANIFEST);
-
-self.addEventListener('fetch', (event) => {
-    const { request } = event;
-    const url = new URL(request.url);
-    if (url.origin === location.origin && url.pathname === '/index.html') {
-        fetch(request).then((fetchResponse) => {
-            if (fetchResponse.redirected) {
-                event.respondWith(fetchResponse);
-            } else {
-                const cacheKey = precacheController.getCacheKeyForURL(
-                    event.request.url
-                );
-                if (!!cacheKey) {
-                    //@ts-ignore
-                    event.respondWith(caches.match(cacheKey));
-                }
-            }
-        });
-    } else {
-        const cacheKey = precacheController.getCacheKeyForURL(
-            event.request.url
-        );
-        if (!!cacheKey) {
-            //@ts-ignore
-            event.respondWith(caches.match(cacheKey));
-        }
-    }
-});
+precacheAndRoute(self.__WB_MANIFEST);
 
 // Set up App Shell-style routing, so that all navigation requests
 // are fulfilled with your index.html shell. Learn more at
@@ -76,9 +51,7 @@ registerRoute(
         // Return true to signal that we want to use the handler.
         return true;
     },
-    precacheController.createHandlerBoundToURL(
-        process.env.PUBLIC_URL + '/index.html'
-    )
+    createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
 );
 
 registerRoute(
