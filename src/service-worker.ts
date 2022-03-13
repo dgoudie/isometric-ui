@@ -9,21 +9,46 @@
 // service worker, and the Workbox build step will be skipped.
 
 import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
-import {
-    PrecacheController,
-    createHandlerBoundToURL,
-    precacheAndRoute,
-} from 'workbox-precaching';
 import { cacheNames, clientsClaim } from 'workbox-core';
 
 import { ExpirationPlugin } from 'workbox-expiration';
+import { PrecacheController } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 
 declare const self: ServiceWorkerGlobalScope;
 
 clientsClaim();
 
-precacheAndRoute(self.__WB_MANIFEST);
+const precacheController = new PrecacheController();
+precacheController.precache(self.__WB_MANIFEST);
+
+self.addEventListener('fetch', (event) => {
+    const { request } = event;
+    const url = new URL(request.url);
+    if (url.origin === location.origin && url.pathname === '/index.html') {
+        fetch(request, { mode: 'no-cors' }).then((fetchResponse) => {
+            if (fetchResponse.redirected) {
+                event.respondWith(fetchResponse);
+            } else {
+                const cacheKey = precacheController.getCacheKeyForURL(
+                    event.request.url
+                );
+                if (!!cacheKey) {
+                    //@ts-ignore
+                    event.respondWith(caches.match(cacheKey));
+                }
+            }
+        });
+    } else {
+        const cacheKey = precacheController.getCacheKeyForURL(
+            event.request.url
+        );
+        if (!!cacheKey) {
+            //@ts-ignore
+            event.respondWith(caches.match(cacheKey));
+        }
+    }
+});
 
 // Set up App Shell-style routing, so that all navigation requests
 // are fulfilled with your index.html shell. Learn more at
@@ -51,7 +76,9 @@ registerRoute(
         // Return true to signal that we want to use the handler.
         return true;
     },
-    createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
+    precacheController.createHandlerBoundToURL(
+        process.env.PUBLIC_URL + '/index.html'
+    )
 );
 
 registerRoute(
@@ -85,10 +112,6 @@ self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
     }
-});
-
-self.addEventListener('activate', (event) => {
-    event.waitUntil(caches.delete(cacheNames.precache));
 });
 
 // Any other custom service worker logic can go here.
