@@ -34,8 +34,10 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
     const cacheKey = precacheController.getCacheKeyForURL(event.request.url);
-    //@ts-ignore
-    event.respondWith(caches.match(cacheKey));
+    if (!!cacheKey) {
+        //@ts-ignore
+        event.respondWith(caches.match(cacheKey));
+    }
 });
 
 // Set up App Shell-style routing, so that all navigation requests
