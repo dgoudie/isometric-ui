@@ -18,6 +18,9 @@
         color: var(--coral);
         font-weight: bold;
         padding: 0.5rem;
+        &:hover {
+            text-decoration: underline;
+        }
     }
     &SettingsLink {
         height: 3rem;
