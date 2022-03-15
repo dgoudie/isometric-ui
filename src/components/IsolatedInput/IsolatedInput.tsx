@@ -65,12 +65,14 @@ export default function IsolatedInput({
                 </summary>
                 <form onSubmit={onFormSubmit}>
                     <input {...props} ref={inputComponentRef} />
-                    <button type='button' onClick={onCancel}>
-                        <i className='fa-solid fa-xmark' />
-                    </button>
-                    <button type='submit'>
-                        <i className='fa-solid fa-check' />
-                    </button>
+                    <section>
+                        <button type='button' onClick={onCancel}>
+                            <i className='fa-solid fa-xmark' />
+                        </button>
+                        <button type='submit'>
+                            <i className='fa-solid fa-check' />
+                        </button>
+                    </section>
                 </form>
             </details>
         </div>
