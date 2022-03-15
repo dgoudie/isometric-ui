@@ -1,5 +1,7 @@
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import { IExercise } from '@dgoudie/isometric-types';
+import IsolatedInput from '../../components/IsolatedInput/IsolatedInput';
+import styles from './index.module.scss';
 import { useFetchFromApi } from '../../utils/fetch-from-api';
 import { useParams } from 'react-router-dom';
 
@@ -18,9 +20,14 @@ const ExerciseDetail = () => {
             pageTitle={exerciseName!}
             showLoading={loading}
         >
-            <pre style={{ whiteSpace: 'pre-wrap' }}>
-                {JSON.stringify(response?.data, null, 2)}
-            </pre>
+            <div className={styles.root}>
+                <label htmlFor='name'>Name</label>
+                <IsolatedInput
+                    defaultValue={response?.data.name}
+                    id='name'
+                    name='name'
+                />
+            </div>
         </AppBarWithAppHeaderLayout>
     );
 };
