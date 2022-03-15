@@ -1,12 +1,16 @@
 .root {
     details {
         > summary {
+            &::-webkit-details-marker {
+                display: none;
+            }
             list-style: none;
             cursor: pointer;
             border-bottom: 2px solid transparent;
             display: grid;
             grid-template-columns: auto min-content;
-            padding-bottom: 0.2rem;
+            padding: 2px;
+            outline: none;
         }
         &[open] {
             > summary {
@@ -23,18 +27,20 @@
                 border-bottom: 2px solid var(--coral);
                 outline: none;
                 font-size: inherit;
-                padding: 0;
                 letter-spacing: inherit;
                 font-family: inherit;
-                padding-bottom: 0.2rem;
+                border-radius: 0;
+                background-color: transparent;
+                padding: 0 0 0.2rem;
+                caret-color: var(--coral);
             }
 
             section {
                 position: absolute;
                 right: 0;
-                top: calc(100% + 0.2rem);
-                width: 72px;
-                height: 36px;
+                top: calc(100% + 0.4rem);
+                width: 84px;
+                height: 42px;
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 0.2rem;

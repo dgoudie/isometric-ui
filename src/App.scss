@@ -44,8 +44,11 @@ a {
 }
 
 * {
-    user-select: none;
     box-sizing: border-box;
+}
+
+*:not(input) {
+    user-select: none;
 }
 
 button,
