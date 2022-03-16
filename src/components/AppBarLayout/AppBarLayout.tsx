@@ -47,7 +47,7 @@ export default function AppBarLayout({
                     <AppBarButton
                         href='/history'
                         text='History'
-                        iconClass='fa-list-check'
+                        iconClass='fa-clock-rotate-left'
                     />
                 </div>
             </div>
