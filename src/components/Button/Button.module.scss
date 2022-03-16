@@ -1,0 +1,38 @@
+.root {
+    background-color: rgba(128, 128, 128, 0.2);
+    align-items: center;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.25rem;
+    box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+    cursor: pointer;
+    display: grid;
+    grid-auto-flow: column;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: calc(0.875rem - 1px) calc(1.5rem - 1px);
+    position: relative;
+    text-decoration: none;
+    transition: all 250ms;
+    user-select: none;
+
+    &.primary {
+        background-color: var(--coral);
+        color: white;
+    }
+}
+
+.root:hover,
+.root:focus {
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+}
+
+.root:hover {
+    transform: translateY(-1px);
+}
+
+.root:active {
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
+    transform: translateY(0);
+}

@@ -5,5 +5,9 @@
         color: var(--scrub);
         margin-bottom: 0.2rem;
         display: block;
+
+        &:not(:first-child) {
+            margin-top: 2rem;
+        }
     }
 }

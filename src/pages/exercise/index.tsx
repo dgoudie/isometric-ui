@@ -21,11 +21,20 @@ const ExerciseDetail = () => {
             showLoading={loading}
         >
             <div className={styles.root}>
-                <label htmlFor='name'>Name</label>
+                <label htmlFor='exercise-name'>Name</label>
                 <IsolatedInput
                     defaultValue={response?.data.name}
-                    id='name'
-                    name='name'
+                    id='exercise-name'
+                    name='exercise-name'
+                />
+                <label htmlFor='exercise-break-time'>
+                    Break Time Between Sets (In Seconds)
+                </label>
+                <IsolatedInput
+                    defaultValue={response?.data.breakTimeInSeconds.toString()}
+                    type='number'
+                    id='exercise-break-time'
+                    name='exercise-break-time'
                 />
             </div>
         </AppBarWithAppHeaderLayout>

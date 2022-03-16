@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 
+import Button from '../Button/Button';
 import classNames from 'classnames';
 import styles from './IsolatedInput.module.scss';
 
@@ -66,12 +67,14 @@ export default function IsolatedInput({
                 <form onSubmit={onFormSubmit}>
                     <input {...props} ref={inputComponentRef} />
                     <section>
-                        <button type='button' onClick={onCancel}>
+                        <Button type='button' onClick={onCancel}>
                             <i className='fa-solid fa-xmark' />
-                        </button>
-                        <button type='submit'>
+                            Cancel
+                        </Button>
+                        <Button primary type='submit'>
                             <i className='fa-solid fa-check' />
-                        </button>
+                            Save
+                        </Button>
                     </section>
                 </form>
             </details>
