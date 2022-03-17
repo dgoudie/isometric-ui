@@ -6,13 +6,6 @@
 .body {
     max-width: var(--max-width);
     margin: 0 auto var(--bar-height);
-
-    &Loading {
-        margin-top: 20vh;
-        display: flex;
-        justify-content: center;
-        animation: loadingFadeIn 500ms forwards;
-    }
 }
 
 .bottomBar {
@@ -55,14 +48,5 @@
                 transform: scale(0.9);
             }
         }
-    }
-}
-
-@keyframes loadingFadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
     }
 }

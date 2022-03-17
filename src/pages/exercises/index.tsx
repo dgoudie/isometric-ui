@@ -1,7 +1,9 @@
+import { Link, Navigate } from 'react-router-dom';
+
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import { IExercise } from '@dgoudie/isometric-types';
-import { Link } from 'react-router-dom';
 import MuscleGroupTag from '../../components/MuscleGroupTag/MuscleGroupTag';
+import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import styles from './index.module.scss';
 import { useFetchFromApi } from '../../utils/fetch-from-api';
 import { useMemo } from 'react';
@@ -22,8 +24,16 @@ const Exercises = () => {
         [response]
     );
 
+    if (!!loading) {
+        return <RouteLoader />;
+    }
+
+    if (!!error) {
+        return <Navigate to={'/error'} />;
+    }
+
     return (
-        <AppBarWithAppHeaderLayout pageTitle='Exercises' showLoading={loading}>
+        <AppBarWithAppHeaderLayout pageTitle='Exercises'>
             <div className={styles.root}>
                 <div className={styles.items}>{items}</div>
             </div>

@@ -11,3 +11,23 @@
         }
     }
 }
+
+.input {
+    width: 100%;
+}
+
+.errorMessage {
+    color: var(--coral);
+    font-size: 0.9rem;
+    padding-top: 0.3rem;
+    display: block;
+    position: absolute;
+}
+
+.buttonBar {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: min-content min-content;
+    justify-content: end;
+    margin-top: 1rem;
+}

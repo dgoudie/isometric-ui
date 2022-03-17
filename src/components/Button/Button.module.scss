@@ -2,7 +2,7 @@
     background-color: rgba(128, 128, 128, 0.2);
     align-items: center;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 0.25rem;
+    border-radius: 0.5rem;
     box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
     cursor: pointer;
     display: grid;
@@ -19,15 +19,21 @@
         background-color: var(--coral);
         color: white;
     }
+
+    &:disabled {
+        background-color: rgba(128, 128, 128, 0.2);
+        color: rgba(128, 128, 128);
+        cursor: default;
+    }
 }
 
-.root:hover,
-.root:focus {
+.root:hover:not(:disabled),
+.root:focus:not(:disabled) {
     border-color: rgba(0, 0, 0, 0.15);
     box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
 }
 
-.root:hover {
+.root:hover:not(:disabled) {
     transform: translateY(-1px);
 }
 

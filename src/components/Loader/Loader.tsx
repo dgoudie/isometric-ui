@@ -1,5 +1,10 @@
+import classNames from 'classnames';
 import styles from './Loader.module.scss';
 
-export default function Loader() {
-    return <div className={styles.loader}></div>;
+interface Props {
+    className?: string;
+}
+
+export default function Loader({ className }: Props) {
+    return <div className={classNames(className, styles.loader)}></div>;
 }

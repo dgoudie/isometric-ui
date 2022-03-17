@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 
-import Loader from '../Loader/Loader';
 import { NavLink } from 'react-router-dom';
 import classNames from 'classnames';
 import styles from './AppBarLayout.module.scss';
@@ -8,26 +7,17 @@ import styles from './AppBarLayout.module.scss';
 type Props = {
     header?: React.ReactNode;
     pageTitle: string;
-    showLoading: boolean;
 };
 
 export default function AppBarLayout({
     children,
     header,
     pageTitle,
-    showLoading,
 }: React.PropsWithChildren<Props>) {
     useEffect(() => {
         document.title = `${pageTitle} | ISOMETRIC`;
     }, [pageTitle]);
     let body = <div className={styles.body}>{children}</div>;
-    if (showLoading) {
-        body = (
-            <div className={styles.bodyLoading}>
-                <Loader />
-            </div>
-        );
-    }
     return (
         <div className={styles.root}>
             {header}
