@@ -9,16 +9,22 @@ import { IExercise } from '@dgoudie/isometric-types';
 import Loader from '../../components/Loader/Loader';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import classNames from 'classnames';
+import { getFormikInitiallyTouchedFields } from '../../utils/formik-initially-touched';
 import styles from './index.module.scss';
 import { useFetchFromApi } from '../../utils/fetch-from-api';
 
 const ExerciseSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     breakTimeInSeconds: Yup.number()
-        .integer('Break time must be a number')
-        .positive('Break time must be more than zero')
-        .max(300, 'Break time must be less than 5 minutes')
+        .integer('Break Time must be a number')
+        .positive('Break Time must be more than zero')
+        .max(300, 'Break Time must be less than 5 minutes')
         .required('Break Time is required'),
+    setCount: Yup.number()
+        .integer('Set Count must be a number')
+        .positive('Set Count must be more than zero')
+        .max(5, 'Set Count cannot be higher than 5')
+        .required('Set Count is required'),
 });
 
 const ExerciseDetail = () => {
@@ -43,6 +49,9 @@ const ExerciseDetail = () => {
         <AppBarWithAppHeaderLayout pageTitle={exerciseName!}>
             <div className={styles.root}>
                 <Formik
+                    initialTouched={getFormikInitiallyTouchedFields(
+                        response!.data
+                    )}
                     initialValues={response!.data}
                     validationSchema={ExerciseSchema}
                     onSubmit={(values) => {
@@ -84,6 +93,22 @@ const ExerciseDetail = () => {
                                 />
                                 <ErrorMessage
                                     name='breakTimeInSeconds'
+                                    component='span'
+                                    className={styles.errorMessage}
+                                />
+                                <label htmlFor='setCount'>Set Count</label>
+                                <Field
+                                    type='number'
+                                    id='setCount'
+                                    name='setCount'
+                                    className={classNames(
+                                        'standard-form-input',
+                                        styles.input
+                                    )}
+                                    disabled={isSubmitting}
+                                />
+                                <ErrorMessage
+                                    name='setCount'
                                     component='span'
                                     className={styles.errorMessage}
                                 />
