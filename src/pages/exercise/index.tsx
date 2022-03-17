@@ -51,18 +51,18 @@ const ExerciseDetail = () => {
                 >
                     {(formik) => {
                         const { isValid, isSubmitting, resetForm } = formik;
-                        const disabled = !isValid || isSubmitting;
                         return (
                             <Form>
                                 <label htmlFor='name'>Name</label>
                                 <Field
+                                    autoFocus
                                     id='name'
                                     name='name'
                                     className={classNames(
                                         'standard-form-input',
                                         styles.input
                                     )}
-                                    disabled={disabled}
+                                    disabled={isSubmitting}
                                 />
                                 <ErrorMessage
                                     name='name'
@@ -80,7 +80,7 @@ const ExerciseDetail = () => {
                                         'standard-form-input',
                                         styles.input
                                     )}
-                                    disabled={disabled}
+                                    disabled={isSubmitting}
                                 />
                                 <ErrorMessage
                                     name='breakTimeInSeconds'
@@ -92,7 +92,7 @@ const ExerciseDetail = () => {
                                     <Button
                                         type='button'
                                         onClick={() => resetForm()}
-                                        disabled={disabled}
+                                        disabled={isSubmitting}
                                     >
                                         <i className='fa-solid fa-rotate-left'></i>
                                         Reset
@@ -100,7 +100,7 @@ const ExerciseDetail = () => {
                                     <Button
                                         primary
                                         type='submit'
-                                        disabled={disabled}
+                                        disabled={!isValid || isSubmitting}
                                     >
                                         <i className='fa-solid fa-floppy-disk'></i>
                                         Save
