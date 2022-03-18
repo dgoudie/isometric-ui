@@ -2,10 +2,11 @@ import {
     ExerciseMuscleGroup,
     ExerciseMuscleGroups,
 } from '@dgoudie/isometric-types';
-import { useCallback, useRef } from 'react';
 
 import MuscleGroupTag from '../MuscleGroupTag/MuscleGroupTag';
 import styles from './MuscleGroupPicker.module.scss';
+import { useCallback } from 'react';
+import { useDetails } from '@primer/react';
 
 interface Props {
     value?: ExerciseMuscleGroup;
@@ -18,18 +19,20 @@ export default function MuscleGroupPicker({
     valueChanged,
     required = false,
 }: Props) {
-    const details = useRef<HTMLDetailsElement>(null);
+    const { getDetailsProps, setOpen } = useDetails({
+        closeOnOutsideClick: true,
+    });
 
     const onClick = useCallback(
         (group: ExerciseMuscleGroup | undefined) => {
-            details.current && (details.current.open = false);
+            setOpen(false);
             valueChanged && valueChanged(group);
         },
-        [details, valueChanged]
+        [setOpen, valueChanged]
     );
 
     return (
-        <details ref={details} className={styles.root}>
+        <details {...getDetailsProps()} className={styles.root}>
             <summary>
                 <MuscleGroupTag muscleGroup={value} />
             </summary>
@@ -44,7 +47,11 @@ export default function MuscleGroupPicker({
                     </button>
                 )}
                 {ExerciseMuscleGroups.map((group) => (
-                    <button type='button' onClick={() => onClick(group)}>
+                    <button
+                        key={group}
+                        type='button'
+                        onClick={() => onClick(group)}
+                    >
                         <MuscleGroupTag muscleGroup={group} />
                     </button>
                 ))}

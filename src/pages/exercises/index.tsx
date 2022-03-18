@@ -16,11 +16,13 @@ import { useFetchFromApi } from '../../utils/fetch-from-api';
 const Exercises = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const muscleGroup = useMemo(
-        () =>
-            searchParams.get('muscleGroup') as ExerciseMuscleGroup | undefined,
-        [searchParams]
-    );
+    const muscleGroup = useMemo(() => {
+        const mg = searchParams.get('muscleGroup');
+        if (!!mg) {
+            return decodeURIComponent(mg) as ExerciseMuscleGroup;
+        }
+        return undefined;
+    }, [searchParams]);
 
     useEffect(() => {
         if (!!muscleGroup && !ExerciseMuscleGroups.includes(muscleGroup)) {
@@ -63,7 +65,10 @@ const Exercises = () => {
                             if (!group) {
                                 searchParams.delete('muscleGroup');
                             } else {
-                                searchParams.set('muscleGroup', group);
+                                searchParams.set(
+                                    'muscleGroup',
+                                    encodeURIComponent(group)
+                                );
                             }
                             setSearchParams(searchParams);
                         }}
