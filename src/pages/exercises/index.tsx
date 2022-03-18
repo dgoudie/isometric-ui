@@ -23,9 +23,14 @@ const Exercises = () => {
             )),
         [response]
     );
+    let child = <RouteLoader />;
 
-    if (!!loading) {
-        return <RouteLoader />;
+    if (!loading) {
+        child = (
+            <div className={styles.root}>
+                <div className={styles.items}>{items}</div>
+            </div>
+        );
     }
 
     if (!!error) {
@@ -33,10 +38,8 @@ const Exercises = () => {
     }
 
     return (
-        <AppBarWithAppHeaderLayout pageTitle='Exercises'>
-            <div className={styles.root}>
-                <div className={styles.items}>{items}</div>
-            </div>
+        <AppBarWithAppHeaderLayout pageTitle={'Exercises'}>
+            {child}
         </AppBarWithAppHeaderLayout>
     );
 };

@@ -8,6 +8,7 @@ import Button from '../../components/Button/Button';
 import { IExercise } from '@dgoudie/isometric-types';
 import Loader from '../../components/Loader/Loader';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
+import SetCountPickerField from '../../components/SetCountPickerField/SetCountPickerField';
 import classNames from 'classnames';
 import { getFormikInitiallyTouchedFields } from '../../utils/formik-initially-touched';
 import styles from './index.module.scss';
@@ -16,7 +17,7 @@ import { useFetchFromApi } from '../../utils/fetch-from-api';
 const ExerciseSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     breakTimeInSeconds: Yup.number()
-        .integer('Break Time must be a number')
+        .integer('Break Time must be a whole number')
         .positive('Break Time must be more than zero')
         .max(300, 'Break Time must be less than 5 minutes')
         .required('Break Time is required'),
@@ -37,16 +38,14 @@ const ExerciseDetail = () => {
         false
     );
 
-    if (!!loading) {
-        return <RouteLoader />;
-    }
+    let child = <RouteLoader />;
 
-    if (!!error) {
-        return <Navigate to={'/error'} />;
-    }
-
-    return (
-        <AppBarWithAppHeaderLayout pageTitle={exerciseName!}>
+    if (!loading) {
+        const standardFormInputStyles = classNames(
+            'standard-form-input',
+            styles.input
+        );
+        child = (
             <div className={styles.root}>
                 <Formik
                     initialTouched={getFormikInitiallyTouchedFields(
@@ -67,10 +66,7 @@ const ExerciseDetail = () => {
                                     autoFocus
                                     id='name'
                                     name='name'
-                                    className={classNames(
-                                        'standard-form-input',
-                                        styles.input
-                                    )}
+                                    className={standardFormInputStyles}
                                     disabled={isSubmitting}
                                 />
                                 <ErrorMessage
@@ -85,10 +81,7 @@ const ExerciseDetail = () => {
                                     type='number'
                                     id='breakTimeInSeconds'
                                     name='breakTimeInSeconds'
-                                    className={classNames(
-                                        'standard-form-input',
-                                        styles.input
-                                    )}
+                                    className={standardFormInputStyles}
                                     disabled={isSubmitting}
                                 />
                                 <ErrorMessage
@@ -97,14 +90,8 @@ const ExerciseDetail = () => {
                                     className={styles.errorMessage}
                                 />
                                 <label htmlFor='setCount'>Set Count</label>
-                                <Field
-                                    type='number'
-                                    id='setCount'
+                                <SetCountPickerField
                                     name='setCount'
-                                    className={classNames(
-                                        'standard-form-input',
-                                        styles.input
-                                    )}
                                     disabled={isSubmitting}
                                 />
                                 <ErrorMessage
@@ -136,6 +123,16 @@ const ExerciseDetail = () => {
                     }}
                 </Formik>
             </div>
+        );
+    }
+
+    if (!!error) {
+        return <Navigate to={'/error'} />;
+    }
+
+    return (
+        <AppBarWithAppHeaderLayout pageTitle={exerciseName!}>
+            {child}
         </AppBarWithAppHeaderLayout>
     );
 };
