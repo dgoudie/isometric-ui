@@ -32,8 +32,8 @@ const ExerciseDetail = () => {
 
     const [response, error, loading] = useFetchFromApi<IExercise>(
         `/api/exercise/${exerciseName}`,
-        null,
-        null,
+        undefined,
+        undefined,
         false
     );
 

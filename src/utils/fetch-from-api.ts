@@ -1,6 +1,6 @@
 import {} from '@dgoudie/isometric-types';
 
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from 'axios';
 
 import React from 'react';
 import { ServiceError } from '@dgoudie/service-error';
@@ -8,8 +8,8 @@ import { useWebSocketForUpdates } from './use-web-socket-for-updates';
 
 export const fetchFromApi = <T>(
     path: string,
-    params?: any,
-    headers?: any
+    params?: URLSearchParams,
+    headers?: AxiosRequestHeaders
 ): Promise<AxiosResponse<T>> => {
     return axios.get<T>(path, {
         withCredentials: true,
@@ -26,8 +26,8 @@ interface UseFetchState<T> {
 
 export const useFetchFromApi = <T>(
     path: string,
-    params?: any,
-    headers?: any,
+    params?: URLSearchParams,
+    headers?: AxiosRequestHeaders,
     skip = false,
     listenForWebsocketReload = false
 ): [AxiosResponse<T> | null, AxiosError<ServiceError> | null, boolean] => {

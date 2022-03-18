@@ -4,37 +4,52 @@ import {
     IExercise,
 } from '@dgoudie/isometric-types';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import MuscleGroupPicker from '../../components/MuscleGroupPicker/MuscleGroupPicker';
 import MuscleGroupTag from '../../components/MuscleGroupTag/MuscleGroupTag';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import styles from './index.module.scss';
+import useDebounce from '../../utils/use-debouce';
 import { useFetchFromApi } from '../../utils/fetch-from-api';
 
 const Exercises = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const muscleGroup = useMemo(() => {
-        const mg = searchParams.get('muscleGroup');
-        if (!!mg) {
-            return decodeURIComponent(mg) as ExerciseMuscleGroup;
-        }
-        return undefined;
-    }, [searchParams]);
+    const q = searchParams.get('q');
+    const muscleGroup = searchParams.get('muscleGroup');
+    const muscleGroupDecoded = !!muscleGroup
+        ? (muscleGroup as ExerciseMuscleGroup)
+        : undefined;
+
+    const [searchTerm, setSearchTerm] = useState(q ?? '');
+
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
     useEffect(() => {
-        if (!!muscleGroup && !ExerciseMuscleGroups.includes(muscleGroup)) {
+        if (
+            !!muscleGroupDecoded &&
+            !ExerciseMuscleGroups.includes(muscleGroupDecoded)
+        ) {
             searchParams.delete('muscleGroup');
             setSearchParams(searchParams);
         }
-    }, [muscleGroup, searchParams, setSearchParams]);
+    }, [muscleGroupDecoded, searchParams, setSearchParams]);
+
+    useEffect(() => {
+        if (!!debouncedSearchTerm) {
+            searchParams.set('q', debouncedSearchTerm);
+        } else {
+            searchParams.delete('q');
+        }
+        setSearchParams(searchParams);
+    }, [debouncedSearchTerm, searchParams, setSearchParams]);
 
     const [response, error, loading] = useFetchFromApi<IExercise[]>(
         `/api/exercises`,
-        null,
-        null,
+        searchParams,
+        undefined,
         false
     );
 
@@ -48,35 +63,7 @@ const Exercises = () => {
     let child = <RouteLoader />;
 
     if (!loading) {
-        child = (
-            <div className={styles.root}>
-                <div className={styles.filters}>
-                    <label>Search:</label>
-                    <div className={styles.filtersInput}>
-                        <input
-                            type={'search'}
-                            placeholder='Enter a search term...'
-                        />
-                    </div>
-                    <label>Muscle Group:</label>
-                    <MuscleGroupPicker
-                        value={muscleGroup}
-                        valueChanged={(group) => {
-                            if (!group) {
-                                searchParams.delete('muscleGroup');
-                            } else {
-                                searchParams.set(
-                                    'muscleGroup',
-                                    encodeURIComponent(group)
-                                );
-                            }
-                            setSearchParams(searchParams);
-                        }}
-                    />
-                </div>
-                <div className={styles.items}>{items}</div>
-            </div>
-        );
+        child = <div className={styles.items}>{items}</div>;
     }
 
     if (!!error) {
@@ -85,7 +72,32 @@ const Exercises = () => {
 
     return (
         <AppBarWithAppHeaderLayout pageTitle={'Exercises'}>
-            {child}
+            <div className={styles.root}>
+                <div className={styles.filters}>
+                    <label>Search:</label>
+                    <div className={styles.filtersInput}>
+                        <input
+                            defaultValue={searchTerm}
+                            type={'search'}
+                            placeholder='Enter a search term...'
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <label>Muscle Group:</label>
+                    <MuscleGroupPicker
+                        value={muscleGroupDecoded}
+                        valueChanged={(group) => {
+                            if (!group) {
+                                searchParams.delete('muscleGroup');
+                            } else {
+                                searchParams.set('muscleGroup', group);
+                            }
+                            setSearchParams(searchParams);
+                        }}
+                    />
+                </div>
+                {child}
+            </div>
         </AppBarWithAppHeaderLayout>
     );
 };

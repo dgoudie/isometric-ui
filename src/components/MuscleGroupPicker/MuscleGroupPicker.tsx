@@ -38,11 +38,7 @@ export default function MuscleGroupPicker({
             </summary>
             <div className={styles.body}>
                 {!required && (
-                    <button
-                        className={styles.undefinedButton}
-                        type='button'
-                        onClick={() => onClick(undefined)}
-                    >
+                    <button type='button' onClick={() => onClick(undefined)}>
                         <MuscleGroupTag />
                     </button>
                 )}

@@ -54,7 +54,7 @@ type AppBarButtonProps = {
 function AppBarButton({ href, text, iconClass }: AppBarButtonProps) {
     return (
         <NavLink
-            to={href}
+            to={{ pathname: href, search: '' }}
             className={({ isActive }) => (isActive ? styles.active : undefined)}
         >
             <i className={classNames('fa-solid', iconClass)}></i>
