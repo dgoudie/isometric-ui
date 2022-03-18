@@ -23,25 +23,32 @@ const colorScale = chroma
     .colors(ExerciseMuscleGroups.length);
 
 interface Props {
-    muscleGroup: ExerciseMuscleGroup;
+    muscleGroup?: ExerciseMuscleGroup;
     className?: string;
 }
 
 export default function MuscleGroupTag({ muscleGroup, className }: Props) {
     const backgroundColor = useMemo(
-        () => colorScale[ExerciseMuscleGroups.indexOf(muscleGroup)],
+        () =>
+            muscleGroup
+                ? colorScale[ExerciseMuscleGroups.indexOf(muscleGroup)]
+                : 'var(--background-color)',
         [muscleGroup]
     );
     let color = 'black';
-    if (contrast(backgroundColor, color) < 7) {
+    let borderColor = 'transparent';
+    if (!muscleGroup) {
+        color = 'var(--color)';
+        borderColor = 'var(--color)';
+    } else if (contrast(backgroundColor, color) < 7) {
         color = 'white';
     }
     return (
         <div
             className={classNames(className, styles.item)}
-            style={{ backgroundColor, color }}
+            style={{ backgroundColor, color, borderColor }}
         >
-            {muscleGroup.toUpperCase()}
+            {muscleGroup ? muscleGroup.toUpperCase() : 'N/A'}
         </div>
     );
 }

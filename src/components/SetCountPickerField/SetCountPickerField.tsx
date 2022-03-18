@@ -4,7 +4,7 @@ import SetCountPicker, { SetCount } from '../SetCountPicker/SetCountPicker';
 import React from 'react';
 
 export default function SetCountPickerField(props: FieldHookConfig<SetCount>) {
-    const [field, meta, helpers] = useField<SetCount>(props);
+    const [_field, meta, helpers] = useField<SetCount>(props);
     const { value } = meta;
     const { setValue } = helpers;
     return (

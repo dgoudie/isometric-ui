@@ -6,7 +6,6 @@ import { Navigate, useParams } from 'react-router-dom';
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import Button from '../../components/Button/Button';
 import { IExercise } from '@dgoudie/isometric-types';
-import Loader from '../../components/Loader/Loader';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import SetCountPickerField from '../../components/SetCountPickerField/SetCountPickerField';
 import classNames from 'classnames';
@@ -99,7 +98,37 @@ const ExerciseDetail = () => {
                                     component='span'
                                     className={styles.errorMessage}
                                 />
-
+                                {/* <label htmlFor='minimumRecommendedRepetitions'>
+                                    Recommended Repetitions
+                                </label>
+                                <Field
+                                    type='number'
+                                    id='minimumRecommendedRepetitions'
+                                    name='minimumRecommendedRepetitions'
+                                    className={classNames(
+                                        'standard-form-input'
+                                    )}
+                                    disabled={isSubmitting}
+                                />
+                                <ErrorMessage
+                                    name='minimumRecommendedRepetitions'
+                                    component='span'
+                                    className={styles.errorMessage}
+                                />
+                                <Field
+                                    type='number'
+                                    id='maximumRecommendedRepetitions'
+                                    name='maximumRecommendedRepetitions'
+                                    className={classNames(
+                                        'standard-form-input'
+                                    )}
+                                    disabled={isSubmitting}
+                                />
+                                <ErrorMessage
+                                    name='maximumRecommendedRepetitions'
+                                    component='span'
+                                    className={styles.errorMessage}
+                                /> */}
                                 <div className={styles.buttonBar}>
                                     <Button
                                         type='button'

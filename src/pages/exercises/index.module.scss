@@ -6,6 +6,22 @@
     grid-auto-flow: row;
     gap: 0.75rem;
 }
+.filters {
+    display: grid;
+    gap: 0.75rem 1rem;
+    grid-template-columns: max-content auto;
+    align-items: center;
+    margin-bottom: 1rem;
+    &Input input {
+        outline: none;
+        font-size: 1rem;
+        letter-spacing: inherit;
+        font-family: inherit;
+        width: 100%;
+        background: transparent;
+        border: none;
+    }
+}
 .item {
     border: 1px solid var(--divider);
     background-color: var(--background-alt);

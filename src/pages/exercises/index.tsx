@@ -1,14 +1,34 @@
-import { Link, Navigate } from 'react-router-dom';
+import {
+    ExerciseMuscleGroup,
+    ExerciseMuscleGroups,
+    IExercise,
+} from '@dgoudie/isometric-types';
+import { Link, Navigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
-import { IExercise } from '@dgoudie/isometric-types';
+import MuscleGroupPicker from '../../components/MuscleGroupPicker/MuscleGroupPicker';
 import MuscleGroupTag from '../../components/MuscleGroupTag/MuscleGroupTag';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import styles from './index.module.scss';
 import { useFetchFromApi } from '../../utils/fetch-from-api';
-import { useMemo } from 'react';
 
 const Exercises = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const muscleGroup = useMemo(
+        () =>
+            searchParams.get('muscleGroup') as ExerciseMuscleGroup | undefined,
+        [searchParams]
+    );
+
+    useEffect(() => {
+        if (!!muscleGroup && !ExerciseMuscleGroups.includes(muscleGroup)) {
+            searchParams.delete('muscleGroup');
+            setSearchParams(searchParams);
+        }
+    }, [muscleGroup, searchParams, setSearchParams]);
+
     const [response, error, loading] = useFetchFromApi<IExercise[]>(
         `/api/exercises`,
         null,
@@ -28,6 +48,27 @@ const Exercises = () => {
     if (!loading) {
         child = (
             <div className={styles.root}>
+                <div className={styles.filters}>
+                    <label>Search:</label>
+                    <div className={styles.filtersInput}>
+                        <input
+                            type={'search'}
+                            placeholder='Enter a search term...'
+                        />
+                    </div>
+                    <label>Muscle Group:</label>
+                    <MuscleGroupPicker
+                        value={muscleGroup}
+                        valueChanged={(group) => {
+                            if (!group) {
+                                searchParams.delete('muscleGroup');
+                            } else {
+                                searchParams.set('muscleGroup', group);
+                            }
+                            setSearchParams(searchParams);
+                        }}
+                    />
+                </div>
                 <div className={styles.items}>{items}</div>
             </div>
         );
