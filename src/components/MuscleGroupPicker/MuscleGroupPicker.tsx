@@ -35,13 +35,17 @@ export default function MuscleGroupPicker({
         <details {...getDetailsProps()} className={styles.root}>
             <summary>
                 <MuscleGroupTag muscleGroup={value} />
-            </summary>
-            <div className={styles.body}>
-                {!required && (
-                    <button type='button' onClick={() => onClick(undefined)}>
-                        <MuscleGroupTag />
+                {!required && !!value && (
+                    <button
+                        className={styles.clear}
+                        type='button'
+                        onClick={() => onClick(undefined)}
+                    >
+                        <i className='fa-solid fa-xmark'></i>
                     </button>
                 )}
+            </summary>
+            <div className={styles.body}>
                 {ExerciseMuscleGroups.map((group) => (
                     <button
                         key={group}
