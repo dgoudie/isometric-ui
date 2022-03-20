@@ -18,6 +18,7 @@
         "formik": "^2.2.9",
         "react": "^17",
         "react-dom": "^17",
+        "react-focus-lock": "^2.8.1",
         "react-hot-toast": "^2.2.0",
         "react-page-visibility": "^6.4.0",
         "react-router-dom": "^6.2.2",

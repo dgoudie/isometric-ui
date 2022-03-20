@@ -1,6 +1,7 @@
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
 import { CSSTransition } from 'react-transition-group';
+import FocusLock from 'react-focus-lock';
 import styles from './BottomSheet.module.scss';
 
 type PropsLocked<T> = {
@@ -63,26 +64,30 @@ export default function BottomSheet<T extends unknown>({
                 onClick={onClosedNoResult}
                 ref={nodeRef}
             >
-                <div
-                    className={styles.sheetRoot}
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    <div className={styles.sheetHeader}>
-                        <div className={styles.sheetHeaderTitle}>{title}</div>
-                        {!locked && (
-                            <button
-                                className={styles.sheetHeaderDismiss}
-                                type='button'
-                                onClick={onClosedNoResult}
-                            >
-                                <i className='fa-solid fa-xmark'></i>
-                            </button>
-                        )}
+                <FocusLock>
+                    <div
+                        className={styles.sheetRoot}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className={styles.sheetHeader}>
+                            <div className={styles.sheetHeaderTitle}>
+                                {title}
+                            </div>
+                            {!locked && (
+                                <button
+                                    className={styles.sheetHeaderDismiss}
+                                    type='button'
+                                    onClick={onClosedNoResult}
+                                >
+                                    <i className='fa-solid fa-xmark'></i>
+                                </button>
+                            )}
+                        </div>
+                        <div className={styles.sheetBody}>
+                            {children(onClosedWithResult)}
+                        </div>
                     </div>
-                    <div className={styles.sheetBody}>
-                        {children(onClosedWithResult)}
-                    </div>
-                </div>
+                </FocusLock>
             </div>
         </CSSTransition>
     );
