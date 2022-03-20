@@ -1,20 +1,17 @@
 .root {
     padding: 0 0.75rem;
-}
-.items {
+    height: var(--between-bars);
     display: grid;
-    grid-auto-flow: row;
-    gap: 0.75rem;
+    grid-template-rows: max-content auto;
 }
 .filters {
     display: grid;
     gap: 0.5rem 1rem;
     grid-template-columns: max-content auto;
     align-items: center;
-    position: sticky;
-    top: var(--top-bar-height);
     padding: 0.5rem 0 0.75rem;
     background: var(--background);
+    z-index: 1;
     &Input input {
         outline: none;
         font-size: 1rem;
@@ -24,6 +21,15 @@
         background: transparent;
         border: none;
     }
+}
+.items {
+    overflow-y: auto;
+    display: grid;
+    grid-auto-flow: row;
+    border-radius: 8px 8px 0 0;
+    gap: 0.75rem;
+    align-items: start;
+    padding-bottom: 0.75rem;
 }
 .item {
     border: 1px solid var(--divider);
