@@ -1,11 +1,6 @@
-.root {
-    --max-width: 540px;
-    --bar-height: 5.5rem;
-}
-
 .body {
     max-width: var(--max-width);
-    margin: 0 auto var(--bar-height);
+    margin: 0 auto var(--bottom-bar-height);
 }
 
 .bottomBar {
@@ -14,7 +9,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: var(--bar-height);
+    height: var(--bottom-bar-height);
     border-top: 1px solid rgba(128, 128, 128, 0.3);
     font-family: 'Syne Mono', monospace;
     font-weight: bold;

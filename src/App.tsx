@@ -8,6 +8,7 @@ import Exercises from './pages/exercises';
 import History from './pages/history';
 import Home from './pages/home';
 import Settings from './pages/settings';
+import WorkoutPlan from './pages/workout-plan';
 
 const App: FC = () => (
     <Routes>
@@ -16,6 +17,7 @@ const App: FC = () => (
         <Route path='exercises/:exerciseName' element={<Exercise />} />
         <Route path='history' element={<History />} />
         <Route path='settings' element={<Settings />} />
+        <Route path='workout-plan' element={<WorkoutPlan />} />
         <Route path='*' element={<Navigate replace to='/home' />} />
     </Routes>
 );

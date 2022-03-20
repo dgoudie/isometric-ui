@@ -4,7 +4,6 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { Navigate, useParams } from 'react-router-dom';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
-import Button from '../../components/Button/Button';
 import { IExercise } from '@dgoudie/isometric-types';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import SetCountPickerField from '../../components/SetCountPickerField/SetCountPickerField';
@@ -130,22 +129,23 @@ const ExerciseDetail = () => {
                                     className={styles.errorMessage}
                                 /> */}
                                 <div className={styles.buttonBar}>
-                                    <Button
+                                    <button
                                         type='button'
+                                        className='standard-button'
                                         onClick={() => resetForm()}
                                         disabled={isSubmitting}
                                     >
                                         <i className='fa-solid fa-rotate-left'></i>
                                         Reset
-                                    </Button>
-                                    <Button
-                                        primary
+                                    </button>
+                                    <button
+                                        className='standard-button primary'
                                         type='submit'
                                         disabled={!isValid || isSubmitting}
                                     >
                                         <i className='fa-solid fa-floppy-disk'></i>
                                         Save
-                                    </Button>
+                                    </button>
                                 </div>
                             </Form>
                         );

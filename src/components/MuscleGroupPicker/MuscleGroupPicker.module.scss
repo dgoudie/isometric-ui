@@ -7,6 +7,7 @@
         list-style: none;
         display: grid;
         grid-template-columns: max-content max-content;
+        align-items: center;
         gap: 0.5rem;
         &::-webkit-details-marker {
             display: none;
@@ -28,7 +29,6 @@
     border-radius: 1000px;
     padding: 0.1rem 0.4rem;
     font-size: 0.8rem;
-    font-weight: bold;
     border: 2px solid;
     color: var(--color);
 }

@@ -1,4 +1,4 @@
-import Button from '../Button/Button';
+import classNames from 'classnames';
 import styles from './SetCountPicker.module.scss';
 
 export type SetCount = 1 | 2 | 3 | 4 | 5;
@@ -19,15 +19,18 @@ export default function SetCountPicker({
     return (
         <div className={styles.root}>
             {setCounts.map((v) => (
-                <Button
+                <button
                     type='button'
                     key={v}
                     disabled={disabled}
-                    primary={v === value}
+                    className={classNames(
+                        'standard-button',
+                        v === value && 'primary'
+                    )}
                     onClick={() => !!valueChanged && valueChanged(v)}
                 >
                     {v}
-                </Button>
+                </button>
             ))}
         </div>
     );

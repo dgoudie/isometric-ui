@@ -20,8 +20,13 @@ body {
     --background: white;
     --background-alt: #f5f5f5;
     --divider: #e0e0e0;
-    --header-height: 3rem;
 
+    --max-width: 540px;
+    --top-bar-height: 3rem;
+    --bottom-bar-height: 5.5rem;
+    --between-bars: calc(
+        100vh - calc(var(--top-bar-height) + var(--bottom-bar-height))
+    );
     @media (prefers-color-scheme: dark) {
         --color: white;
         --background: var(--navy);
@@ -52,6 +57,7 @@ a {
     user-select: none;
 }
 
+a,
 button,
 input[type='submit'],
 input[type='reset'] {
@@ -61,8 +67,18 @@ input[type='reset'] {
     padding: 0;
     font: inherit;
     cursor: pointer;
-    outline: inherit;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
+
+h1 {
+    font-weight: 300;
+    font-size: 1.5rem;
+    margin: 0;
+    padding: 0.75rem 0.5rem;
+}
+
+@import './scss/button.scss';
 
 .standard-form-input {
     border: none;
