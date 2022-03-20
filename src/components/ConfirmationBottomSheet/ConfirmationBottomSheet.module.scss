@@ -1,0 +1,9 @@
+.root {
+    display: grid;
+    gap: 1rem;
+    pre {
+        white-space: pre-wrap;
+        font-family: inherit;
+        margin: 0;
+    }
+}

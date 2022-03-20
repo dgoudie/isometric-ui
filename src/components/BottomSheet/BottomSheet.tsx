@@ -5,7 +5,7 @@ import FocusLock from 'react-focus-lock';
 import styles from './BottomSheet.module.scss';
 
 type PropsLocked<T> = {
-    title: string;
+    title?: string;
     locked: true;
     onResult: (result: T) => void;
     children: (onResult: (result: T) => void) => ReactNode;
@@ -69,20 +69,24 @@ export default function BottomSheet<T extends unknown>({
                         className={styles.sheetRoot}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className={styles.sheetHeader}>
-                            <div className={styles.sheetHeaderTitle}>
-                                {title}
+                        {(title || !locked) && (
+                            <div className={styles.sheetHeader}>
+                                {title && (
+                                    <div className={styles.sheetHeaderTitle}>
+                                        {title}
+                                    </div>
+                                )}
+                                {!locked && (
+                                    <button
+                                        className={styles.sheetHeaderDismiss}
+                                        type='button'
+                                        onClick={onClosedNoResult}
+                                    >
+                                        <i className='fa-solid fa-xmark'></i>
+                                    </button>
+                                )}
                             </div>
-                            {!locked && (
-                                <button
-                                    className={styles.sheetHeaderDismiss}
-                                    type='button'
-                                    onClick={onClosedNoResult}
-                                >
-                                    <i className='fa-solid fa-xmark'></i>
-                                </button>
-                            )}
-                        </div>
+                        )}
                         <div className={styles.sheetBody}>
                             {children(onClosedWithResult)}
                         </div>

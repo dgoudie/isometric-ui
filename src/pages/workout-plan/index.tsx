@@ -2,21 +2,32 @@ import React, { useState } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import BottomSheet from '../../components/BottomSheet/BottomSheet';
+import ConfirmationBottomSheet from '../../components/ConfirmationBottomSheet/ConfirmationBottomSheet';
 import styles from './index.module.scss';
 
 export default function WorkoutPlan() {
     const [open, setOpen] = useState(false);
     const [open2, setOpen2] = useState(false);
+    const [confirm, setConfirm] = useState(false);
     return (
         <AppBarWithAppHeaderLayout pageTitle='Workout Plan'>
             <h1>Workout Plan</h1>
             <div className={styles.root}>
-                <button type='button' onClick={() => setOpen(true)}>
-                    open
-                </button>
-                <button type='button' onClick={() => setOpen2(true)}>
-                    open2
-                </button>
+                <div>
+                    <button type='button' onClick={() => setOpen(true)}>
+                        open
+                    </button>
+                </div>
+                <div>
+                    <button type='button' onClick={() => setOpen2(true)}>
+                        open2
+                    </button>
+                </div>
+                <div>
+                    <button type='button' onClick={() => setConfirm(true)}>
+                        confirm
+                    </button>
+                </div>
                 {open && (
                     <BottomSheet
                         title='Hello'
@@ -67,6 +78,15 @@ export default function WorkoutPlan() {
                             </div>
                         )}
                     </BottomSheet>
+                )}
+                {confirm && (
+                    <ConfirmationBottomSheet
+                        prompt="Are you sure that you'd like to perform this action?"
+                        onResult={(yesOrNo) => {
+                            setConfirm(false);
+                            console.log('yesOrNo', yesOrNo);
+                        }}
+                    />
                 )}
             </div>
         </AppBarWithAppHeaderLayout>
