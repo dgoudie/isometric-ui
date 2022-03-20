@@ -77,6 +77,7 @@ const ExerciseDetail = () => {
                                 </label>
                                 <Field
                                     type='number'
+                                    inputmode='decimal'
                                     id='breakTimeInSeconds'
                                     name='breakTimeInSeconds'
                                     className={standardFormInputStyles}
@@ -102,6 +103,7 @@ const ExerciseDetail = () => {
                                 </label>
                                 <Field
                                     type='number'
+                                    inputmode="decimal"
                                     id='minimumRecommendedRepetitions'
                                     name='minimumRecommendedRepetitions'
                                     className={classNames(
@@ -116,6 +118,7 @@ const ExerciseDetail = () => {
                                 />
                                 <Field
                                     type='number'
+                                    inputmode="decimal"
                                     id='maximumRecommendedRepetitions'
                                     name='maximumRecommendedRepetitions'
                                     className={classNames(
