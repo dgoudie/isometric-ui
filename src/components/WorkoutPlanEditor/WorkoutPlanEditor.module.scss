@@ -1,0 +1,93 @@
+.list {
+    overflow-y: auto;
+    border-radius: 8px;
+    i {
+        font-size: 1.2rem;
+    }
+}
+
+.addDay {
+    display: flex;
+    justify-content: end;
+    padding: 0.5rem 0;
+}
+
+.day {
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    background-color: var(--background-alt);
+    border: 1px solid var(--divider);
+    &Header {
+        display: grid;
+        grid-template-columns: max-content auto max-content;
+        align-items: center;
+        outline: none;
+        font-weight: bold;
+        cursor: pointer;
+        list-style: none;
+        &::-webkit-details-marker {
+            display: none;
+        }
+    }
+
+    &Number {
+        padding: 0.75rem 0.75rem 0.75rem 0.25rem;
+    }
+
+    &Handle {
+        height: 3rem;
+        width: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &DeleteIcon {
+        height: 3rem;
+        width: 3rem;
+        color: var(--coral);
+    }
+}
+
+.exercises {
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--divider);
+}
+
+.exercise {
+    display: grid;
+    grid-template-columns: max-content auto max-content max-content;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--background-alt);
+    border-radius: 8px;
+
+    &Handle {
+        height: 3rem;
+        width: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &Name {
+        font-size: 0.9rem;
+    }
+}
+
+.noExercises {
+    padding: 0 0.75rem 0.75rem;
+    color: var(--coral);
+}
+
+.addExercise {
+    display: flex;
+    justify-content: end;
+    padding: 0 0.5rem 0.5rem;
+}
+
+.deleteIcon {
+    height: 3rem;
+    width: 3rem;
+    color: var(--coral);
+}

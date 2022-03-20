@@ -88,6 +88,7 @@ h2 {
 
 summary {
     outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 @import './scss/button.scss';

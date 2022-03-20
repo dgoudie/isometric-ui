@@ -1,7 +1,7 @@
 .wrapper {
-    height: var(--between-bars);
+    height: 100%;
     display: grid;
-    grid-template-rows: max-content max-content auto;
+    grid-template-rows: max-content 1fr;
 }
 
 .root {
@@ -12,54 +12,7 @@
     min-height: 0;
 }
 
-.list {
-    display: grid;
-    grid-auto-rows: max-content;
-    gap: 0.5rem;
-    overflow-y: auto;
-    border-radius: 8px;
-}
-
 .buttonBar {
     justify-self: end;
     margin-bottom: 1rem;
-}
-
-.day {
-    border-radius: 8px;
-    background-color: var(--background-alt);
-    border: 1px solid var(--divider);
-    summary {
-        display: grid;
-        grid-template-columns: auto max-content;
-        align-items: center;
-        outline: none;
-        font-weight: bold;
-        cursor: pointer;
-        list-style: none;
-        &::-webkit-details-marker {
-            display: none;
-        }
-    }
-
-    &Number {
-        padding: 0.75rem;
-    }
-
-    &DeleteIcon {
-        height: 2rem;
-        width: 2rem;
-        color: var(--coral);
-    }
-}
-
-.exercises {
-    padding: 0.5rem 0.75rem 0.75rem;
-    display: grid;
-    gap: 0.5rem;
-}
-
-.exercise {
-    display: grid;
-    grid-template-columns: auto max-content;
 }

@@ -32,7 +32,7 @@ export default function AppBarWithAppHeaderLayout({
                 </header>
             }
         >
-            <div className={styles.body}>{children}</div>
+            {children}
         </AppBarLayout>
     );
 }
