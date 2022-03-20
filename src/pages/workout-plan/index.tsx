@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 
 import { FieldArray, Form, Formik } from 'formik';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import { IExercise } from '@dgoudie/isometric-types';
@@ -61,49 +61,63 @@ export default function WorkoutPlan() {
                 <Formik
                     initialValues={{
                         days: [
-                            { exercises: ['622cf5ac671ab3d12676b6c8'] },
+                            {
+                                exercises: ['622cf5ac671ab3d12676b6c8'],
+                            },
                             {
                                 exercises: [
                                     '622cf5ac671ab3d12676b6c9',
                                     '622cf5ac671ab3d12676b731',
                                 ],
                             },
-                            { exercises: ['622cf5ac671ab3d12676b6c8'] },
+                            {
+                                exercises: ['622cf5ac671ab3d12676b6c8'],
+                            },
                             {
                                 exercises: [
                                     '622cf5ac671ab3d12676b6c9',
                                     '622cf5ac671ab3d12676b731',
                                 ],
                             },
-                            { exercises: ['622cf5ac671ab3d12676b6c8'] },
+                            {
+                                exercises: ['622cf5ac671ab3d12676b6c8'],
+                            },
                             {
                                 exercises: [
                                     '622cf5ac671ab3d12676b6c9',
                                     '622cf5ac671ab3d12676b731',
                                 ],
                             },
-                            { exercises: ['622cf5ac671ab3d12676b6c8'] },
+                            {
+                                exercises: ['622cf5ac671ab3d12676b6c8'],
+                            },
                             {
                                 exercises: [
                                     '622cf5ac671ab3d12676b6c9',
                                     '622cf5ac671ab3d12676b731',
                                 ],
                             },
-                            { exercises: ['622cf5ac671ab3d12676b6c8'] },
+                            {
+                                exercises: ['622cf5ac671ab3d12676b6c8'],
+                            },
                             {
                                 exercises: [
                                     '622cf5ac671ab3d12676b6c9',
                                     '622cf5ac671ab3d12676b731',
                                 ],
                             },
-                            { exercises: ['622cf5ac671ab3d12676b6c8'] },
+                            {
+                                exercises: ['622cf5ac671ab3d12676b6c8'],
+                            },
                             {
                                 exercises: [
                                     '622cf5ac671ab3d12676b6c9',
                                     '622cf5ac671ab3d12676b731',
                                 ],
                             },
-                            { exercises: ['622cf5ac671ab3d12676b6c8'] },
+                            {
+                                exercises: ['622cf5ac671ab3d12676b6c8'],
+                            },
                             {
                                 exercises: [
                                     '622cf5ac671ab3d12676b6c9',
@@ -125,6 +139,11 @@ export default function WorkoutPlan() {
                                         <div className={styles.list}>
                                             {values.days.map((day, index) => (
                                                 <Day
+                                                    onDelete={() =>
+                                                        arrayHelpers.remove(
+                                                            index
+                                                        )
+                                                    }
                                                     day={day}
                                                     index={index}
                                                     key={index}
@@ -156,29 +175,54 @@ interface DayProps {
     day: { exercises: string[] };
     index: number;
     map: Map<string, IExercise>;
+    onDelete: () => void;
 }
 
-function Day({ day, index, map }: DayProps) {
+function Day({ day, index, map, onDelete }: DayProps) {
+    const onDeleteWrapped = useCallback(
+        (event) => {
+            event.stopPropagation();
+            onDelete();
+        },
+        [onDelete]
+    );
+
     return (
         <details key={index} className={styles.day}>
-            <summary>Day {index + 1}</summary>
-            <FieldArray name={`days.${index}.exercises`}>
-                {(arrayHelpers) => {
-                    return day.exercises.map((exerciseId, index) => {
-                        const exercise = map.get(exerciseId)!;
-                        return (
-                            <div className={styles.exercise} key={exerciseId}>
-                                <div className={styles.exerciseName}>
-                                    {exercise.name}
+            <summary>
+                <div className={styles.dayNumber}>Day {index + 1}</div>
+                <button
+                    type='button'
+                    onClick={onDeleteWrapped}
+                    className={styles.dayDeleteIcon}
+                >
+                    <i className='fa-solid fa-trash'></i>
+                </button>
+            </summary>
+            <div className={styles.exercises}>
+                <FieldArray name={`days.${index}.exercises`}>
+                    {(arrayHelpers) => {
+                        return day.exercises.map((exerciseId) => {
+                            const exercise = map.get(exerciseId)!;
+                            return (
+                                <div
+                                    className={styles.exercise}
+                                    key={`${index}_${exerciseId}`}
+                                >
+                                    <div className={styles.exerciseName}>
+                                        {exercise.name}
+                                    </div>
+                                    <MuscleGroupTag
+                                        muscleGroup={
+                                            exercise.primaryMuscleGroup
+                                        }
+                                    />
                                 </div>
-                                <MuscleGroupTag
-                                    muscleGroup={exercise.primaryMuscleGroup}
-                                />
-                            </div>
-                        );
-                    });
-                }}
-            </FieldArray>
+                            );
+                        });
+                    }}
+                </FieldArray>
+            </div>
         </details>
     );
 }

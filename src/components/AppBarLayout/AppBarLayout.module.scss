@@ -1,10 +1,16 @@
 .body {
     max-width: var(--max-width);
-    margin: 0 auto var(--bottom-bar-height);
+    margin: 0 auto;
+    position: fixed;
+    top: var(--top-bar-height);
+    left: 0;
+    right: 0;
+    bottom: var(--bottom-bar-height);
+    z-index: 1;
+    overflow-y: auto;
 }
 
 .bottomBar {
-    background-color: var(--background);
     position: fixed;
     bottom: 0;
     left: 0;
