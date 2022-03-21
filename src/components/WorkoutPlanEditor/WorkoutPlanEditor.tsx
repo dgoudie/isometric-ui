@@ -233,7 +233,7 @@ function Day({ day, dayChanged, index, exerciseMap, onDelete }: DayProps) {
                         <div className={styles.dayNumber}>Day {index + 1}</div>
                         <div className={styles.nicknameInputWrapper}>
                             <input
-                                placeholder='Enter a nickname for this day...'
+                                placeholder='Enter a nickname...'
                                 defaultValue={day.nickname}
                                 onChange={(e) =>
                                     nicknameChanged(e.target.value)
