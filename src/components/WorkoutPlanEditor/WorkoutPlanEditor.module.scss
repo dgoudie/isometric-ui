@@ -29,19 +29,35 @@
     border: 1px solid var(--divider);
     &Header {
         display: grid;
-        grid-template-columns: max-content auto max-content;
+        grid-template-columns: max-content max-content auto max-content;
         align-items: center;
         outline: none;
         font-weight: bold;
-        cursor: pointer;
-        list-style: none;
         &::-webkit-details-marker {
             display: none;
+        }
+
+        .nicknameInputWrapper {
+            padding-left: 1rem;
+            margin-left: 1rem;
+            border-left: 1px solid var(--divider);
+            input {
+                width: 100%;
+                background: var(--background);
+                border: 1px solid var(--divider);
+                outline: none;
+                border-radius: 6px;
+                padding: 6px 10px;
+                font-family: inherit;
+                &::placeholder {
+                    color: var(--coral);
+                }
+            }
         }
     }
 
     &Number {
-        padding: 0.75rem 0.75rem 0.75rem 0.25rem;
+        padding: 0.75rem 0 0.75rem 0.25rem;
     }
 
     &Handle {

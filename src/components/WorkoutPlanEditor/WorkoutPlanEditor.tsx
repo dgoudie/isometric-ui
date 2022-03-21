@@ -5,17 +5,18 @@ import {
     Droppable,
 } from 'react-beautiful-dnd';
 import { IExercise, IWorkoutScheduleDay } from '@dgoudie/isometric-types';
-import React, { useCallback, useMemo, useState } from 'react';
+import { ObjectID, ObjectId } from 'bson';
+import React, { useCallback, useState } from 'react';
 import {
     deleteItemFromArray,
     moveItemInArray,
     replaceItemInArray,
 } from '../../utils/array-helpers';
 
+import CopyDayBottomSheet from '../CopyDayBottomSheet/CopyDayBottomSheet';
 import ExercisePickerBottomSheet from '../ExercisePickerBottomSheet/ExercisePickerBottomSheet';
 import MuscleGroupTag from '../MuscleGroupTag/MuscleGroupTag';
 import styles from './WorkoutPlanEditor.module.scss';
-import { v4 as uuidV4 } from 'uuid';
 
 interface Props {
     days: IWorkoutScheduleDay[];
@@ -24,13 +25,18 @@ interface Props {
 }
 
 export default function WorkoutPlanEditor({
-    days: daysWithoutId,
+    days,
     exerciseMap,
     daysChanged,
 }: Props) {
-    const days = useMemo(
-        () => daysWithoutId.map((day) => ({ ...day, id: uuidV4() })),
-        [daysWithoutId]
+    const [copyDayVisible, setCopyDayVisible] = useState(false);
+
+    const updateAndReportDays = useCallback(
+        (updatedDays: typeof days) => {
+            // setDays(updatedDays);
+            daysChanged(updatedDays);
+        },
+        [daysChanged]
     );
 
     const onDragEnd = useCallback(
@@ -41,27 +47,44 @@ export default function WorkoutPlanEditor({
             if (destination.index === source.index) {
                 return;
             }
-            daysChanged(moveItemInArray(days, source.index, destination.index));
+            updateAndReportDays(
+                moveItemInArray(days, source.index, destination.index)
+            );
         },
-        [days, daysChanged]
+        [days, updateAndReportDays]
     );
 
-    const handleAdd = useCallback(
-        () => daysChanged([...days, { exercises: [], id: uuidV4() }]),
-        [days, daysChanged]
-    );
+    const handleAdd = useCallback(() => {
+        updateAndReportDays([
+            ...days,
+            { exercises: [], nickname: '', _id: new ObjectID().toString() },
+        ]);
+    }, [days, updateAndReportDays]);
 
     const handleDelete = useCallback(
         (index: number) => {
-            daysChanged(deleteItemFromArray(days, index));
+            updateAndReportDays(deleteItemFromArray(days, index));
         },
-        [days, daysChanged]
+        [days, updateAndReportDays]
     );
 
-    const exercisesChanged = useCallback(
-        (exercises: string[], index: number) => {
-            const day = days[index];
-            daysChanged(replaceItemInArray(days, index, { ...day, exercises }));
+    const dayChanged = useCallback(
+        (day: IWorkoutScheduleDay, index: number) => {
+            updateAndReportDays(replaceItemInArray(days, index, day));
+        },
+        [days, updateAndReportDays]
+    );
+
+    const onCopyDayResult = useCallback(
+        (result: number | undefined) => {
+            if (typeof result !== 'undefined') {
+                const day = days[result];
+                daysChanged([
+                    ...days,
+                    { ...day, _id: new ObjectId().toString() },
+                ]);
+            }
+            setCopyDayVisible(false);
         },
         [days, daysChanged]
     );
@@ -93,14 +116,11 @@ export default function WorkoutPlanEditor({
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
-                            {days.map(({ id, exercises }, index) => (
+                            {days.map((day, index) => (
                                 <Day
-                                    key={id}
-                                    id={id}
-                                    exercises={exercises}
-                                    exercisesChanged={(exercises) =>
-                                        exercisesChanged(exercises, index)
-                                    }
+                                    key={day._id}
+                                    day={day}
+                                    dayChanged={(day) => dayChanged(day, index)}
                                     index={index}
                                     exerciseMap={exerciseMap}
                                     onDelete={() => handleDelete(index)}
@@ -112,7 +132,10 @@ export default function WorkoutPlanEditor({
                 </Droppable>
             </DragDropContext>
             <div className={styles.addDay}>
-                <button className={'standard-button'} onClick={handleAdd}>
+                <button
+                    className={'standard-button'}
+                    onClick={() => setCopyDayVisible(true)}
+                >
                     <i className='fa-solid fa-copy'></i>
                     Copy Day
                 </button>
@@ -124,37 +147,42 @@ export default function WorkoutPlanEditor({
                     Add Day
                 </button>
             </div>
+            {copyDayVisible && (
+                <CopyDayBottomSheet days={days} onResult={onCopyDayResult} />
+            )}
         </div>
     );
 }
 
 interface DayProps {
-    id: string;
-    exercises: string[];
-    exercisesChanged: (exercises: string[]) => void;
+    day: IWorkoutScheduleDay;
+    dayChanged: (day: IWorkoutScheduleDay) => void;
     index: number;
     exerciseMap: Map<string, IExercise>;
     onDelete: () => void;
 }
 
-function Day({
-    id: dayId,
-    exercises,
-    exercisesChanged,
-    index,
-    exerciseMap,
-    onDelete,
-}: DayProps) {
+function Day({ day, dayChanged, index, exerciseMap, onDelete }: DayProps) {
     const [exercisePickerVisible, setExercisePickerVisible] = useState(false);
+
+    const exercisesChanged = useCallback(
+        (exercises: string[]) => dayChanged({ ...day, exercises }),
+        [day, dayChanged]
+    );
+
+    const nicknameChanged = useCallback(
+        (nickname: string) => dayChanged({ ...day, nickname }),
+        [day, dayChanged]
+    );
 
     const onExercisePickerResult = useCallback(
         (result: string | undefined) => {
             setExercisePickerVisible(false);
             if (!!result) {
-                exercisesChanged([...exercises, result]);
+                exercisesChanged([...day.exercises, result]);
             }
         },
-        [exercises, exercisesChanged]
+        [day.exercises, exercisesChanged]
     );
 
     const deleteDayWrapped = useCallback(
@@ -174,21 +202,21 @@ function Day({
                 return;
             }
             exercisesChanged(
-                moveItemInArray(exercises, source.index, destination.index)
+                moveItemInArray(day.exercises, source.index, destination.index)
             );
         },
-        [exercises, exercisesChanged]
+        [day.exercises, exercisesChanged]
     );
 
     const handleExerciseDelete = useCallback(
         (index: number) => {
-            exercisesChanged(deleteItemFromArray(exercises, index));
+            exercisesChanged(deleteItemFromArray(day.exercises, index));
         },
-        [exercises, exercisesChanged]
+        [day.exercises, exercisesChanged]
     );
 
     return (
-        <Draggable draggableId={dayId} index={index}>
+        <Draggable draggableId={day._id} index={index}>
             {(provided) => (
                 <div
                     ref={provided.innerRef}
@@ -203,6 +231,15 @@ function Day({
                             <i className='fa-solid fa-grip-lines'></i>
                         </div>
                         <div className={styles.dayNumber}>Day {index + 1}</div>
+                        <div className={styles.nicknameInputWrapper}>
+                            <input
+                                placeholder='Enter a nickname for this day...'
+                                defaultValue={day.nickname}
+                                onChange={(e) =>
+                                    nicknameChanged(e.target.value)
+                                }
+                            />
+                        </div>
                         <button
                             type='button'
                             onClick={deleteDayWrapped}
@@ -212,18 +249,17 @@ function Day({
                         </button>
                     </div>
                     <DragDropContext onDragEnd={onDragEnd}>
-                        <Droppable droppableId={dayId}>
+                        <Droppable droppableId={day._id}>
                             {(provided) => (
                                 <div
                                     className={styles.exercises}
                                     {...provided.droppableProps}
                                     ref={provided.innerRef}
                                 >
-                                    {exercises.map((exerciseId, index) => (
+                                    {day.exercises.map((exerciseId, index) => (
                                         <Exercise
                                             index={index}
-                                            key={`${dayId}_${exerciseId}_${index}`}
-                                            dayId={dayId}
+                                            key={`day_${index}_${exerciseId}_${index}`}
                                             exerciseId={exerciseId}
                                             exerciseMap={exerciseMap}
                                             onDelete={() =>
@@ -236,7 +272,7 @@ function Day({
                             )}
                         </Droppable>
                     </DragDropContext>
-                    {exercises.length === 0 && (
+                    {day.exercises.length === 0 && (
                         <div className={styles.noExercises}>
                             Please add at least one exercise.
                         </div>
@@ -263,19 +299,12 @@ function Day({
 
 interface ExerciseProps {
     index: number;
-    dayId: string;
     exerciseId: string;
     exerciseMap: Map<string, IExercise>;
     onDelete: () => void;
 }
 
-function Exercise({
-    index,
-    dayId,
-    exerciseId,
-    exerciseMap,
-    onDelete,
-}: ExerciseProps) {
+function Exercise({ index, exerciseId, exerciseMap, onDelete }: ExerciseProps) {
     const deleteExerciseWrapped = useCallback(
         (event) => {
             event.stopPropagation();

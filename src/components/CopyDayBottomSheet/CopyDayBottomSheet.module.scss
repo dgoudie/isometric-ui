@@ -1,0 +1,17 @@
+.root {
+    max-height: 75vh;
+    display: grid;
+    gap: 0.75rem;
+    button {
+        padding: 0.5rem;
+        border-radius: 8px;
+        border: 1px solid var(--divider);
+        background-color: var(--background-alt);
+        text-align: start;
+
+        .noNickname {
+            font-style: italic;
+            color: var(--scrub);
+        }
+    }
+}
