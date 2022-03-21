@@ -1,3 +1,12 @@
+.noDays {
+    display: grid;
+    align-items: start;
+    justify-items: center;
+    grid-template-rows: max-content max-content;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
 .list {
     overflow-y: auto;
     border-radius: 8px;

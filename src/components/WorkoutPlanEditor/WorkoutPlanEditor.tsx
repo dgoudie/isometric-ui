@@ -5,7 +5,7 @@ import {
     Droppable,
 } from 'react-beautiful-dnd';
 import { IExercise, IWorkoutScheduleDay } from '@dgoudie/isometric-types';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
     deleteItemFromArray,
     moveItemInArray,
@@ -19,15 +19,18 @@ import { v4 as uuidV4 } from 'uuid';
 
 interface Props {
     days: IWorkoutScheduleDay[];
+    daysChanged: (days: IWorkoutScheduleDay[]) => void;
     exerciseMap: Map<string, IExercise>;
 }
 
 export default function WorkoutPlanEditor({
     days: daysWithoutId,
     exerciseMap,
+    daysChanged,
 }: Props) {
-    const [days, setDays] = useState(
-        daysWithoutId.map((day) => ({ ...day, id: uuidV4() }))
+    const days = useMemo(
+        () => daysWithoutId.map((day) => ({ ...day, id: uuidV4() })),
+        [daysWithoutId]
     );
 
     const onDragEnd = useCallback(
@@ -38,30 +41,48 @@ export default function WorkoutPlanEditor({
             if (destination.index === source.index) {
                 return;
             }
-            setDays(moveItemInArray(days, source.index, destination.index));
+            daysChanged(moveItemInArray(days, source.index, destination.index));
         },
-        [days]
+        [days, daysChanged]
     );
 
     const handleAdd = useCallback(
-        () => setDays([...days, { exercises: [], id: uuidV4() }]),
-        [days]
+        () => daysChanged([...days, { exercises: [], id: uuidV4() }]),
+        [days, daysChanged]
     );
 
     const handleDelete = useCallback(
         (index: number) => {
-            setDays(deleteItemFromArray(days, index));
+            daysChanged(deleteItemFromArray(days, index));
         },
-        [days]
+        [days, daysChanged]
     );
 
     const exercisesChanged = useCallback(
         (exercises: string[], index: number) => {
             const day = days[index];
-            setDays(replaceItemInArray(days, index, { ...day, exercises }));
+            daysChanged(replaceItemInArray(days, index, { ...day, exercises }));
         },
-        [days]
+        [days, daysChanged]
     );
+
+    if (!days.length) {
+        return (
+            <div className={styles.noDays}>
+                <span>
+                    Here, you can build a workout schedule. Start by adding a
+                    day, and adding some exercises.
+                </span>
+                <button
+                    className={'standard-button primary'}
+                    onClick={handleAdd}
+                >
+                    <i className='fa-solid fa-plus'></i>
+                    Add Day
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.list}>
@@ -292,4 +313,7 @@ function Exercise({
             )}
         </Draggable>
     );
+}
+function setDays(arg0: { exercises: string[]; id: string }[]) {
+    throw new Error('Function not implemented.');
 }

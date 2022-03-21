@@ -1,3 +1,5 @@
+import * as Yup from 'yup';
+
 import { IExercise, IWorkoutScheduleDay } from '@dgoudie/isometric-types';
 import React, { useMemo, useState } from 'react';
 
@@ -7,6 +9,15 @@ import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import WorkoutPlanEditor from '../../components/WorkoutPlanEditor/WorkoutPlanEditor';
 import styles from './index.module.scss';
 import { useFetchFromApi } from '../../utils/fetch-from-api';
+
+const WorkoutPlanSchema = Yup.array()
+    .min(1)
+    .required()
+    .of(
+        Yup.object().shape({
+            exercises: Yup.array().min(1).required().of(Yup.string()),
+        })
+    );
 
 export default function WorkoutPlan() {
     const [response, error, loading] = useFetchFromApi<
@@ -25,44 +36,18 @@ export default function WorkoutPlan() {
 
     const [workoutScheduleDays, setWorkoutScheduleDays] = useState<
         IWorkoutScheduleDay[]
-    >([
-        {
-            exercises: ['622cf5ac671ab3d12676b6c8'],
-        },
-        {
-            exercises: ['622cf5ac671ab3d12676b6c9', '622cf5ac671ab3d12676b731'],
-        },
-        {
-            exercises: ['622cf5ac671ab3d12676b6c8'],
-        },
-        {
-            exercises: ['622cf5ac671ab3d12676b6c8'],
-        },
-        {
-            exercises: ['622cf5ac671ab3d12676b6c9', '622cf5ac671ab3d12676b731'],
-        },
-        {
-            exercises: ['622cf5ac671ab3d12676b6c8'],
-        },
-        {
-            exercises: ['622cf5ac671ab3d12676b6c8'],
-        },
-        {
-            exercises: ['622cf5ac671ab3d12676b6c9', '622cf5ac671ab3d12676b731'],
-        },
-        {
-            exercises: ['622cf5ac671ab3d12676b6c8'],
-        },
-        {
-            exercises: ['622cf5ac671ab3d12676b6c8'],
-        },
-        {
-            exercises: ['622cf5ac671ab3d12676b6c9', '622cf5ac671ab3d12676b731'],
-        },
-        {
-            exercises: ['622cf5ac671ab3d12676b6c8'],
-        },
-    ]);
+    >([]);
+
+    const valid = useMemo(() => {
+        try {
+            WorkoutPlanSchema.validateSync(workoutScheduleDays, {
+                strict: true,
+            });
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }, [workoutScheduleDays]);
 
     if (!!loading) {
         return (
@@ -84,16 +69,20 @@ export default function WorkoutPlan() {
                     <WorkoutPlanEditor
                         days={workoutScheduleDays}
                         exerciseMap={exerciseMap}
+                        daysChanged={setWorkoutScheduleDays}
                     />
-                    <div className={styles.buttonBar}>
-                        <button
-                            type='button'
-                            className='standard-button primary'
-                        >
-                            <i className='fa-solid fa-save' />
-                            Save
-                        </button>
-                    </div>
+                    {!!workoutScheduleDays.length && (
+                        <div className={styles.buttonBar}>
+                            <button
+                                disabled={!valid}
+                                type='button'
+                                className='standard-button primary'
+                            >
+                                <i className='fa-solid fa-save' />
+                                Save
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </AppBarWithAppHeaderLayout>

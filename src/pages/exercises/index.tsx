@@ -46,6 +46,7 @@ const Exercises = () => {
         <AppBarWithAppHeaderLayout pageTitle={'Exercises'}>
             <div className={styles.root}>
                 <ExerciseSearch
+                    className={styles.exerciseSearch}
                     search={searchTerm}
                     searchChanged={setSearchTerm}
                     muscleGroup={muscleGroupDecoded}

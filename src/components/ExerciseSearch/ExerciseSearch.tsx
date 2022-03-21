@@ -5,10 +5,12 @@ import { Link } from 'react-router-dom';
 import MuscleGroupPicker from '../MuscleGroupPicker/MuscleGroupPicker';
 import MuscleGroupTag from '../MuscleGroupTag/MuscleGroupTag';
 import RouteLoader from '../RouteLoader/RouteLoader';
+import classNames from 'classnames';
 import styles from './ExerciseSearch.module.scss';
 import { useFetchFromApi } from '../../utils/fetch-from-api';
 
 interface Props {
+    className?: string;
     search: string | undefined;
     searchChanged: (search: string | undefined) => void;
     muscleGroup: ExerciseMuscleGroup | undefined;
@@ -17,6 +19,7 @@ interface Props {
 }
 
 export default function ExerciseSearch({
+    className,
     search,
     searchChanged,
     muscleGroup,
@@ -51,7 +54,7 @@ export default function ExerciseSearch({
         child = <div className={styles.items}>{items}</div>;
     }
     return (
-        <div className={styles.root}>
+        <div className={classNames(styles.root, className)}>
             <div className={styles.filters}>
                 <label>Search:</label>
                 <div className={styles.filtersInput}>

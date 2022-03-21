@@ -21,6 +21,7 @@ export default function ExercisePickerBottomSheet({ onResult }: Props) {
             {(onResult) => (
                 <div className={styles.root}>
                     <ExerciseSearch
+                        className={styles.exerciseSearch}
                         search={searchDebounced}
                         searchChanged={setSearch}
                         muscleGroup={muscleGroup}
