@@ -1,12 +1,17 @@
 import * as Yup from 'yup';
 
-import { IExercise, IWorkoutScheduleDay } from '@dgoudie/isometric-types';
-import React, { useMemo, useState } from 'react';
+import {
+    IExercise,
+    IWorkoutSchedule,
+    IWorkoutScheduleDay,
+} from '@dgoudie/isometric-types';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import { Navigate } from 'react-router-dom';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import WorkoutPlanEditor from '../../components/WorkoutPlanEditor/WorkoutPlanEditor';
+import axios from 'axios';
 import styles from './index.module.scss';
 import { useFetchFromApi } from '../../utils/fetch-from-api';
 
@@ -20,23 +25,36 @@ const WorkoutPlanSchema = Yup.array()
     );
 
 export default function WorkoutPlan() {
-    const [response, error, loading] = useFetchFromApi<
+    const [exercisesResponse, error1, loading1] = useFetchFromApi<
         (IExercise & { _id: string })[]
     >(`/api/exercises`, undefined, undefined, false);
+
+    const [scheduleResponse, error2, loading2] =
+        useFetchFromApi<IWorkoutSchedule>(
+            `/api/schedule`,
+            undefined,
+            undefined,
+            false
+        );
 
     const exerciseMap: Map<string, IExercise> = useMemo(
         () =>
             new Map<string, IExercise>(
-                !response
+                !exercisesResponse
                     ? []
-                    : response.data.map(({ _id, ...ex }) => [_id, ex])
+                    : exercisesResponse.data.map(({ _id, ...ex }) => [_id, ex])
             ),
-        [response]
+        [exercisesResponse]
     );
 
     const [workoutScheduleDays, setWorkoutScheduleDays] = useState<
         IWorkoutScheduleDay[]
     >([]);
+
+    useEffect(() => {
+        !!scheduleResponse &&
+            setWorkoutScheduleDays(scheduleResponse.data.days);
+    }, [scheduleResponse]);
 
     const valid = useMemo(() => {
         try {
@@ -49,7 +67,15 @@ export default function WorkoutPlan() {
         }
     }, [workoutScheduleDays]);
 
-    if (!!loading) {
+    const save = useCallback(() => {
+        axios.put(
+            `/api/schedule`,
+            { days: workoutScheduleDays },
+            { withCredentials: true }
+        );
+    }, [workoutScheduleDays]);
+
+    if (!!loading1 || !!loading2) {
         return (
             <AppBarWithAppHeaderLayout pageTitle='Workout Plan'>
                 <RouteLoader />
@@ -57,7 +83,7 @@ export default function WorkoutPlan() {
         );
     }
 
-    if (!!error) {
+    if (!!error1 || error2) {
         return <Navigate to={'/error'} />;
     }
 
@@ -75,6 +101,7 @@ export default function WorkoutPlan() {
                         <div className={styles.buttonBar}>
                             <button
                                 disabled={!valid}
+                                onClick={save}
                                 type='button'
                                 className='standard-button primary'
                             >

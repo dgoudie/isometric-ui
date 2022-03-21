@@ -314,6 +314,3 @@ function Exercise({
         </Draggable>
     );
 }
-function setDays(arg0: { exercises: string[]; id: string }[]) {
-    throw new Error('Function not implemented.');
-}
