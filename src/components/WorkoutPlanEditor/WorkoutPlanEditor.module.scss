@@ -7,9 +7,10 @@
 }
 
 .addDay {
-    display: flex;
-    justify-content: end;
-    padding: 0.5rem 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 25vh;
+    gap: 0.5rem;
 }
 
 .day {
@@ -76,14 +77,23 @@
 }
 
 .noExercises {
-    padding: 0 0.75rem 0.75rem;
+    padding: 0 0.75rem;
     color: var(--coral);
 }
 
 .addExercise {
-    display: flex;
-    justify-content: end;
-    padding: 0 0.5rem 0.5rem;
+    display: grid;
+    grid-template-columns: max-content auto;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--background-alt);
+    border-radius: 8px;
+    color: var(--scrub);
+    width: 100%;
+
+    .exerciseName {
+        justify-self: start;
+    }
 }
 
 .deleteIcon {

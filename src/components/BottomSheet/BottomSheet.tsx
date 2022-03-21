@@ -12,7 +12,7 @@ type PropsLocked<T> = {
 };
 
 type PropsNotLocked<T> = {
-    title: string;
+    title?: string;
     locked?: false;
     onResult: (result: T | undefined) => void;
     children: (onResult: (result: T) => void) => ReactNode;

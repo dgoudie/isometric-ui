@@ -12,6 +12,7 @@ import {
     replaceItemInArray,
 } from '../../utils/array-helpers';
 
+import ExercisePickerBottomSheet from '../ExercisePickerBottomSheet/ExercisePickerBottomSheet';
 import MuscleGroupTag from '../MuscleGroupTag/MuscleGroupTag';
 import styles from './WorkoutPlanEditor.module.scss';
 import { v4 as uuidV4 } from 'uuid';
@@ -91,6 +92,13 @@ export default function WorkoutPlanEditor({
             </DragDropContext>
             <div className={styles.addDay}>
                 <button className={'standard-button'} onClick={handleAdd}>
+                    <i className='fa-solid fa-copy'></i>
+                    Copy Day
+                </button>
+                <button
+                    className={'standard-button primary'}
+                    onClick={handleAdd}
+                >
                     <i className='fa-solid fa-plus'></i>
                     Add Day
                 </button>
@@ -116,6 +124,18 @@ function Day({
     exerciseMap,
     onDelete,
 }: DayProps) {
+    const [exercisePickerVisible, setExercisePickerVisible] = useState(false);
+
+    const onExercisePickerResult = useCallback(
+        (result: string | undefined) => {
+            setExercisePickerVisible(false);
+            if (!!result) {
+                exercisesChanged([...exercises, result]);
+            }
+        },
+        [exercises, exercisesChanged]
+    );
+
     const deleteDayWrapped = useCallback(
         (event) => {
             event.stopPropagation();
@@ -181,7 +201,7 @@ function Day({
                                     {exercises.map((exerciseId, index) => (
                                         <Exercise
                                             index={index}
-                                            key={`${dayId}_${exerciseId}`}
+                                            key={`${dayId}_${exerciseId}_${index}`}
                                             dayId={dayId}
                                             exerciseId={exerciseId}
                                             exerciseMap={exerciseMap}
@@ -200,15 +220,20 @@ function Day({
                             Please add at least one exercise.
                         </div>
                     )}
-                    <div className={styles.addExercise}>
-                        <button
-                            className={'standard-button'}
-                            onClick={() => alert('hello')}
-                        >
+                    <button
+                        className={styles.addExercise}
+                        onClick={() => setExercisePickerVisible(true)}
+                    >
+                        <div className={styles.exerciseHandle}>
                             <i className='fa-solid fa-plus'></i>
-                            Add Exercise
-                        </button>
-                    </div>
+                        </div>
+                        <div className={styles.exerciseName}>Add Exercise</div>
+                    </button>
+                    {exercisePickerVisible && (
+                        <ExercisePickerBottomSheet
+                            onResult={onExercisePickerResult}
+                        />
+                    )}
                 </div>
             )}
         </Draggable>
@@ -244,7 +269,7 @@ function Exercise({
             {(provided) => (
                 <div
                     className={styles.exercise}
-                    key={exerciseId}
+                    key={`${exerciseId}_${index}`}
                     {...provided.draggableProps}
                     ref={provided.innerRef}
                 >
