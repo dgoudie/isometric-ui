@@ -18,8 +18,6 @@ export default function ServiceWorkerUpdater() {
     useEffect(() => {
         swRegistration.then((registration) => {
             setServiceWorkerRegistration(registration);
-            //@ts-ignore
-            window.swr = registration;
         });
     }, []);
 
