@@ -1,13 +1,15 @@
 .wrapper {
-    height: var(--between-bars);
     display: grid;
     grid-template-rows: max-content auto;
+    height: 100%;
 }
 
 .root {
     padding: 0 0.75rem 0.75rem;
     display: grid;
-    grid-template-rows: auto;
-    justify-content: end;
-    align-items: end;
+    grid-template-rows: auto max-content;
+}
+
+.editPlanButton {
+    justify-self: end;
 }

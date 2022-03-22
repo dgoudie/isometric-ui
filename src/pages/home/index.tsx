@@ -4,6 +4,7 @@ import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayou
 import BottomSheet from '../../components/BottomSheet/BottomSheet';
 import ConfirmationBottomSheet from '../../components/ConfirmationBottomSheet/ConfirmationBottomSheet';
 import { Link } from 'react-router-dom';
+import classNames from 'classnames';
 import { getGreeting } from '../../utils/get-greeting';
 import styles from './index.module.scss';
 
@@ -19,48 +20,36 @@ const Home: React.FC<Props> = () => {
             <div className={styles.wrapper}>
                 <h1>{greeting}</h1>
                 <div className={styles.root}>
-                    <div className={styles.root}>
+                    <div>
                         <div>
-                            <button type='button' onClick={() => setOpen(true)}>
+                            <button
+                                className={'standard-button'}
+                                type='button'
+                                onClick={() => setOpen(true)}
+                            >
                                 open
                             </button>
                         </div>
                         <div>
                             <button
+                                className={'standard-button'}
                                 type='button'
-                                onClick={() => setOpen2(true)}
+                                onClick={() => {
+                                    setOpen2(true);
+                                }}
                             >
                                 open2
                             </button>
                         </div>
                         <div>
                             <button
+                                className={'standard-button'}
                                 type='button'
                                 onClick={() => setConfirm(true)}
                             >
                                 confirm
                             </button>
                         </div>
-                        {open && (
-                            <BottomSheet
-                                title='Hello'
-                                locked
-                                onResult={() => {
-                                    setOpen(false);
-                                }}
-                            >
-                                {(onResult) => (
-                                    <div>
-                                        <button
-                                            className='standard-button'
-                                            onClick={onResult}
-                                        >
-                                            Click to close!
-                                        </button>
-                                    </div>
-                                )}
-                            </BottomSheet>
-                        )}
                         {open2 && (
                             <BottomSheet
                                 title='Select an Exercise'
@@ -96,6 +85,26 @@ const Home: React.FC<Props> = () => {
                                 )}
                             </BottomSheet>
                         )}
+                        {open && (
+                            <BottomSheet
+                                title='Hello'
+                                locked
+                                onResult={() => {
+                                    setOpen(false);
+                                }}
+                            >
+                                {(onResult) => (
+                                    <div>
+                                        <button
+                                            className='standard-button'
+                                            onClick={onResult}
+                                        >
+                                            Click to close!
+                                        </button>
+                                    </div>
+                                )}
+                            </BottomSheet>
+                        )}
                         {confirm && (
                             <ConfirmationBottomSheet
                                 prompt="Are you sure that you'd like to perform this action?"
@@ -106,7 +115,13 @@ const Home: React.FC<Props> = () => {
                             />
                         )}
                     </div>
-                    <Link to={'/workout-plan'} className={'standard-button'}>
+                    <Link
+                        to={'/workout-plan'}
+                        className={classNames(
+                            'standard-button',
+                            styles.editPlanButton
+                        )}
+                    >
                         <i className='fa-solid fa-calendar-week'></i>
                         Edit Workout Plan
                     </Link>

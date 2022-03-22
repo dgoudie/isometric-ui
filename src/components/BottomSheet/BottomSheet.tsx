@@ -2,6 +2,7 @@ import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
 import { CSSTransition } from 'react-transition-group';
 import FocusLock from 'react-focus-lock';
+import { Portal } from '@primer/react';
 import styles from './BottomSheet.module.scss';
 
 type PropsLocked<T> = {
@@ -50,49 +51,55 @@ export default function BottomSheet<T extends unknown>({
     );
 
     return (
-        <CSSTransition
-            nodeRef={nodeRef}
-            in={inProp}
-            classNames={{
-                enter: styles.rootEnter,
-                enterDone: styles.rootEnterDone,
-            }}
-            timeout={250}
-        >
-            <div
-                className={styles.root}
-                onClick={onClosedNoResult}
-                ref={nodeRef}
+        <Portal>
+            <CSSTransition
+                nodeRef={nodeRef}
+                in={inProp}
+                classNames={{
+                    enter: styles.rootEnter,
+                    enterDone: styles.rootEnterDone,
+                }}
+                timeout={250}
             >
-                <FocusLock>
-                    <div
-                        className={styles.sheetRoot}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        {(title || !locked) && (
-                            <div className={styles.sheetHeader}>
-                                {title && (
-                                    <div className={styles.sheetHeaderTitle}>
-                                        {title}
-                                    </div>
-                                )}
-                                {!locked && (
-                                    <button
-                                        className={styles.sheetHeaderDismiss}
-                                        type='button'
-                                        onClick={onClosedNoResult}
-                                    >
-                                        <i className='fa-solid fa-xmark'></i>
-                                    </button>
-                                )}
+                <div
+                    className={styles.root}
+                    onClick={onClosedNoResult}
+                    ref={nodeRef}
+                >
+                    <FocusLock>
+                        <div
+                            className={styles.sheetRoot}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {(title || !locked) && (
+                                <div className={styles.sheetHeader}>
+                                    {title && (
+                                        <div
+                                            className={styles.sheetHeaderTitle}
+                                        >
+                                            {title}
+                                        </div>
+                                    )}
+                                    {!locked && (
+                                        <button
+                                            className={
+                                                styles.sheetHeaderDismiss
+                                            }
+                                            type='button'
+                                            onClick={onClosedNoResult}
+                                        >
+                                            <i className='fa-solid fa-xmark'></i>
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                            <div className={styles.sheetBody}>
+                                {children(onClosedWithResult)}
                             </div>
-                        )}
-                        <div className={styles.sheetBody}>
-                            {children(onClosedWithResult)}
                         </div>
-                    </div>
-                </FocusLock>
-            </div>
-        </CSSTransition>
+                    </FocusLock>
+                </div>
+            </CSSTransition>
+        </Portal>
     );
 }
