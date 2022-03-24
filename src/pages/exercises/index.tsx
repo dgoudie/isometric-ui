@@ -47,7 +47,7 @@ const Exercises = () => {
             <div className={styles.root}>
                 <ExerciseSearch
                     className={styles.exerciseSearch}
-                    search={searchTerm}
+                    search={debouncedSearchTerm}
                     searchChanged={setSearchTerm}
                     muscleGroup={muscleGroupDecoded}
                     muscleGroupChanged={(group) => {
