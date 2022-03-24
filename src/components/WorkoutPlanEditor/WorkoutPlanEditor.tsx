@@ -1,5 +1,5 @@
 import { DragDropContext, DropResult, Droppable } from 'react-beautiful-dnd';
-import { IExercise, IWorkoutScheduleDay } from '@dgoudie/isometric-types';
+import { IExercise, IScheduleDay } from '@dgoudie/isometric-types';
 import { ObjectID, ObjectId } from 'bson';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -14,8 +14,8 @@ import classNames from 'classnames';
 import styles from './WorkoutPlanEditor.module.scss';
 
 interface Props {
-    days: IWorkoutScheduleDay[];
-    daysChanged: (days: IWorkoutScheduleDay[]) => void;
+    days: IScheduleDay[];
+    daysChanged: (days: IScheduleDay[]) => void;
     exerciseMap: Map<string, IExercise>;
     dayReorderModeEnabled?: boolean;
 }
@@ -78,7 +78,7 @@ export default function WorkoutPlanEditor({
     );
 
     const dayChanged = useCallback(
-        (day: IWorkoutScheduleDay, index: number) => {
+        (day: IScheduleDay, index: number) => {
             updateAndReportDays(replaceItemInArray(days, index, day));
         },
         [days, updateAndReportDays]

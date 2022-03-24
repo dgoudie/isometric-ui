@@ -4,7 +4,7 @@ import {
     DropResult,
     Droppable,
 } from 'react-beautiful-dnd';
-import { IExercise, IWorkoutScheduleDay } from '@dgoudie/isometric-types';
+import { IExercise, IScheduleDay } from '@dgoudie/isometric-types';
 import React, { useCallback, useState } from 'react';
 import {
     deleteItemFromArray,
@@ -17,8 +17,8 @@ import classNames from 'classnames';
 import styles from './WorkoutPlanDayEditor.module.scss';
 
 interface Props {
-    day: IWorkoutScheduleDay;
-    dayChanged: (day: IWorkoutScheduleDay) => void;
+    day: IScheduleDay;
+    dayChanged: (day: IScheduleDay) => void;
     index: number;
     exerciseMap: Map<string, IExercise>;
     onDelete: () => void;

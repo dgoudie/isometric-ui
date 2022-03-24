@@ -1,9 +1,9 @@
 import BottomSheet from '../BottomSheet/BottomSheet';
-import { IWorkoutScheduleDay } from '@dgoudie/isometric-types';
+import { IScheduleDay } from '@dgoudie/isometric-types';
 import styles from './CopyDayBottomSheet.module.scss';
 
 interface Props {
-    days: IWorkoutScheduleDay[];
+    days: IScheduleDay[];
     onResult: (result: number | undefined) => void;
 }
 
@@ -27,7 +27,7 @@ export default function CopyDayBottomSheet({ days, onResult }: Props) {
 
 interface CopyDayBottomSheetButtonProps {
     index: number;
-    day: IWorkoutScheduleDay;
+    day: IScheduleDay;
     onSelected: () => void;
 }
 

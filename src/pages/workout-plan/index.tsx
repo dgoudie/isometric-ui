@@ -1,10 +1,6 @@
 import * as Yup from 'yup';
 
-import {
-    IExercise,
-    IWorkoutSchedule,
-    IWorkoutScheduleDay,
-} from '@dgoudie/isometric-types';
+import { IExercise, ISchedule, IScheduleDay } from '@dgoudie/isometric-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
@@ -30,13 +26,12 @@ export default function WorkoutPlan() {
         (IExercise & { _id: string })[]
     >(`/api/exercises`, undefined, undefined, false);
 
-    const [scheduleResponse, error2, loading2] =
-        useFetchFromApi<IWorkoutSchedule>(
-            `/api/schedule`,
-            undefined,
-            undefined,
-            false
-        );
+    const [scheduleResponse, error2, loading2] = useFetchFromApi<ISchedule>(
+        `/api/schedule`,
+        undefined,
+        undefined,
+        false
+    );
 
     const exerciseMap: Map<string, IExercise> = useMemo(
         () =>
@@ -49,7 +44,7 @@ export default function WorkoutPlan() {
     );
 
     const [workoutScheduleDays, setWorkoutScheduleDays] = useState<
-        IWorkoutScheduleDay[]
+        IScheduleDay[]
     >([]);
 
     useEffect(() => {
