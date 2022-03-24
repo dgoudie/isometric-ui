@@ -76,6 +76,8 @@ export default function WorkoutPlan() {
         );
     }, [workoutScheduleDays]);
 
+    const [isReorderMode, setIsReorderMode] = useState(false);
+
     if (!!loading1 || !!loading2) {
         return (
             <AppBarWithAppHeaderLayout pageTitle='Workout Plan'>
@@ -94,12 +96,33 @@ export default function WorkoutPlan() {
                 <h1>Workout Plan</h1>
                 <div className={styles.root}>
                     <WorkoutPlanEditor
+                        dayReorderModeEnabled={isReorderMode}
                         days={workoutScheduleDays}
                         exerciseMap={exerciseMap}
                         daysChanged={setWorkoutScheduleDays}
                     />
                     {!!workoutScheduleDays.length && (
                         <div className={styles.buttonBar}>
+                            {!isReorderMode && (
+                                <button
+                                    onClick={() => setIsReorderMode(true)}
+                                    type='button'
+                                    className='standard-button outlined'
+                                >
+                                    <i className='fa-solid fa-sort' />
+                                    Reorder Days
+                                </button>
+                            )}
+                            {isReorderMode && (
+                                <button
+                                    onClick={() => setIsReorderMode(false)}
+                                    type='button'
+                                    className='standard-button outlined'
+                                >
+                                    <i className='fa-solid fa-check' />
+                                    Done Reordering
+                                </button>
+                            )}
                             <button
                                 disabled={!valid}
                                 onClick={save}
