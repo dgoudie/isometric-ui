@@ -93,9 +93,7 @@ export default function BottomSheet<T extends unknown>({
                                     )}
                                 </div>
                             )}
-                            <div className={styles.sheetBody}>
-                                {children(onClosedWithResult)}
-                            </div>
+                            <div>{children(onClosedWithResult)}</div>
                         </div>
                     </FocusLock>
                 </div>

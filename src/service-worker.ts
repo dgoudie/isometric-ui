@@ -8,18 +8,12 @@
 // You can also remove this file if you'd prefer not to use a
 // service worker, and the Workbox build step will be skipped.
 
-import {
-    CacheKeyWillBeUsedCallback,
-    RouteMatchCallback,
-    WorkboxPlugin,
-    cacheNames,
-    clientsClaim,
-} from 'workbox-core';
 import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
-import { PrecacheController, precacheAndRoute } from 'workbox-precaching';
+import { RouteMatchCallback, WorkboxPlugin, clientsClaim } from 'workbox-core';
 
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import { ExpirationPlugin } from 'workbox-expiration';
+import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 
 declare const self: ServiceWorkerGlobalScope;
@@ -101,7 +95,6 @@ registerRoute(
     ({ url }) => url.host === 'fonts.gstatic.com',
     new StaleWhileRevalidate({
         cacheName: 'google_fonts',
-        plugins: [new ExpirationPlugin({ maxEntries: 10 })],
     })
 );
 
