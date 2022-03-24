@@ -1,27 +1,3 @@
-.noDays {
-    display: grid;
-    align-items: start;
-    justify-items: center;
-    grid-template-rows: max-content max-content;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.list {
-    overflow-y: auto;
-    border-radius: 8px;
-    i {
-        font-size: 1.2rem;
-    }
-}
-
-.addDay {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    margin-bottom: 25vh;
-    gap: 0.5rem;
-}
-
 .day {
     margin-bottom: 1rem;
     border-radius: 8px;
@@ -62,10 +38,18 @@
 
     &Handle {
         height: 3rem;
-        width: 3rem;
+        overflow: hidden;
+        width: 0;
         display: flex;
         align-items: center;
         justify-content: center;
+        margin-right: 0.5rem;
+        transition: width 250ms, margin-right 250ms;
+
+        &.reordering {
+            margin-right: 0;
+            width: 3rem;
+        }
     }
 
     &DeleteIcon {
@@ -78,26 +62,10 @@
 .exercises {
     padding-top: 0.75rem;
     border-top: 1px solid var(--divider);
-}
 
-.exercise {
-    display: grid;
-    grid-template-columns: max-content auto max-content max-content;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: var(--background-alt);
-    border-radius: 8px;
-
-    &Handle {
-        height: 3rem;
-        width: 3rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    &Name {
-        font-size: 0.9rem;
+    &.reorder {
+        padding-top: 0;
+        border-top: none;
     }
 }
 
@@ -115,9 +83,27 @@
     border-radius: 8px;
     color: var(--scrub);
     width: 100%;
+    height: 3rem;
+    overflow-y: hidden;
+    transition: height 250ms;
 
-    .exerciseName {
+    &Name {
         justify-self: start;
+    }
+
+    &Handle {
+        width: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &Name {
+        font-size: 0.9rem;
+    }
+
+    &.reorder {
+        height: 0;
     }
 }
 

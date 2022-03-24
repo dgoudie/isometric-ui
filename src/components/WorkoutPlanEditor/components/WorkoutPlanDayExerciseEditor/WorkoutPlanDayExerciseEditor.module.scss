@@ -1,0 +1,33 @@
+.exercise {
+    display: grid;
+    grid-template-columns: max-content auto max-content max-content;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--background-alt);
+    border-radius: 8px;
+    overflow-y: hidden;
+    transition: height 250ms;
+    height: 3rem;
+
+    &.reordering {
+        height: 0;
+    }
+
+    &Handle {
+        height: 3rem;
+        width: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &Name {
+        font-size: 0.9rem;
+    }
+}
+
+.deleteIcon {
+    height: 3rem;
+    width: 3rem;
+    color: var(--coral);
+}

@@ -5,9 +5,15 @@ import {
     Droppable,
 } from 'react-beautiful-dnd';
 import { IExercise, IWorkoutScheduleDay } from '@dgoudie/isometric-types';
-import { ObjectID, ObjectId } from 'bson';
 import React, { useCallback, useState } from 'react';
+import {
+    deleteItemFromArray,
+    moveItemInArray,
+} from '../../../../utils/array-helpers';
 
+import ExercisePickerBottomSheet from '../../../ExercisePickerBottomSheet/ExercisePickerBottomSheet';
+import WorkoutPlanDayExerciseEditor from '../WorkoutPlanDayExerciseEditor/WorkoutPlanDayExerciseEditor';
+import classNames from 'classnames';
 import styles from './WorkoutPlanDayEditor.module.scss';
 
 interface Props {
@@ -16,6 +22,7 @@ interface Props {
     index: number;
     exerciseMap: Map<string, IExercise>;
     onDelete: () => void;
+    dayReorderModeEnabled: boolean;
 }
 
 export default function WorkoutPlanDayEditor({
@@ -24,6 +31,7 @@ export default function WorkoutPlanDayEditor({
     index,
     exerciseMap,
     onDelete,
+    dayReorderModeEnabled,
 }: Props) {
     const [exercisePickerVisible, setExercisePickerVisible] = useState(false);
 
@@ -87,7 +95,10 @@ export default function WorkoutPlanDayEditor({
                 >
                     <div className={styles.dayHeader}>
                         <div
-                            className={styles.dayHandle}
+                            className={classNames(
+                                styles.dayHandle,
+                                dayReorderModeEnabled && styles.reordering
+                            )}
                             {...provided.dragHandleProps}
                         >
                             <i className='fa-solid fa-grip-lines'></i>
@@ -114,18 +125,24 @@ export default function WorkoutPlanDayEditor({
                         <Droppable droppableId={day._id}>
                             {(provided) => (
                                 <div
-                                    className={styles.exercises}
+                                    className={classNames(
+                                        styles.exercises,
+                                        dayReorderModeEnabled && styles.reorder
+                                    )}
                                     {...provided.droppableProps}
                                     ref={provided.innerRef}
                                 >
                                     {day.exercises.map((exerciseId, index) => (
-                                        <Exercise
+                                        <WorkoutPlanDayExerciseEditor
                                             index={index}
                                             key={`day_${index}_${exerciseId}_${index}`}
                                             exerciseId={exerciseId}
                                             exerciseMap={exerciseMap}
                                             onDelete={() =>
                                                 handleExerciseDelete(index)
+                                            }
+                                            dayReorderModeEnabled={
+                                                dayReorderModeEnabled
                                             }
                                         />
                                     ))}
@@ -140,66 +157,24 @@ export default function WorkoutPlanDayEditor({
                         </div>
                     )}
                     <button
-                        className={styles.addExercise}
+                        className={classNames(
+                            styles.addExercise,
+                            dayReorderModeEnabled && styles.reorder
+                        )}
                         onClick={() => setExercisePickerVisible(true)}
                     >
-                        <div className={styles.exerciseHandle}>
+                        <div className={styles.addExerciseHandle}>
                             <i className='fa-solid fa-plus'></i>
                         </div>
-                        <div className={styles.exerciseName}>Add Exercise</div>
+                        <div className={styles.addExerciseName}>
+                            Add Exercise
+                        </div>
                     </button>
                     {exercisePickerVisible && (
                         <ExercisePickerBottomSheet
                             onResult={onExercisePickerResult}
                         />
                     )}
-                </div>
-            )}
-        </Draggable>
-    );
-}
-
-interface ExerciseProps {
-    index: number;
-    exerciseId: string;
-    exerciseMap: Map<string, IExercise>;
-    onDelete: () => void;
-}
-
-function Exercise({ index, exerciseId, exerciseMap, onDelete }: ExerciseProps) {
-    const deleteExerciseWrapped = useCallback(
-        (event) => {
-            event.stopPropagation();
-            onDelete();
-        },
-        [onDelete]
-    );
-
-    const exercise = exerciseMap.get(exerciseId)!;
-    return (
-        <Draggable draggableId={exerciseId} index={index}>
-            {(provided) => (
-                <div
-                    className={styles.exercise}
-                    key={`${exerciseId}_${index}`}
-                    {...provided.draggableProps}
-                    ref={provided.innerRef}
-                >
-                    <div
-                        className={styles.exerciseHandle}
-                        {...provided.dragHandleProps}
-                    >
-                        <i className='fa-solid fa-grip-lines'></i>
-                    </div>
-                    <div className={styles.exerciseName}>{exercise.name}</div>
-                    <MuscleGroupTag muscleGroup={exercise.primaryMuscleGroup} />
-                    <button
-                        type='button'
-                        onClick={deleteExerciseWrapped}
-                        className={styles.deleteIcon}
-                    >
-                        <i className='fa-solid fa-xmark'></i>
-                    </button>
                 </div>
             )}
         </Draggable>
