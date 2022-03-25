@@ -33,9 +33,12 @@ export default function ExerciseSearch({
         return searchParams;
     }, [muscleGroup, search]);
 
-    const [response, error, loading] = useFetchFromApi<
-        (IExercise & { _id: string })[]
-    >(`/api/exercises`, searchParams, undefined, false);
+    const response = useFetchFromApi<(IExercise & { _id: string })[]>(
+        `/api/exercises`,
+        searchParams,
+        undefined,
+        false
+    );
 
     const items = useMemo(
         () =>
@@ -50,7 +53,7 @@ export default function ExerciseSearch({
     );
     let child = <RouteLoader />;
 
-    if (!loading) {
+    if (response) {
         child = <div className={styles.items}>{items}</div>;
     }
     return (

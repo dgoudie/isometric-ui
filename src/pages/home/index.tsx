@@ -1,130 +1,113 @@
-import React, { useMemo, useState } from 'react';
+import { IExercise, IScheduleDayWithExercises } from '@dgoudie/isometric-types';
+import React, { useMemo } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
-import BottomSheet from '../../components/BottomSheet/BottomSheet';
-import ConfirmationBottomSheet from '../../components/ConfirmationBottomSheet/ConfirmationBottomSheet';
 import { Link } from 'react-router-dom';
+import MuscleGroupTag from '../../components/MuscleGroupTag/MuscleGroupTag';
+import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import classNames from 'classnames';
 import { getGreeting } from '../../utils/get-greeting';
+import { secondsToMinutes } from 'date-fns';
 import styles from './index.module.scss';
+import { useFetchFromApi } from '../../utils/fetch-from-api';
+
+const TIME_PER_SET = 60;
 
 type Props = {};
 
 const Home: React.FC<Props> = () => {
     const greeting = useMemo(() => getGreeting(), []);
-    const [open, setOpen] = useState(false);
-    const [open2, setOpen2] = useState(false);
-    const [confirm, setConfirm] = useState(false);
+
+    const response = useFetchFromApi<IScheduleDayWithExercises>(
+        `/api/schedule/next-day`
+    );
+
+    const dayDurationInSeconds = useMemo(() => {
+        if (!response) {
+            return 0;
+        }
+        return response.data.exercises
+            .map(
+                (exercise) =>
+                    (exercise.breakTimeInSeconds + TIME_PER_SET) *
+                    exercise.setCount
+            )
+            .reduce((sum, exerciseDuration) => sum + exerciseDuration, 0);
+    }, [response]);
+
+    const setCount = useMemo(() => {
+        if (!response) {
+            return 0;
+        }
+        return response.data.exercises
+            .map((exercise) => exercise.setCount)
+            .reduce((sum, exerciseDuration) => sum + exerciseDuration, 0);
+    }, [response]);
+
+    const dayDurationInMinutes = useMemo(
+        () => secondsToMinutes(dayDurationInSeconds),
+        [dayDurationInSeconds]
+    );
+
+    if (!response) {
+        return <RouteLoader />;
+    }
+
     return (
         <AppBarWithAppHeaderLayout pageTitle='Home'>
             <div className={styles.wrapper}>
                 <h1>{greeting}</h1>
                 <div className={styles.root}>
-                    <div>
-                        <div>
-                            <button
-                                className={'standard-button'}
-                                type='button'
-                                onClick={() => setOpen(true)}
-                            >
-                                open
-                            </button>
+                    <div className={styles.day}>
+                        <div className={styles.dayHeader}>
+                            <div className={styles.dayHeaderNumber}>
+                                <div>
+                                    Day {response.data.dayNumber + 1}/
+                                    {response.data.dayCount}
+                                </div>
+                                <div>{response.data.nickname}</div>
+                            </div>
+                            <div className={styles.dayHeaderMeta}>
+                                <HeaderItem
+                                    title='Duration'
+                                    value={dayDurationInMinutes}
+                                    suffix='mins'
+                                />
+                                <HeaderItem
+                                    title='Exercises'
+                                    value={response.data.exercises.length}
+                                />
+                                <HeaderItem title='Sets' value={setCount} />
+                            </div>
                         </div>
-                        <div>
-                            <button
-                                className={'standard-button'}
-                                type='button'
-                                onClick={() => {
-                                    setOpen2(true);
-                                }}
-                            >
-                                open2
-                            </button>
+                        <div className={styles.exercises}>
+                            {response.data.exercises.map((exercise) => (
+                                <ExerciseItem
+                                    key={exercise._id}
+                                    exercise={exercise}
+                                />
+                            ))}
                         </div>
-                        <div>
-                            <button
-                                className={'standard-button'}
-                                type='button'
-                                onClick={() => setConfirm(true)}
-                            >
-                                confirm
-                            </button>
-                        </div>
-                        {open2 && (
-                            <BottomSheet
-                                title='Select an Exercise'
-                                onResult={() => {
-                                    setOpen2(false);
-                                }}
-                            >
-                                {(onResult) => (
-                                    <div>
-                                        Quisque non tellus orci ac auctor augue.
-                                        Blandit cursus risus at ultrices mi. Eu
-                                        consequat ac felis donec et odio
-                                        pellentesque. Viverra mauris in aliquam
-                                        sem fringilla ut morbi tincidunt. Nisi
-                                        scelerisque eu ultrices vitae auctor eu.
-                                        Augue neque gravida in fermentum et
-                                        sollicitudin ac. Interdum varius sit
-                                        amet mattis vulputate enim. Vel turpis
-                                        nunc eget lorem dolor sed viverra ipsum.
-                                        Amet consectetur adipiscing elit duis.
-                                        Aenean sed adipiscing diam donec
-                                        adipiscing tristique risus nec feugiat.
-                                        Quis viverra nibh cras pulvinar mattis
-                                        nunc sed odio euismod lacinia at quis
-                                        risus. Lacus sed turpis tincidunt id
-                                        aliquet risus feugiat in. Sed libero
-                                        enim sed faucibus turpis. Tellus rutrum
-                                        tellus pellentesque eu. Vestibulum
-                                        rhoncus est pellentesque elit
-                                        ullamcorper dignissim cras tincidunt
-                                        lobortis.
-                                    </div>
-                                )}
-                            </BottomSheet>
-                        )}
-                        {open && (
-                            <BottomSheet
-                                title='Hello'
-                                locked
-                                onResult={() => {
-                                    setOpen(false);
-                                }}
-                            >
-                                {(onResult) => (
-                                    <div>
-                                        <button
-                                            className='standard-button'
-                                            onClick={onResult}
-                                        >
-                                            Click to close!
-                                        </button>
-                                    </div>
-                                )}
-                            </BottomSheet>
-                        )}
-                        {confirm && (
-                            <ConfirmationBottomSheet
-                                prompt="Are you sure that you'd like to perform this action?"
-                                onResult={(yesOrNo) => {
-                                    setConfirm(false);
-                                    console.log('yesOrNo', yesOrNo);
-                                }}
-                            />
-                        )}
                     </div>
-                    <Link
-                        to={'/workout-plan'}
-                        className={classNames(
-                            'standard-button',
-                            styles.editPlanButton
-                        )}
-                    >
-                        <i className='fa-solid fa-calendar-week'></i>
-                        Edit Workout Plan
-                    </Link>
+                    <div className={styles.actions}>
+                        <Link
+                            to={'/workout-plan'}
+                            className={classNames(
+                                'standard-button',
+                                styles.editPlanButton
+                            )}
+                        >
+                            <i className='fa-solid fa-calendar-week'></i>
+                            Edit Plan
+                        </Link>
+                        <Link
+                            to={'/workout-plan'}
+                            className={classNames('standard-button primary')}
+                        >
+                            <i className='fa-solid fa-person-walking'></i>
+                            Start Day {response.data.dayNumber + 1}
+                        </Link>
+                    </div>
                 </div>
             </div>
         </AppBarWithAppHeaderLayout>
@@ -132,3 +115,75 @@ const Home: React.FC<Props> = () => {
 };
 
 export default Home;
+
+interface HeaderItemProps {
+    title: string;
+    value: string | number;
+    suffix?: string;
+}
+
+function HeaderItem({ title, value, suffix }: HeaderItemProps) {
+    return (
+        <div className={styles.headerItem}>
+            <div className={styles.headerItemTitle}>{title}</div>
+            <div className={styles.headerItemValue}>
+                {value}
+                {suffix && (
+                    <span className={styles.headerItemValueSuffix}>
+                        {suffix}
+                    </span>
+                )}
+            </div>
+        </div>
+    );
+}
+
+interface ExerciseItemProps {
+    exercise: IExercise;
+}
+
+function ExerciseItem({ exercise }: ExerciseItemProps) {
+    const duration = useMemo(() => {
+        switch (exercise.exerciseType) {
+            case 'rep_based': {
+                return <>{exercise.setCount} sets</>;
+            }
+            case 'timed': {
+                if (exercise.setCount < 2) {
+                    return (
+                        <>
+                            {secondsToMinutes(exercise.timePerSetInSeconds!)}{' '}
+                            minutes
+                        </>
+                    );
+                }
+                return (
+                    <>
+                        {exercise.setCount} sets —{' '}
+                        {secondsToMinutes(exercise.timePerSetInSeconds!)}{' '}
+                        Minutes
+                    </>
+                );
+            }
+            default: {
+                return (
+                    <>
+                        {exercise.setCount} sets —{' '}
+                        {exercise.minimumRecommendedRepetitions}-
+                        {exercise.maximumRecommendedRepetitions} reps
+                    </>
+                );
+            }
+        }
+    }, [exercise]);
+
+    return (
+        <div className={styles.exercise}>
+            <div className={styles.exerciseName}>{exercise.name}</div>
+            <div className={styles.exerciseGroup}>
+                <MuscleGroupTag muscleGroup={exercise.primaryMuscleGroup} />
+            </div>
+            <div className={styles.exerciseDuration}>{duration}</div>
+        </div>
+    );
+}

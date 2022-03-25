@@ -1,10 +1,8 @@
 import {} from '@dgoudie/isometric-types';
 
-import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse } from 'axios';
+import axios, { AxiosRequestHeaders, AxiosResponse } from 'axios';
 
 import React from 'react';
-import { ServiceError } from '@dgoudie/service-error';
-import { useWebSocketForUpdates } from './use-web-socket-for-updates';
 
 export const fetchFromApi = <T>(
     path: string,
@@ -20,7 +18,6 @@ export const fetchFromApi = <T>(
 
 interface UseFetchState<T> {
     response: AxiosResponse<T> | null;
-    error: AxiosError<ServiceError> | null;
     loading: boolean;
 }
 
@@ -28,40 +25,33 @@ export const useFetchFromApi = <T>(
     path: string,
     params?: URLSearchParams,
     headers?: AxiosRequestHeaders,
-    skip = false,
-    listenForWebsocketReload = false
-): [AxiosResponse<T> | null, AxiosError<ServiceError> | null, boolean] => {
-    const [state, setState] = React.useState<UseFetchState<T>>({
-        response: null,
-        error: null,
-        loading: true,
-    });
-    let updateDate: number | null = useWebSocketForUpdates(path);
-    if (!listenForWebsocketReload) {
-        updateDate = null;
-    }
+    skip = false
+): AxiosResponse<T> | undefined => {
+    const [state, setState] = React.useState<AxiosResponse<T> | undefined>(
+        undefined
+    );
 
     React.useEffect(() => {
         const fetchData = async () => {
             if (skip) {
-                setState({ response: null, error: null, loading: false });
+                setState(undefined);
             } else {
-                setState((state) => ({ ...state, loading: true }));
+                setState(undefined);
                 try {
                     const response = await fetchFromApi<T>(
                         path,
                         params,
                         headers
                     );
-                    setState({ response, error: null, loading: false });
+                    setState(response);
                 } catch (error: any) {
-                    setState({ response: null, error, loading: false });
+                    setState(undefined);
                 }
             }
         };
         fetchData();
-    }, [path, params, headers, skip, updateDate]);
-    return [state.response, state.error, state.loading];
+    }, [headers, params, path, skip]);
+    return state;
 };
 
 // export const markBeerOrLiquorInStock = (_id: string, inStock: boolean) =>

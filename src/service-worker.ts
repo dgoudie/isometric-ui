@@ -75,23 +75,6 @@ registerRoute(
 );
 
 registerRoute(
-    ({ url, sameOrigin }) => sameOrigin && url.pathname === '/api/exercises',
-    new NetworkFirst({
-        cacheName: 'exercise',
-        plugins: [new ExpirationPlugin({ maxEntries: 1 })],
-    })
-);
-
-registerRoute(
-    ({ url, sameOrigin }) =>
-        sameOrigin && url.pathname.startsWith('/api/exercise/'),
-    new NetworkFirst({
-        cacheName: 'exercises',
-        plugins: [new ExpirationPlugin({ maxEntries: 50 })],
-    })
-);
-
-registerRoute(
     ({ url }) => url.host === 'fonts.gstatic.com',
     new StaleWhileRevalidate({
         cacheName: 'google_fonts',

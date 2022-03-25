@@ -8,8 +8,77 @@
     padding: 0 0.75rem 0.75rem;
     display: grid;
     grid-template-rows: auto max-content;
+    gap: 0.75rem;
+    overflow-y: auto;
 }
 
-.editPlanButton {
-    justify-self: end;
+.day {
+    background: var(--background-alt);
+    border-radius: 8px;
+    border: 1px solid var(--divider);
+    display: grid;
+    grid-template-rows: max-content auto;
+    overflow-y: auto;
+    &Header {
+        &Number {
+            font-size: 1.3rem;
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+        }
+
+        &Meta {
+            display: grid;
+            grid-auto-columns: 1fr;
+            grid-auto-flow: column;
+            justify-items: center;
+            text-align: center;
+        }
+    }
+}
+
+.headerItem {
+    &Title {
+        color: var(--scrub);
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+    &Value {
+        font-size: 1.2rem;
+        &Suffix {
+            font-size: 0.7rem;
+            color: var(--scrub);
+        }
+    }
+}
+
+.exercises {
+    overflow-y: auto;
+    padding: 0 1rem;
+    margin-top: 1rem;
+    .exercise {
+        display: grid;
+        grid-template-columns: auto max-content;
+        grid-auto-rows: auto;
+        margin-bottom: 1rem;
+        align-items: center;
+
+        &Name {
+            font-size: 1.1rem;
+        }
+
+        &Group {
+            grid-row-start: span 2;
+        }
+        &Duration {
+            font-size: 0.9rem;
+            color: var(--scrub);
+        }
+    }
+}
+
+.actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
 }

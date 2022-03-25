@@ -4,12 +4,13 @@ import { IExercise, ISchedule, IScheduleDay } from '@dgoudie/isometric-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
-import { Navigate } from 'react-router-dom';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import WorkoutPlanEditor from '../../components/WorkoutPlanEditor/WorkoutPlanEditor';
 import axios from 'axios';
+import classNames from 'classnames';
 import styles from './index.module.scss';
 import { useFetchFromApi } from '../../utils/fetch-from-api';
+import { useNavigate } from 'react-router-dom';
 
 const WorkoutPlanSchema = Yup.array()
     .min(1)
@@ -22,11 +23,14 @@ const WorkoutPlanSchema = Yup.array()
     );
 
 export default function WorkoutPlan() {
-    const [exercisesResponse, error1, loading1] = useFetchFromApi<
-        (IExercise & { _id: string })[]
-    >(`/api/exercises`, undefined, undefined, false);
+    const exercisesResponse = useFetchFromApi<IExercise[]>(
+        `/api/exercises`,
+        undefined,
+        undefined,
+        false
+    );
 
-    const [scheduleResponse, error2, loading2] = useFetchFromApi<ISchedule>(
+    const scheduleResponse = useFetchFromApi<ISchedule>(
         `/api/schedule`,
         undefined,
         undefined,
@@ -38,7 +42,10 @@ export default function WorkoutPlan() {
             new Map<string, IExercise>(
                 !exercisesResponse
                     ? []
-                    : exercisesResponse.data.map(({ _id, ...ex }) => [_id, ex])
+                    : exercisesResponse.data.map(({ _id, ...ex }) => [
+                          _id,
+                          { _id, ...ex },
+                      ])
             ),
         [exercisesResponse]
     );
@@ -63,26 +70,25 @@ export default function WorkoutPlan() {
         }
     }, [workoutScheduleDays]);
 
-    const save = useCallback(() => {
-        axios.put(
+    const navigate = useNavigate();
+
+    const save = useCallback(async () => {
+        await axios.put(
             `/api/schedule`,
             { days: workoutScheduleDays },
             { withCredentials: true }
         );
-    }, [workoutScheduleDays]);
+        navigate('/home');
+    }, [workoutScheduleDays, navigate]);
 
     const [isReorderMode, setIsReorderMode] = useState(false);
 
-    if (!!loading1 || !!loading2) {
+    if (!exercisesResponse || !scheduleResponse) {
         return (
             <AppBarWithAppHeaderLayout pageTitle='Workout Plan'>
                 <RouteLoader />
             </AppBarWithAppHeaderLayout>
         );
-    }
-
-    if (!!error1 || error2) {
-        return <Navigate to={'/error'} />;
     }
 
     return (
@@ -98,26 +104,23 @@ export default function WorkoutPlan() {
                     />
                     {!!workoutScheduleDays.length && (
                         <div className={styles.buttonBar}>
-                            {!isReorderMode && (
-                                <button
-                                    onClick={() => setIsReorderMode(true)}
-                                    type='button'
-                                    className='standard-button outlined'
-                                >
-                                    <i className='fa-solid fa-sort' />
-                                    Reorder Days
-                                </button>
-                            )}
-                            {isReorderMode && (
-                                <button
-                                    onClick={() => setIsReorderMode(false)}
-                                    type='button'
-                                    className='standard-button outlined'
-                                >
-                                    <i className='fa-solid fa-check' />
-                                    Done Reordering
-                                </button>
-                            )}
+                            <button
+                                onClick={() => setIsReorderMode(!isReorderMode)}
+                                type='button'
+                                className={classNames(
+                                    'standard-button outlined',
+                                    isReorderMode && 'highlighted'
+                                )}
+                            >
+                                <i
+                                    className={`fa-solid fa-${
+                                        isReorderMode ? 'check' : 'sort'
+                                    }`}
+                                />
+                                {isReorderMode
+                                    ? 'Done Reordering'
+                                    : 'Reorder Days'}
+                            </button>
                             <button
                                 disabled={!valid}
                                 onClick={save}

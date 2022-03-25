@@ -13,7 +13,7 @@
     padding: 0 calc(1.5rem - 1px);
     position: relative;
     text-decoration: none;
-    transition: transform 150ms, box-shadow 150ms;
+    transition: transform 150ms, box-shadow 150ms, border-color 150ms;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
 
@@ -24,7 +24,12 @@
 
     &.outlined {
         background-color: transparent;
-        border: 1px solid var(--divider);
+        border: 1px solid;
+        border-color: var(--divider);
+
+        &.highlighted {
+            border-color: var(--scrub);
+        }
     }
 
     &:disabled {

@@ -1,7 +1,6 @@
 import * as Yup from 'yup';
 
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { Navigate, useParams } from 'react-router-dom';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import { IExercise } from '@dgoudie/isometric-types';
@@ -11,6 +10,7 @@ import classNames from 'classnames';
 import { getFormikInitiallyTouchedFields } from '../../utils/formik-initially-touched';
 import styles from './index.module.scss';
 import { useFetchFromApi } from '../../utils/fetch-from-api';
+import { useParams } from 'react-router-dom';
 
 const ExerciseSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -29,7 +29,7 @@ const ExerciseSchema = Yup.object().shape({
 const ExerciseDetail = () => {
     const { exerciseName } = useParams();
 
-    const [response, error, loading] = useFetchFromApi<IExercise>(
+    const response = useFetchFromApi<IExercise>(
         `/api/exercise/${exerciseName}`,
         undefined,
         undefined,
@@ -38,7 +38,7 @@ const ExerciseDetail = () => {
 
     let child = <RouteLoader />;
 
-    if (!loading) {
+    if (response) {
         const standardFormInputStyles = classNames(
             'standard-form-input',
             styles.input
@@ -156,10 +156,6 @@ const ExerciseDetail = () => {
                 </Formik>
             </div>
         );
-    }
-
-    if (!!error) {
-        return <Navigate to={'/error'} />;
     }
 
     return (
