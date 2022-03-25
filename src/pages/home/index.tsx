@@ -1,5 +1,6 @@
 import { IExercise, IScheduleDayWithExercises } from '@dgoudie/isometric-types';
-import React, { useMemo } from 'react';
+import { ReadableResource, fetchFromApi2 } from '../../utils/fetch-from-api';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import { Link } from 'react-router-dom';
@@ -9,49 +10,62 @@ import classNames from 'classnames';
 import { getGreeting } from '../../utils/get-greeting';
 import { secondsToMinutes } from 'date-fns';
 import styles from './index.module.scss';
-import { useFetchFromApi } from '../../utils/fetch-from-api';
 
 const TIME_PER_SET = 60;
 
-type Props = {};
+const initialScheduleResponse = fetchFromApi2<IScheduleDayWithExercises>(
+    `/api/schedule/next-day`
+);
 
-const Home: React.FC<Props> = () => {
-    const greeting = useMemo(() => getGreeting(), []);
-
-    const response = useFetchFromApi<IScheduleDayWithExercises>(
-        `/api/schedule/next-day`
+export default function Home() {
+    const [scheduleResponse, setScheduleResponse] = useState(
+        initialScheduleResponse
     );
 
+    useEffect(() => {
+        setScheduleResponse(
+            fetchFromApi2<IScheduleDayWithExercises>(`/api/schedule/next-day`)
+        );
+    }, []);
+
+    return (
+        <AppBarWithAppHeaderLayout pageTitle='Home'>
+            <Suspense fallback={<RouteLoader />}>
+                <HomeContent scheduleResponse={scheduleResponse} />
+            </Suspense>
+        </AppBarWithAppHeaderLayout>
+    );
+}
+
+interface HomeContentProps {
+    scheduleResponse: ReadableResource<IScheduleDayWithExercises>;
+}
+
+function HomeContent({ scheduleResponse }: HomeContentProps) {
+    const schedule = scheduleResponse.read();
+
+    const greeting = useMemo(() => getGreeting(), []);
+
     const dayDurationInSeconds = useMemo(() => {
-        if (!response) {
-            return 0;
-        }
-        return response.data.exercises
+        return schedule.exercises
             .map(
                 (exercise) =>
                     (exercise.breakTimeInSeconds + TIME_PER_SET) *
                     exercise.setCount
             )
             .reduce((sum, exerciseDuration) => sum + exerciseDuration, 0);
-    }, [response]);
+    }, [schedule]);
 
     const setCount = useMemo(() => {
-        if (!response) {
-            return 0;
-        }
-        return response.data.exercises
+        return schedule.exercises
             .map((exercise) => exercise.setCount)
             .reduce((sum, exerciseDuration) => sum + exerciseDuration, 0);
-    }, [response]);
+    }, [schedule]);
 
     const dayDurationInMinutes = useMemo(
         () => secondsToMinutes(dayDurationInSeconds),
         [dayDurationInSeconds]
     );
-
-    if (!response) {
-        return <RouteLoader />;
-    }
 
     return (
         <AppBarWithAppHeaderLayout pageTitle='Home'>
@@ -62,10 +76,10 @@ const Home: React.FC<Props> = () => {
                         <div className={styles.dayHeader}>
                             <div className={styles.dayHeaderNumber}>
                                 <div>
-                                    Day {response.data.dayNumber + 1}/
-                                    {response.data.dayCount}
+                                    Day {schedule.dayNumber + 1}/
+                                    {schedule.dayCount}
                                 </div>
-                                <div>{response.data.nickname}</div>
+                                <div>{schedule.nickname}</div>
                             </div>
                             <div className={styles.dayHeaderMeta}>
                                 <HeaderItem
@@ -75,13 +89,13 @@ const Home: React.FC<Props> = () => {
                                 />
                                 <HeaderItem
                                     title='Exercises'
-                                    value={response.data.exercises.length}
+                                    value={schedule.exercises.length}
                                 />
                                 <HeaderItem title='Sets' value={setCount} />
                             </div>
                         </div>
                         <div className={styles.exercises}>
-                            {response.data.exercises.map((exercise) => (
+                            {schedule.exercises.map((exercise) => (
                                 <ExerciseItem
                                     key={exercise._id}
                                     exercise={exercise}
@@ -105,16 +119,14 @@ const Home: React.FC<Props> = () => {
                             className={classNames('standard-button primary')}
                         >
                             <i className='fa-solid fa-person-walking'></i>
-                            Start Day {response.data.dayNumber + 1}
+                            Start Day {schedule.dayNumber + 1}
                         </Link>
                     </div>
                 </div>
             </div>
         </AppBarWithAppHeaderLayout>
     );
-};
-
-export default Home;
+}
 
 interface HeaderItemProps {
     title: string;

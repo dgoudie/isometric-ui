@@ -1,5 +1,6 @@
 import { ExerciseMuscleGroup, IExercise } from '@dgoudie/isometric-types';
-import React, { useMemo } from 'react';
+import { ReadableResource, fetchFromApi2 } from '../../utils/fetch-from-api';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 
 import { Link } from 'react-router-dom';
 import MuscleGroupPicker from '../MuscleGroupPicker/MuscleGroupPicker';
@@ -7,55 +8,70 @@ import MuscleGroupTag from '../MuscleGroupTag/MuscleGroupTag';
 import RouteLoader from '../RouteLoader/RouteLoader';
 import classNames from 'classnames';
 import styles from './ExerciseSearch.module.scss';
-import { useFetchFromApi } from '../../utils/fetch-from-api';
+
+const initialExercisesResponse = fetchFromApi2<IExercise[]>(`/api/exercises`);
 
 interface Props {
-    className?: string;
     search: string | undefined;
-    searchChanged: (search: string | undefined) => void;
     muscleGroup: ExerciseMuscleGroup | undefined;
+    className?: string;
+    searchChanged: (search: string | undefined) => void;
     muscleGroupChanged: (muscleGroup: ExerciseMuscleGroup | undefined) => void;
     onSelect?: (exerciseId: string) => void;
 }
 
-export default function ExerciseSearch({
-    className,
-    search,
-    searchChanged,
-    muscleGroup,
-    muscleGroupChanged,
-    onSelect,
-}: Props) {
-    const searchParams = useMemo(() => {
-        const searchParams = new URLSearchParams();
-        !!search && searchParams.set('search', search);
-        !!muscleGroup && searchParams.set('muscleGroup', muscleGroup);
-        return searchParams;
-    }, [muscleGroup, search]);
-
-    const response = useFetchFromApi<(IExercise & { _id: string })[]>(
-        `/api/exercises`,
-        searchParams,
-        undefined,
-        false
+export default function ExerciseSearch(props: Props) {
+    const [exercisesResponse, setExercisesResponse] = useState(
+        initialExercisesResponse
     );
 
+    const searchParams = useMemo(() => {
+        const searchParams = new URLSearchParams();
+        !!props.search && searchParams.set('search', props.search);
+        !!props.muscleGroup &&
+            searchParams.set('muscleGroup', props.muscleGroup);
+        return searchParams;
+    }, [props.muscleGroup, props.search]);
+
+    useEffect(() => {
+        setExercisesResponse(fetchFromApi2(`/api/exercises`, searchParams));
+    }, [searchParams]);
+
+    return (
+        <Suspense fallback={<RouteLoader />}>
+            <ExerciseSearchContent
+                exercisesResponse={exercisesResponse}
+                {...props}
+            />
+        </Suspense>
+    );
+}
+
+interface ExerciseSearchContentProps extends Props {
+    exercisesResponse: ReadableResource<IExercise[]>;
+}
+
+function ExerciseSearchContent({
+    exercisesResponse,
+    search,
+    muscleGroup,
+    className,
+    searchChanged,
+    muscleGroupChanged,
+    onSelect,
+}: ExerciseSearchContentProps) {
+    const exercises = exercisesResponse.read();
     const items = useMemo(
         () =>
-            response?.data.map((ex) => (
+            exercises?.map((ex) => (
                 <ExerciseButton
                     key={ex.name}
                     exercise={ex}
                     onSelect={onSelect}
                 />
             )),
-        [response, onSelect]
+        [exercises, onSelect]
     );
-    let child = <RouteLoader />;
-
-    if (response) {
-        child = <div className={styles.items}>{items}</div>;
-    }
     return (
         <div className={classNames(styles.root, className)}>
             <div className={styles.filters}>
@@ -74,7 +90,7 @@ export default function ExerciseSearch({
                     valueChanged={muscleGroupChanged}
                 />
             </div>
-            {child}
+            <div className={styles.items}>{items}</div>
         </div>
     );
 }
