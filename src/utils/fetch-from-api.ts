@@ -35,7 +35,7 @@ export const fetchFromApi2 = <T>(
     headers?: HeadersInit
 ) => {
     return wrapPromise(
-        fetch(`${path}${params ? params.toString() : ''}`, {
+        fetch(`${path}?${params ? params.toString() : ''}`, {
             credentials: 'same-origin',
             headers,
         }).then((res) => res.json() as Promise<T>)
