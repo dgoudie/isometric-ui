@@ -9,7 +9,7 @@ import RouteLoader from '../RouteLoader/RouteLoader';
 import classNames from 'classnames';
 import styles from './ExerciseSearch.module.scss';
 
-const initialExercisesResponse = fetchFromApi2<IExercise[]>(`/api/exercises`);
+let initialExercisesResponse = fetchFromApi2<IExercise[]>(`/api/exercises`);
 
 interface Props {
     search: string | undefined;
@@ -81,7 +81,6 @@ function ExerciseSearchContent({
             <div className={styles.filters}>
                 <div className={styles.filtersInput}>
                     <input
-                        autoFocus
                         autoCapitalize='none'
                         autoCorrect='off'
                         autoComplete='off'

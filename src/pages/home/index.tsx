@@ -13,7 +13,7 @@ import styles from './index.module.scss';
 
 const TIME_PER_SET = 60;
 
-const initialScheduleResponse = fetchFromApi2<IScheduleDayWithExercises>(
+let initialScheduleResponse = fetchFromApi2<IScheduleDayWithExercises>(
     `/api/schedule/next-day`
 );
 
@@ -26,11 +26,11 @@ export default function Home() {
 
     useEffect(() => {
         startTransaction(() => {
-            setScheduleResponse(
-                fetchFromApi2<IScheduleDayWithExercises>(
-                    `/api/schedule/next-day`
-                )
+            const updatedResponse = fetchFromApi2<IScheduleDayWithExercises>(
+                `/api/schedule/next-day`
             );
+            setScheduleResponse(updatedResponse);
+            initialScheduleResponse = updatedResponse;
         });
     }, []);
 

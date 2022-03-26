@@ -29,8 +29,8 @@ const WorkoutPlanSchema = Yup.array()
         })
     );
 
-const initialExercisesResponse = fetchFromApi2<IExercise[]>(`/api/exercises`);
-const initialScheduleResponse = fetchFromApi2<ISchedule>(`/api/schedule`);
+let initialExercisesResponse = fetchFromApi2<IExercise[]>(`/api/exercises`);
+let initialScheduleResponse = fetchFromApi2<ISchedule>(`/api/schedule`);
 
 export default function WorkoutPlan() {
     const [exercisesResponse, setExercisesResponse] = useState(
@@ -44,8 +44,14 @@ export default function WorkoutPlan() {
 
     useEffect(() => {
         startTransaction(() => {
-            setExercisesResponse(fetchFromApi2<IExercise[]>(`/api/exercises`));
-            setScheduleResponse(fetchFromApi2<ISchedule>(`/api/schedule`));
+            const updatedExercisesResponse =
+                fetchFromApi2<IExercise[]>(`/api/exercises`);
+            const updatedScheduleResponse =
+                fetchFromApi2<ISchedule>(`/api/schedule`);
+            setExercisesResponse(updatedExercisesResponse);
+            setScheduleResponse(updatedScheduleResponse);
+            initialExercisesResponse = updatedExercisesResponse;
+            initialScheduleResponse = updatedScheduleResponse;
         });
     }, []);
 
@@ -83,6 +89,8 @@ function WorkoutPlanContent({
     const [workoutScheduleDays, setWorkoutScheduleDays] = useState<
         IScheduleDay[]
     >(schedule.days);
+
+    useEffect(() => setWorkoutScheduleDays(schedule.days), [schedule]);
 
     const valid = useMemo(() => {
         try {
