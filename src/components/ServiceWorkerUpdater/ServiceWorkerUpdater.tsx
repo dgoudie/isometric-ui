@@ -8,13 +8,16 @@ export default function ServiceWorkerUpdater() {
     const [showUpdateAvailablePrompt, setShowUpdateAvailablePrompt] =
         useState(false);
 
-    const onUpdateAvailable = useCallback(() => {
-        setShowUpdateAvailablePrompt(true);
-    }, []);
-
     const [serviceWorkerRegistration, setServiceWorkerRegistration] = useState<
         ServiceWorkerRegistration | undefined
     >();
+
+    const onUpdateAvailable = useCallback(() => {
+        if (serviceWorkerRegistration?.active) {
+            setShowUpdateAvailablePrompt(true);
+        }
+    }, [serviceWorkerRegistration]);
+
     useEffect(() => {
         swRegistration.then((registration) => {
             setServiceWorkerRegistration(registration);
