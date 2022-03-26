@@ -3,15 +3,12 @@
     grid-template-rows: max-content auto;
 }
 .filters {
-    display: grid;
-    gap: 0.5rem 1rem;
-    grid-template-columns: max-content auto;
-    align-items: center;
     padding: 0.5rem 0 0.75rem;
     background: var(--background);
     z-index: 1;
     &Input {
         grid-column-start: span 2;
+        margin-bottom: 0.5rem;
         input {
             padding: 0;
             outline: none;
@@ -22,6 +19,10 @@
             background: transparent;
             border: none;
         }
+    }
+    &MuscleGroup {
+        display: flex;
+        gap: 0.5rem;
     }
 }
 .items {

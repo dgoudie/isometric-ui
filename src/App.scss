@@ -20,6 +20,8 @@ body {
     --background: white;
     --background-alt: #f5f5f5;
     --divider: #e0e0e0;
+    --color-inverse: white;
+    --background-inverse: var(--navy);
 
     --max-width: 540px;
     --top-bar-height: 3rem;
@@ -32,6 +34,8 @@ body {
         --background: var(--navy);
         --background-alt: #2a2d35;
         --divider: #34373f;
+        --color-inverse: black;
+        --background-inverse: white;
     }
 }
 

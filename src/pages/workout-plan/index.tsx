@@ -18,6 +18,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import styles from './index.module.scss';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from '../../utils/use-snackbar';
 
 const WorkoutPlanSchema = Yup.array()
     .min(1)
@@ -105,12 +106,15 @@ function WorkoutPlanContent({
 
     const navigate = useNavigate();
 
+    const [openSnackbar] = useSnackbar();
+
     const save = useCallback(async () => {
         await axios.put(
             `/api/schedule`,
             { days: workoutScheduleDays },
             { withCredentials: true }
         );
+        openSnackbar('Schedule saved successfully.');
         navigate('/home');
     }, [workoutScheduleDays, navigate]);
 

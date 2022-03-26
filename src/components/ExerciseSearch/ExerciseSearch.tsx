@@ -90,11 +90,13 @@ function ExerciseSearchContent({
                         onChange={(e) => searchChanged(e.target.value)}
                     />
                 </div>
-                <label>Muscle Group:</label>
-                <MuscleGroupPicker
-                    value={muscleGroup}
-                    valueChanged={muscleGroupChanged}
-                />
+                <div className={styles.filtersMuscleGroup}>
+                    <label>Muscle Group:</label>
+                    <MuscleGroupPicker
+                        value={muscleGroup}
+                        valueChanged={muscleGroupChanged}
+                    />
+                </div>
             </div>
             <div className={styles.items}>{items}</div>
         </div>
