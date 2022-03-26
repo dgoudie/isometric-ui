@@ -79,9 +79,9 @@ function ExerciseSearchContent({
     return (
         <div className={classNames(styles.root, className)}>
             <div className={styles.filters}>
-                <label>Search:</label>
                 <div className={styles.filtersInput}>
                     <input
+                        autoFocus
                         autoCapitalize='none'
                         autoCorrect='off'
                         autoComplete='off'
