@@ -21,8 +21,6 @@ const Exercises = () => {
 
     const [searchTerm, setSearchTerm] = useState(q ?? undefined);
 
-    const debouncedSearchTerm = useDebounce(searchTerm, 500);
-
     useEffect(() => {
         if (
             !!muscleGroupDecoded &&
@@ -34,20 +32,20 @@ const Exercises = () => {
     }, [muscleGroupDecoded, searchParams, setSearchParams]);
 
     useEffect(() => {
-        if (!!debouncedSearchTerm) {
-            searchParams.set('q', debouncedSearchTerm);
+        if (!!searchTerm) {
+            searchParams.set('q', searchTerm);
         } else {
             searchParams.delete('q');
         }
         setSearchParams(searchParams);
-    }, [debouncedSearchTerm, searchParams, setSearchParams]);
+    }, [searchTerm, searchParams, setSearchParams]);
 
     return (
         <AppBarWithAppHeaderLayout pageTitle={'Exercises'}>
             <div className={styles.root}>
                 <ExerciseSearch
                     className={styles.exerciseSearch}
-                    search={debouncedSearchTerm}
+                    search={searchTerm}
                     searchChanged={setSearchTerm}
                     muscleGroup={muscleGroupDecoded}
                     muscleGroupChanged={(group) => {

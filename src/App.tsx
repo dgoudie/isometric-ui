@@ -3,21 +3,15 @@ import './App.scss';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import React, { FC, Suspense } from 'react';
 
-import Exercise from './pages/exercise';
-import Exercises from './pages/exercises';
-import History from './pages/history';
-import Home from './pages/home';
 import RouteLoader from './components/RouteLoader/RouteLoader';
 import ServiceWorkerUpdater from './components/ServiceWorkerUpdater/ServiceWorkerUpdater';
-import Settings from './pages/settings';
-import WorkoutPlan from './pages/workout-plan';
 
-// const Settings = React.lazy(() => import('./pages/settings'));
-// const WorkoutPlan = React.lazy(() => import('./pages/workout-plan'));
-// const History = React.lazy(() => import('./pages/history'));
-// const Home = React.lazy(() => import('./pages/home'));
-// const Exercises = React.lazy(() => import('./pages/exercises'));
-// const Exercise = React.lazy(() => import('./pages/exercise'));
+const Settings = React.lazy(() => import('./pages/settings'));
+const WorkoutPlan = React.lazy(() => import('./pages/workout-plan'));
+const History = React.lazy(() => import('./pages/history'));
+const Home = React.lazy(() => import('./pages/home'));
+const Exercises = React.lazy(() => import('./pages/exercises'));
+const Exercise = React.lazy(() => import('./pages/exercise'));
 
 const App: FC = () => (
     <>

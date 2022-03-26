@@ -1,6 +1,6 @@
 import { ExerciseMuscleGroup, IExercise } from '@dgoudie/isometric-types';
 import { ReadableResource, fetchFromApi2 } from '../../utils/fetch-from-api';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState, useTransition } from 'react';
 
 import { Link } from 'react-router-dom';
 import MuscleGroupPicker from '../MuscleGroupPicker/MuscleGroupPicker';
@@ -33,8 +33,12 @@ export default function ExerciseSearch(props: Props) {
         return searchParams;
     }, [props.muscleGroup, props.search]);
 
+    const [_isPending, startTransaction] = useTransition();
+
     useEffect(() => {
-        setExercisesResponse(fetchFromApi2(`/api/exercises`, searchParams));
+        startTransaction(() => {
+            setExercisesResponse(fetchFromApi2(`/api/exercises`, searchParams));
+        });
     }, [searchParams]);
 
     return (
@@ -78,6 +82,9 @@ function ExerciseSearchContent({
                 <label>Search:</label>
                 <div className={styles.filtersInput}>
                     <input
+                        autoCapitalize='none'
+                        autoCorrect='off'
+                        autoComplete='off'
                         defaultValue={search}
                         type={'search'}
                         placeholder='Enter a search term...'
