@@ -10,15 +10,18 @@ import {
     useState,
     useTransition,
 } from 'react';
+import WorkoutPlanEditor, {
+    IScheduleDayWithId,
+} from '../../components/WorkoutPlanEditor/WorkoutPlanEditor';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
-import WorkoutPlanEditor from '../../components/WorkoutPlanEditor/WorkoutPlanEditor';
 import axios from 'axios';
 import classNames from 'classnames';
 import styles from './index.module.scss';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from '../../utils/use-snackbar';
+import { v4 } from 'uuid';
 
 const WorkoutPlanSchema = Yup.array()
     .min(1)
@@ -88,10 +91,10 @@ function WorkoutPlanContent({
     );
 
     const [workoutScheduleDays, setWorkoutScheduleDays] = useState<
-        IScheduleDay[]
-    >(schedule.days);
+        IScheduleDayWithId[]
+    >(addIds(schedule.days));
 
-    useEffect(() => setWorkoutScheduleDays(schedule.days), [schedule]);
+    useEffect(() => setWorkoutScheduleDays(addIds(schedule.days)), [schedule]);
 
     const valid = useMemo(() => {
         try {
@@ -162,3 +165,6 @@ function WorkoutPlanContent({
         </div>
     );
 }
+
+const addIds = (days: IScheduleDay[]): IScheduleDayWithId[] =>
+    days.map((day) => ({ ...day, id: v4() }));

@@ -1,6 +1,5 @@
 import { DragDropContext, DropResult, Droppable } from 'react-beautiful-dnd';
 import { IExercise, IScheduleDay } from '@dgoudie/isometric-types';
-import { ObjectID, ObjectId } from 'bson';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     deleteItemFromArray,
@@ -12,10 +11,13 @@ import CopyDayBottomSheet from '../BottomSheet/components/CopyDayBottomSheet/Cop
 import WorkoutPlanDayEditor from './components/WorkoutPlanDayEditor/WorkoutPlanDayEditor';
 import classNames from 'classnames';
 import styles from './WorkoutPlanEditor.module.scss';
+import { v4 } from 'uuid';
+
+export type IScheduleDayWithId = IScheduleDay & { id: string };
 
 interface Props {
-    days: IScheduleDay[];
-    daysChanged: (days: IScheduleDay[]) => void;
+    days: IScheduleDayWithId[];
+    daysChanged: (days: IScheduleDayWithId[]) => void;
     exerciseMap: Map<string, IExercise>;
     dayReorderModeEnabled?: boolean;
 }
@@ -41,8 +43,7 @@ export default function WorkoutPlanEditor({
     }, [listRef, dayReorderModeEnabled]);
 
     const updateAndReportDays = useCallback(
-        (updatedDays: typeof days) => {
-            // setDays(updatedDays);
+        (updatedDays: IScheduleDayWithId[]) => {
             daysChanged(updatedDays);
         },
         [daysChanged]
@@ -66,7 +67,7 @@ export default function WorkoutPlanEditor({
     const handleAdd = useCallback(() => {
         updateAndReportDays([
             ...days,
-            { exercises: [], nickname: '', _id: new ObjectID().toString() },
+            { exercises: [], nickname: '', id: v4() },
         ]);
     }, [days, updateAndReportDays]);
 
@@ -78,7 +79,7 @@ export default function WorkoutPlanEditor({
     );
 
     const dayChanged = useCallback(
-        (day: IScheduleDay, index: number) => {
+        (day: IScheduleDayWithId, index: number) => {
             updateAndReportDays(replaceItemInArray(days, index, day));
         },
         [days, updateAndReportDays]
@@ -88,10 +89,7 @@ export default function WorkoutPlanEditor({
         (result: number | undefined) => {
             if (typeof result !== 'undefined') {
                 const day = days[result];
-                daysChanged([
-                    ...days,
-                    { ...day, _id: new ObjectId().toString() },
-                ]);
+                daysChanged([...days, { ...day, id: v4() }]);
             }
             setCopyDayVisible(false);
         },
@@ -127,7 +125,7 @@ export default function WorkoutPlanEditor({
                         >
                             {days.map((day, index) => (
                                 <WorkoutPlanDayEditor
-                                    key={day._id}
+                                    key={day.id}
                                     day={day}
                                     dayChanged={(day) => dayChanged(day, index)}
                                     index={index}
