@@ -2,7 +2,14 @@ import * as Yup from 'yup';
 
 import { IExercise, ISchedule, IScheduleDay } from '@dgoudie/isometric-types';
 import { ReadableResource, fetchFromApi2 } from '../../utils/fetch-from-api';
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+    Suspense,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
@@ -33,9 +40,13 @@ export default function WorkoutPlan() {
         initialScheduleResponse
     );
 
+    const [_isPending, startTransaction] = useTransition();
+
     useEffect(() => {
-        setExercisesResponse(fetchFromApi2<IExercise[]>(`/api/exercises`));
-        setScheduleResponse(fetchFromApi2<ISchedule>(`/api/schedule`));
+        startTransaction(() => {
+            setExercisesResponse(fetchFromApi2<IExercise[]>(`/api/exercises`));
+            setScheduleResponse(fetchFromApi2<ISchedule>(`/api/schedule`));
+        });
     }, []);
 
     return (
