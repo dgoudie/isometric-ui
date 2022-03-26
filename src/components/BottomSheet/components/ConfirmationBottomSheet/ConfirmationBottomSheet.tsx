@@ -1,4 +1,4 @@
-import BottomSheet from '../BottomSheet/BottomSheet';
+import BottomSheet from '../../BottomSheet';
 import React from 'react';
 import styles from './ConfirmationBottomSheet.module.scss';
 

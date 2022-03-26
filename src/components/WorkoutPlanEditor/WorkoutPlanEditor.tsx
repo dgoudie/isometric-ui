@@ -8,7 +8,7 @@ import {
     replaceItemInArray,
 } from '../../utils/array-helpers';
 
-import CopyDayBottomSheet from '../CopyDayBottomSheet/CopyDayBottomSheet';
+import CopyDayBottomSheet from '../BottomSheet/components/CopyDayBottomSheet/CopyDayBottomSheet';
 import WorkoutPlanDayEditor from './components/WorkoutPlanDayEditor/WorkoutPlanDayEditor';
 import classNames from 'classnames';
 import styles from './WorkoutPlanEditor.module.scss';

@@ -11,7 +11,7 @@ import {
     moveItemInArray,
 } from '../../../../utils/array-helpers';
 
-import ExercisePickerBottomSheet from '../../../ExercisePickerBottomSheet/ExercisePickerBottomSheet';
+import ExercisePickerBottomSheet from '../../../BottomSheet/components/ExercisePickerBottomSheet/ExercisePickerBottomSheet';
 import WorkoutPlanDayExerciseEditor from '../WorkoutPlanDayExerciseEditor/WorkoutPlanDayExerciseEditor';
 import classNames from 'classnames';
 import styles from './WorkoutPlanDayEditor.module.scss';

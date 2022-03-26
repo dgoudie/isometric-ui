@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import ConfirmationBottomSheet from '../ConfirmationBottomSheet/ConfirmationBottomSheet';
+import ConfirmationBottomSheet from '../BottomSheet/components/ConfirmationBottomSheet/ConfirmationBottomSheet';
 import { swRegistration } from '../..';
 import { usePageVisibility } from 'react-page-visibility';
 

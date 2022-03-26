@@ -1,4 +1,4 @@
-import BottomSheet from '../BottomSheet/BottomSheet';
+import BottomSheet from '../../BottomSheet';
 import { IScheduleDay } from '@dgoudie/isometric-types';
 import styles from './CopyDayBottomSheet.module.scss';
 

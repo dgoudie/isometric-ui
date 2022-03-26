@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
-import BottomSheet from '../BottomSheet/BottomSheet';
+import BottomSheet from '../../BottomSheet';
 import { ExerciseMuscleGroup } from '@dgoudie/isometric-types';
-import ExerciseSearch from '../ExerciseSearch/ExerciseSearch';
+import ExerciseSearch from '../../../ExerciseSearch/ExerciseSearch';
 import styles from './ExercisePickerBottomSheet.module.scss';
-import useDebounce from '../../utils/use-debouce';
+import useDebounce from '../../../../utils/use-debouce';
 
 interface Props {
     onResult: (result: string | undefined) => void;
