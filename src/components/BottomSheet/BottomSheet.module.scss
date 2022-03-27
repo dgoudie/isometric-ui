@@ -4,8 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
-    background-color: rgba(0, 0, 0, 0);
+    transition: background-color 1000ms cubic-bezier(0.4, 0, 0.2, 1);
 
     .sheet {
         &Header {
@@ -31,18 +30,31 @@
             left: 0.5rem;
             right: 0.5rem;
             border-radius: 8px;
-            transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateY(calc(100% + 2rem));
             max-width: var(--max-width);
             margin: 0 auto;
+            transition: transform 1000ms cubic-bezier(0.4, 0, 0.2, 1);
         }
     }
-    &Enter,
-    &EnterDone {
+    &Enter {
+        background-color: rgba(0, 0, 0, 0);
+        .sheet {
+            &Root {
+                transform: translateY(calc(100% + 2rem));
+            }
+        }
+    }
+    &EnterActive {
         background-color: rgba(0, 0, 0, 0.5);
         .sheet {
             &Root {
                 transform: translateY(0);
+            }
+        }
+    }
+    &EnterDone {
+        background-color: rgba(0, 0, 0, 0.5);
+        .sheet {
+            &Root {
             }
         }
     }

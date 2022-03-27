@@ -4,6 +4,7 @@ import { CSSTransition } from 'react-transition-group';
 import FocusLock from 'react-focus-lock';
 import { Portal } from '@primer/react';
 import styles from './BottomSheet.module.scss';
+import { useSwipeable } from 'react-swipeable';
 
 type PropsLocked<T> = {
     title?: string;
@@ -19,7 +20,7 @@ type PropsNotLocked<T> = {
     children: (onResult: (result: T) => void) => ReactNode;
 };
 
-const TIMEOUT = 250;
+const TIMEOUT = 1000;
 
 export default function BottomSheet<T extends unknown>({
     title,
@@ -30,6 +31,13 @@ export default function BottomSheet<T extends unknown>({
     const nodeRef = useRef<HTMLDivElement>(null);
 
     const [inProp, setInProp] = useState(false);
+
+    const [distanceFrom0, setDistanceFrom0] = useState(0);
+    const [dragDelta, setDragDelta] = useState(0);
+
+    useEffect(() => {
+        console.log('distanceFrom0', distanceFrom0, ', dragDelta', dragDelta);
+    }, [distanceFrom0, dragDelta]);
 
     useEffect(() => {
         setInProp(true);
@@ -50,6 +58,14 @@ export default function BottomSheet<T extends unknown>({
         [onResult]
     );
 
+    const handlers = useSwipeable({
+        onSwiped: (eventData) =>
+            setDistanceFrom0(distanceFrom0 + eventData.deltaY),
+        onSwiping: (event) => setDragDelta(distanceFrom0 + event.deltaY),
+        delta: 0,
+        trackMouse: true,
+    });
+
     return (
         <Portal>
             <CSSTransition
@@ -57,6 +73,7 @@ export default function BottomSheet<T extends unknown>({
                 in={inProp}
                 classNames={{
                     enter: styles.rootEnter,
+                    enterActive: styles.rootEnterActive,
                     enterDone: styles.rootEnterDone,
                 }}
                 timeout={250}
@@ -70,9 +87,17 @@ export default function BottomSheet<T extends unknown>({
                         <div
                             className={styles.sheetRoot}
                             onClick={(e) => e.stopPropagation()}
+                            // style={{
+                            //     transform: dragDelta
+                            //         ? `translateY(${dragDelta}px)`
+                            //         : undefined,
+                            // }}
                         >
                             {(title || !locked) && (
-                                <div className={styles.sheetHeader}>
+                                <div
+                                    className={styles.sheetHeader}
+                                    {...handlers}
+                                >
                                     {title && (
                                         <div
                                             className={styles.sheetHeaderTitle}
