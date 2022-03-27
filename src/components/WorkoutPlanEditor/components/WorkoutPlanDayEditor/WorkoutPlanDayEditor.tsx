@@ -37,7 +37,7 @@ export default function WorkoutPlanDayEditor({
     const [exercisePickerVisible, setExercisePickerVisible] = useState(false);
 
     const exercisesChanged = useCallback(
-        (exercises: string[]) => dayChanged({ ...day, exercises }),
+        (exerciseIds: string[]) => dayChanged({ ...day, exerciseIds }),
         [day, dayChanged]
     );
 
@@ -50,10 +50,10 @@ export default function WorkoutPlanDayEditor({
         (result: string | undefined) => {
             setExercisePickerVisible(false);
             if (!!result) {
-                exercisesChanged([...day.exercises, result]);
+                exercisesChanged([...day.exerciseIds, result]);
             }
         },
-        [day.exercises, exercisesChanged]
+        [day.exerciseIds, exercisesChanged]
     );
 
     const deleteDayWrapped = useCallback(
@@ -73,17 +73,21 @@ export default function WorkoutPlanDayEditor({
                 return;
             }
             exercisesChanged(
-                moveItemInArray(day.exercises, source.index, destination.index)
+                moveItemInArray(
+                    day.exerciseIds,
+                    source.index,
+                    destination.index
+                )
             );
         },
-        [day.exercises, exercisesChanged]
+        [day.exerciseIds, exercisesChanged]
     );
 
     const handleExerciseDelete = useCallback(
         (index: number) => {
-            exercisesChanged(deleteItemFromArray(day.exercises, index));
+            exercisesChanged(deleteItemFromArray(day.exerciseIds, index));
         },
-        [day.exercises, exercisesChanged]
+        [day.exerciseIds, exercisesChanged]
     );
 
     return (
@@ -133,26 +137,28 @@ export default function WorkoutPlanDayEditor({
                                     {...provided.droppableProps}
                                     ref={provided.innerRef}
                                 >
-                                    {day.exercises.map((exerciseId, index) => (
-                                        <WorkoutPlanDayExerciseEditor
-                                            index={index}
-                                            key={`day_${index}_${exerciseId}_${index}`}
-                                            exerciseId={exerciseId}
-                                            exerciseMap={exerciseMap}
-                                            onDelete={() =>
-                                                handleExerciseDelete(index)
-                                            }
-                                            dayReorderModeEnabled={
-                                                dayReorderModeEnabled
-                                            }
-                                        />
-                                    ))}
+                                    {day.exerciseIds.map(
+                                        (exerciseId, index) => (
+                                            <WorkoutPlanDayExerciseEditor
+                                                index={index}
+                                                key={`day_${index}_${exerciseId}_${index}`}
+                                                exerciseId={exerciseId}
+                                                exerciseMap={exerciseMap}
+                                                onDelete={() =>
+                                                    handleExerciseDelete(index)
+                                                }
+                                                dayReorderModeEnabled={
+                                                    dayReorderModeEnabled
+                                                }
+                                            />
+                                        )
+                                    )}
                                     {provided.placeholder}
                                 </div>
                             )}
                         </Droppable>
                     </DragDropContext>
-                    {day.exercises.length === 0 && (
+                    {day.exerciseIds.length === 0 && (
                         <div className={styles.noExercises}>
                             Please add at least one exercise.
                         </div>

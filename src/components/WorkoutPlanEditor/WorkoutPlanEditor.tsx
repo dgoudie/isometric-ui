@@ -67,7 +67,7 @@ export default function WorkoutPlanEditor({
     const handleAdd = useCallback(() => {
         updateAndReportDays([
             ...days,
-            { exercises: [], nickname: '', id: v4() },
+            { exerciseIds: [], nickname: '', id: v4() },
         ]);
     }, [days, updateAndReportDays]);
 
