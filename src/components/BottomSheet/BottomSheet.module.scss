@@ -1,61 +1,31 @@
-.root {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    transition: background-color 1000ms cubic-bezier(0.4, 0, 0.2, 1);
-
-    .sheet {
-        &Header {
-            display: grid;
-            grid-template-columns: auto max-content;
-            align-items: center;
-            font-size: 1.3rem;
-            padding: 0.5rem 0.5rem 0 1rem;
-
-            &Dismiss {
-                height: 3rem;
-                width: 3rem;
-                justify-self: end;
-            }
-        }
-        &Root {
-            max-height: calc(100vh - 2rem);
-            display: flex;
-            flex-direction: column;
+.pane {
+    :global {
+        .pane {
+            color: var(--color);
             background-color: var(--background);
-            position: absolute;
-            bottom: 2rem;
-            left: 0.5rem;
-            right: 0.5rem;
             border-radius: 8px;
-            max-width: var(--max-width);
-            margin: 0 auto;
-            transition: transform 1000ms cubic-bezier(0.4, 0, 0.2, 1);
+            width: calc(100% - 1rem);
+            padding-top: 0;
+            padding-bottom: 1px;
         }
     }
-    &Enter {
-        background-color: rgba(0, 0, 0, 0);
-        .sheet {
-            &Root {
-                transform: translateY(calc(100% + 2rem));
-            }
+}
+.sheet {
+    &Header {
+        display: grid;
+        grid-template-columns: auto max-content;
+        align-items: center;
+        font-size: 1.3rem;
+        height: 3rem;
+
+        &Title {
+            padding-left: 1rem;
         }
-    }
-    &EnterActive {
-        background-color: rgba(0, 0, 0, 0.5);
-        .sheet {
-            &Root {
-                transform: translateY(0);
-            }
-        }
-    }
-    &EnterDone {
-        background-color: rgba(0, 0, 0, 0.5);
-        .sheet {
-            &Root {
-            }
+
+        &Dismiss {
+            align-self: stretch;
+            width: 3rem;
+            justify-self: end;
         }
     }
 }

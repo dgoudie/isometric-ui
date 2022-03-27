@@ -3,6 +3,7 @@ import { ReadableResource, fetchFromApi2 } from '../../utils/fetch-from-api';
 import { Suspense, useEffect, useMemo, useState, useTransition } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
+import ConfirmationBottomSheet from '../../components/BottomSheet/components/ConfirmationBottomSheet/ConfirmationBottomSheet';
 import { Link } from 'react-router-dom';
 import MuscleGroupTag from '../../components/MuscleGroupTag/MuscleGroupTag';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';

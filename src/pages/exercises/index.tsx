@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import ExerciseSearch from '../../components/ExerciseSearch/ExerciseSearch';
 import styles from './index.module.scss';
-import useDebounce from '../../utils/use-debouce';
 import { useSearchParams } from 'react-router-dom';
 
 const Exercises = () => {

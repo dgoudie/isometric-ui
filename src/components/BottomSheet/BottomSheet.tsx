@@ -1,10 +1,17 @@
-import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+    MouseEvent,
+    ReactNode,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 
 import { CSSTransition } from 'react-transition-group';
+import { CupertinoPane } from 'cupertino-pane';
 import FocusLock from 'react-focus-lock';
 import { Portal } from '@primer/react';
 import styles from './BottomSheet.module.scss';
-import { useSwipeable } from 'react-swipeable';
 
 type PropsLocked<T> = {
     title?: string;
@@ -20,7 +27,7 @@ type PropsNotLocked<T> = {
     children: (onResult: (result: T) => void) => ReactNode;
 };
 
-const TIMEOUT = 1000;
+const TIMEOUT = 250;
 
 export default function BottomSheet<T extends unknown>({
     title,
@@ -28,101 +35,86 @@ export default function BottomSheet<T extends unknown>({
     onResult,
     children,
 }: PropsLocked<T> | PropsNotLocked<T>) {
-    const nodeRef = useRef<HTMLDivElement>(null);
+    const paneRef = useRef<CupertinoPane>();
+    const paneDivRef = useRef<HTMLDivElement>(null);
+    const headerDivRef = useRef<HTMLDivElement>(null);
 
-    const [inProp, setInProp] = useState(false);
+    const onClosedNoResult = useCallback(
+        (event: MouseEvent<HTMLElement>) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (!locked) {
+                paneRef.current?.hide();
+                paneRef.current?.destroy({ animate: true });
+                setTimeout(() => onResult(undefined), TIMEOUT);
+            }
+        },
+        [onResult, locked, paneRef]
+    );
 
-    const [distanceFrom0, setDistanceFrom0] = useState(0);
-    const [dragDelta, setDragDelta] = useState(0);
-
-    useEffect(() => {
-        console.log('distanceFrom0', distanceFrom0, ', dragDelta', dragDelta);
-    }, [distanceFrom0, dragDelta]);
-
-    useEffect(() => {
-        setInProp(true);
-    }, [setInProp]);
-
-    const onClosedNoResult = useCallback(() => {
-        if (!locked) {
-            setInProp(false);
-            setTimeout(() => onResult(undefined), TIMEOUT);
-        }
-    }, [onResult, locked]);
+    const paneDismissed = useCallback(() => {
+        !locked && onResult(undefined);
+    }, [paneRef, locked, onResult]);
 
     const onClosedWithResult = useCallback(
         (result: T) => {
-            setInProp(false);
+            paneRef.current?.hide();
+            paneRef.current?.destroy({ animate: true });
             setTimeout(() => onResult(result), TIMEOUT);
         },
-        [onResult]
+        [onResult, paneRef]
     );
 
-    const handlers = useSwipeable({
-        onSwiped: (eventData) =>
-            setDistanceFrom0(distanceFrom0 + eventData.deltaY),
-        onSwiping: (event) => setDragDelta(distanceFrom0 + event.deltaY),
-        delta: 0,
-        trackMouse: true,
-    });
+    useEffect(() => {
+        if (!paneDivRef.current || !!paneRef.current) {
+            return;
+        }
+        paneRef.current = new CupertinoPane(paneDivRef.current, {
+            fitHeight: true,
+            buttonDestroy: false,
+            showDraggable: false,
+            bottomClose: true,
+            animationDuration: TIMEOUT,
+            backdrop: true,
+            cssClass: styles.pane,
+            dragBy: [`.${styles.sheetHeader}`],
+            bottomOffset: 32,
+            onDidDismiss: paneDismissed,
+        });
+        paneRef.current.present({ animate: true });
+        if (!!locked) {
+            paneRef.current.preventDismiss(true);
+        }
+    }, [paneDivRef, paneRef]);
 
     return (
         <Portal>
-            <CSSTransition
-                nodeRef={nodeRef}
-                in={inProp}
-                classNames={{
-                    enter: styles.rootEnter,
-                    enterActive: styles.rootEnterActive,
-                    enterDone: styles.rootEnterDone,
-                }}
-                timeout={250}
-            >
-                <div
-                    className={styles.root}
-                    onClick={onClosedNoResult}
-                    ref={nodeRef}
-                >
-                    <FocusLock>
-                        <div
-                            className={styles.sheetRoot}
-                            onClick={(e) => e.stopPropagation()}
-                            // style={{
-                            //     transform: dragDelta
-                            //         ? `translateY(${dragDelta}px)`
-                            //         : undefined,
-                            // }}
-                        >
-                            {(title || !locked) && (
-                                <div
-                                    className={styles.sheetHeader}
-                                    {...handlers}
-                                >
-                                    {title && (
-                                        <div
-                                            className={styles.sheetHeaderTitle}
-                                        >
-                                            {title}
-                                        </div>
-                                    )}
-                                    {!locked && (
-                                        <button
-                                            className={
-                                                styles.sheetHeaderDismiss
-                                            }
-                                            type='button'
-                                            onClick={onClosedNoResult}
-                                        >
-                                            <i className='fa-solid fa-xmark'></i>
-                                        </button>
-                                    )}
+            <div onClick={onClosedNoResult} className={styles.backdrop}>
+                <FocusLock>
+                    <div
+                        ref={paneDivRef}
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        {(title || !locked) && (
+                            <div className={styles.sheetHeader}>
+                                <div className={styles.sheetHeaderTitle}>
+                                    {title}
                                 </div>
-                            )}
-                            <div>{children(onClosedWithResult)}</div>
-                        </div>
-                    </FocusLock>
-                </div>
-            </CSSTransition>
+                                {!locked && (
+                                    <button
+                                        className={styles.sheetHeaderDismiss}
+                                        type='button'
+                                        onClick={onClosedNoResult}
+                                    >
+                                        <i className='fa-solid fa-xmark'></i>
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                        <div>{children(onClosedWithResult)}</div>
+                    </div>
+                </FocusLock>
+            </div>
         </Portal>
     );
 }

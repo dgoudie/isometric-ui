@@ -14,15 +14,13 @@ export default function ExercisePickerBottomSheet({ onResult }: Props) {
     const [search, setSearch] = useState<string>();
     const [muscleGroup, setMuscleGroup] = useState<ExerciseMuscleGroup>();
 
-    const searchDebounced = useDebounce(search, 500);
-
     return (
         <BottomSheet onResult={onResult} title='Select an Exercise'>
             {(onResult) => (
                 <div className={styles.root}>
                     <ExerciseSearch
                         className={styles.exerciseSearch}
-                        search={searchDebounced}
+                        search={search}
                         searchChanged={setSearch}
                         muscleGroup={muscleGroup}
                         muscleGroupChanged={setMuscleGroup}
