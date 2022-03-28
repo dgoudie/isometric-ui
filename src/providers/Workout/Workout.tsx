@@ -54,9 +54,9 @@ export default function WorkoutProvider({
 
     useEffect(() => {
         if (typeof workout != 'undefined') {
-            if (workout === null && pathname.startsWith('/workout')) {
+            if (workout === null && pathname === '/workout') {
                 navigate('/home', { replace: true });
-            } else if (workout !== null && !pathname.startsWith('/workout')) {
+            } else if (workout !== null && pathname !== '/workout') {
                 navigate('/workout', { replace: true });
             }
         }
