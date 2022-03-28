@@ -11,7 +11,6 @@ export const defaultInterval = 250;
 type OpenSnackbar = (content: string, duration: number) => void;
 type CloseSnackbar = () => void;
 
-// Context used by the hook useSnackbar() and HoC withSnackbar()
 export const SnackbarContext = createContext<{
     openSnackbar: OpenSnackbar;
     closeSnackbar: CloseSnackbar;

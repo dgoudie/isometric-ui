@@ -6,18 +6,21 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import SnackbarProvider from './components/Snackbar/Snackbar';
+import SnackbarProvider from './providers/Snackbar/Snackbar';
+import WorkoutProvider from './providers/Workout/Workout';
 import reportWebVitals from './reportWebVitals';
 
 //@ts-ignore
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-    <SnackbarProvider>
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
-    </SnackbarProvider>
+    <WorkoutProvider>
+        <SnackbarProvider>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </SnackbarProvider>
+    </WorkoutProvider>
 );
 
 // If you want your app to work offline and load faster, you can change

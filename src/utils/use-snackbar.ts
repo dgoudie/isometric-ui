@@ -1,7 +1,7 @@
 import {
     SnackbarContext,
     defaultDuration,
-} from '../components/Snackbar/Snackbar';
+} from '../providers/Snackbar/Snackbar';
 
 import { useContext } from 'react';
 

@@ -1,12 +1,20 @@
 import { IExercise, IScheduleDayWithExercises } from '@dgoudie/isometric-types';
 import { ReadableResource, fetchFromApi2 } from '../../utils/fetch-from-api';
-import { Suspense, useEffect, useMemo, useState, useTransition } from 'react';
+import {
+    Suspense,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+    useTransition,
+} from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import ConfirmationBottomSheet from '../../components/BottomSheet/components/ConfirmationBottomSheet/ConfirmationBottomSheet';
 import { Link } from 'react-router-dom';
 import MuscleGroupTag from '../../components/MuscleGroupTag/MuscleGroupTag';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
+import { WorkoutContext } from '../../providers/Workout/Workout';
 import classNames from 'classnames';
 import { getGreeting } from '../../utils/get-greeting';
 import { secondsToMinutes } from 'date-fns';
@@ -74,6 +82,8 @@ function HomeContent({ scheduleResponse }: HomeContentProps) {
         [dayDurationInSeconds]
     );
 
+    const { startWorkout } = useContext(WorkoutContext);
+
     return (
         <div className={styles.wrapper}>
             <h1>{greeting}</h1>
@@ -119,13 +129,14 @@ function HomeContent({ scheduleResponse }: HomeContentProps) {
                         <i className='fa-solid fa-calendar-week'></i>
                         Edit Plan
                     </Link>
-                    <Link
-                        to={'/workout-plan'}
+                    <button
+                        type='button'
+                        onClick={() => startWorkout()}
                         className={classNames('standard-button primary')}
                     >
                         <i className='fa-solid fa-person-walking'></i>
                         Start Day {schedule.dayNumber + 1}
-                    </Link>
+                    </button>
                 </div>
             </div>
         </div>
