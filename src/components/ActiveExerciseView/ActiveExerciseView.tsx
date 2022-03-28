@@ -26,10 +26,10 @@ export default function ActiveExerciseView({
     }, []);
 
     useEffect(() => {
-        rootRef.current!.addEventListener('touchstart', touchStart);
+        rootRef.current?.addEventListener('touchstart', touchStart);
         setRootChildren(rootRef.current?.children);
         return () => {
-            rootRef.current!.removeEventListener('touchstart', touchStart);
+            rootRef.current?.removeEventListener('touchstart', touchStart);
         };
     }, [rootRef]);
 
