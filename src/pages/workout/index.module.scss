@@ -1,0 +1,29 @@
+.header {
+    height: 3rem;
+    display: grid;
+    grid-template-columns: 1fr max-content 1fr;
+    align-items: center;
+    justify-items: center;
+
+    button {
+        min-width: 1rem;
+        padding: 0 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.4rem;
+        &:active {
+            transform: scale(0.95, 0.9);
+        }
+
+        &:first-child {
+            justify-self: start;
+            color: var(--coral);
+        }
+
+        &:last-child {
+            justify-self: end;
+            color: var(--scrub);
+        }
+    }
+}

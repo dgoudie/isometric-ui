@@ -12,6 +12,7 @@ const History = React.lazy(() => import('./pages/history'));
 const Home = React.lazy(() => import('./pages/home'));
 const Exercises = React.lazy(() => import('./pages/exercises'));
 const Exercise = React.lazy(() => import('./pages/exercise'));
+const Workout = React.lazy(() => import('./pages/workout'));
 
 export default function App() {
     return (
@@ -62,6 +63,14 @@ export default function App() {
                     element={
                         <Suspense fallback={<RouteLoader />}>
                             <WorkoutPlan />
+                        </Suspense>
+                    }
+                />
+                <Route
+                    path='workout'
+                    element={
+                        <Suspense fallback={<RouteLoader />}>
+                            <Workout />
                         </Suspense>
                     }
                 />
