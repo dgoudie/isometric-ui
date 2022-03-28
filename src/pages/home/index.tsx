@@ -184,7 +184,7 @@ function ExerciseItem({ exercise }: ExerciseItemProps) {
             default: {
                 return (
                     <>
-                        {exercise.setCount} sets —{' '}
+                        {exercise.setCount} sets,{' '}
                         {exercise.minimumRecommendedRepetitions}-
                         {exercise.maximumRecommendedRepetitions} reps
                     </>

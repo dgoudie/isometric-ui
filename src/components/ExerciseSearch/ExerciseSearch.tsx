@@ -1,6 +1,13 @@
 import { ExerciseMuscleGroup, IExercise } from '@dgoudie/isometric-types';
 import { ReadableResource, fetchFromApi2 } from '../../utils/fetch-from-api';
-import { Suspense, useEffect, useMemo, useState, useTransition } from 'react';
+import {
+    Suspense,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+    useTransition,
+} from 'react';
 
 import { Link } from 'react-router-dom';
 import MuscleGroupPicker from '../MuscleGroupPicker/MuscleGroupPicker';
@@ -64,6 +71,7 @@ function ExerciseSearchContent({
     muscleGroupChanged,
     onSelect,
 }: ExerciseSearchContentProps) {
+    const inputRef = useRef<HTMLInputElement>(null);
     const exercises = exercisesResponse.read();
     const items = useMemo(
         () =>
@@ -81,14 +89,29 @@ function ExerciseSearchContent({
             <div className={styles.filters}>
                 <div className={styles.filtersInput}>
                     <input
+                        ref={inputRef}
                         autoCapitalize='none'
                         autoCorrect='off'
                         autoComplete='off'
                         defaultValue={search}
-                        type={'search'}
+                        type={'text'}
                         placeholder='Enter a search term...'
                         onChange={(e) => searchChanged(e.target.value)}
                     />
+                    <div className={styles.filtersInputClear}>
+                        {search && (
+                            <button
+                                type='button'
+                                onClick={() => {
+                                    searchChanged('');
+                                    inputRef.current!.value = '';
+                                    inputRef.current!.focus();
+                                }}
+                            >
+                                <i className='fa-solid fa-close'></i>
+                            </button>
+                        )}
+                    </div>
                 </div>
                 <div className={styles.filtersMuscleGroup}>
                     <label>Muscle Group:</label>
