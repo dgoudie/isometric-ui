@@ -29,7 +29,7 @@ const WorkoutPlanSchema = Yup.array()
     .of(
         Yup.object().shape({
             nickname: Yup.string().required(),
-            exercises: Yup.array().min(1).required().of(Yup.string()),
+            exerciseIds: Yup.array().min(1).required().of(Yup.string()),
         })
     );
 
