@@ -1,0 +1,25 @@
+.root {
+    display: grid;
+    grid-auto-flow: column;
+    scroll-snap-type: x mandatory;
+    overflow-x: auto;
+    gap: 1rem;
+    padding-bottom: 1rem;
+
+    section {
+        border-radius: 8px;
+        background-color: var(--background-alt);
+        border: 1px solid var(--divider);
+        scroll-snap-align: center;
+        width: calc(100vw - 2rem);
+        max-width: var(--max-width);
+
+        &:first-child {
+            margin-left: 2rem;
+        }
+
+        &:last-child {
+            margin-right: 2rem;
+        }
+    }
+}

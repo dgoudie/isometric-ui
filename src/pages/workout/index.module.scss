@@ -1,9 +1,19 @@
+.root {
+    height: 100vh;
+    height: 100dvh;
+    display: grid;
+    grid-template-rows: max-content auto max-content;
+}
+
 .header {
     height: 3rem;
     display: grid;
     grid-template-columns: 1fr max-content 1fr;
     align-items: center;
     justify-items: center;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    width: 100%;
 
     button {
         min-width: 1rem;
@@ -23,7 +33,26 @@
 
         &:last-child {
             justify-self: end;
-            color: var(--scrub);
+        }
+    }
+}
+
+.paginator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-bottom: 2rem;
+
+    div {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 10000px;
+        background-color: var(--background-alt);
+        border: 1px solid var(--divider);
+        &.active {
+            background-color: var(--coral);
+            border: 1px solid var(--coral);
         }
     }
 }

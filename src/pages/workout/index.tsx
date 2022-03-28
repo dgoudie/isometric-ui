@@ -1,8 +1,10 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
+import ActiveExerciseView from '../../components/ActiveExerciseView/ActiveExerciseView';
 import EndWorkoutBottomSheet from '../../components/BottomSheet/components/EndWorkoutBottomSheet/EndWorkoutBottomSheet';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import { WorkoutContext } from '../../providers/Workout/Workout';
+import classNames from 'classnames';
 import styles from './index.module.scss';
 
 export default function Workout() {
@@ -23,6 +25,7 @@ export default function Workout() {
         setShowEndWorkoutBottomSheet(false);
     }, []);
 
+    const [initialActiveExercise, setInitialActiveExercise] = useState(0);
     const [activeExercise, setActiveExercise] = useState(0);
 
     if (!workout) {
@@ -30,7 +33,7 @@ export default function Workout() {
     }
 
     return (
-        <>
+        <div className={styles.root}>
             <header className={styles.header}>
                 <button
                     type='button'
@@ -51,9 +54,24 @@ export default function Workout() {
                     Exercises
                 </button>
             </header>
+            <ActiveExerciseView
+                exercises={workout.exercises}
+                focusedIndex={initialActiveExercise}
+                focusedIndexChanged={setActiveExercise}
+            />
+            <div className={styles.paginator}>
+                {workout.exercises.map((exercise, index) => (
+                    <div
+                        key={exercise.exerciseId}
+                        className={classNames(
+                            activeExercise === index && styles.active
+                        )}
+                    />
+                ))}
+            </div>
             {showEndWorkoutBottomSheet && (
                 <EndWorkoutBottomSheet onResult={onEndWorkoutResult} />
             )}
-        </>
+        </div>
     );
 }
