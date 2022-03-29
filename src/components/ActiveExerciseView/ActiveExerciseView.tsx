@@ -11,6 +11,7 @@ import React, {
 import MuscleGroupTag from '../MuscleGroupTag/MuscleGroupTag';
 import { ReadableResource } from '../../utils/fetch-from-api';
 import RouteLoader from '../RouteLoader/RouteLoader';
+import SwipeDeadZone from '../SwipeDeadZone/SwipeDeadZone';
 import styles from './ActiveExerciseView.module.scss';
 import { useInView } from 'react-intersection-observer';
 
@@ -95,15 +96,19 @@ function Exercise({
     }, [inView, selected]);
     return (
         <section ref={ref}>
-            <div className={styles.header}>{data.name}</div>
-            <div className={styles.groups}>
-                {[
-                    data.primaryMuscleGroup,
-                    ...(data.secondaryMuscleGroups ?? []),
-                ].map((group) => (
-                    <MuscleGroupTag key={group} muscleGroup={group} />
-                ))}
+            <SwipeDeadZone className={styles.deadZone} />
+            <div className='body'>
+                <div className={styles.header}>{data.name}</div>
+                <div className={styles.groups}>
+                    {[
+                        data.primaryMuscleGroup,
+                        ...(data.secondaryMuscleGroups ?? []),
+                    ].map((group) => (
+                        <MuscleGroupTag key={group} muscleGroup={group} />
+                    ))}
+                </div>
             </div>
+            <SwipeDeadZone className={styles.deadZone} />
         </section>
     );
 }

@@ -11,9 +11,11 @@
         background-color: var(--background-alt);
         border: 1px solid var(--divider);
         scroll-snap-align: center;
-        width: calc(100vw - 2rem);
+        width: calc(100vw - 3rem);
         max-width: var(--max-width);
-        padding: 1rem;
+        padding: 1rem 0;
+        display: grid;
+        grid-template-columns: 1rem auto 1rem;
 
         &:first-child {
             margin-left: 2rem;
