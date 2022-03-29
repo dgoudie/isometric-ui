@@ -1,20 +1,42 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { IExercise, IWorkoutExercise } from '@dgoudie/isometric-types';
+import React, {
+    Suspense,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 
-import { IWorkoutExercise } from '@dgoudie/isometric-types';
+import MuscleGroupTag from '../MuscleGroupTag/MuscleGroupTag';
+import { ReadableResource } from '../../utils/fetch-from-api';
+import RouteLoader from '../RouteLoader/RouteLoader';
 import styles from './ActiveExerciseView.module.scss';
 import { useInView } from 'react-intersection-observer';
 
 interface Props {
     exercises: IWorkoutExercise[];
+    exercisesResponse: ReadableResource<IExercise[]>;
     focusedIndex?: number;
     focusedIndexChanged?: (index: number) => void;
 }
 
 export default function ActiveExerciseView({
     exercises,
+    exercisesResponse,
     focusedIndex = 0,
     focusedIndexChanged = () => undefined,
 }: Props) {
+    const exerciseMap: Map<string, IExercise> = useMemo(
+        () =>
+            new Map<string, IExercise>(
+                exercisesResponse
+                    .read()
+                    .map(({ _id, ...ex }) => [_id, { _id, ...ex }])
+            ),
+        [exercises]
+    );
+
     const [rootChildren, setRootChildren] = useState<HTMLCollection>();
 
     const rootRef = useRef<HTMLDivElement>(null);
@@ -45,6 +67,7 @@ export default function ActiveExerciseView({
             {exercises.map((exercise, index) => (
                 <Exercise
                     key={exercise.exerciseId}
+                    data={exerciseMap.get(exercise.exerciseId)!}
                     exercise={exercise}
                     selected={() => focusedIndexChanged(index)}
                 />
@@ -55,15 +78,32 @@ export default function ActiveExerciseView({
 
 interface ExerciseProps {
     exercise: IWorkoutExercise;
+    data: IExercise;
     selected: () => void;
 }
 
-function Exercise({ exercise, selected = () => undefined }: ExerciseProps) {
+function Exercise({
+    exercise,
+    data,
+    selected = () => undefined,
+}: ExerciseProps) {
     const { ref, inView } = useInView({
         threshold: 0.6,
     });
     useEffect(() => {
         !!inView && selected();
     }, [inView, selected]);
-    return <section ref={ref}>{JSON.stringify(exercise, null, 4)}</section>;
+    return (
+        <section ref={ref}>
+            <div className={styles.header}>{data.name}</div>
+            <div className={styles.groups}>
+                {[
+                    data.primaryMuscleGroup,
+                    ...(data.secondaryMuscleGroups ?? []),
+                ].map((group) => (
+                    <MuscleGroupTag key={group} muscleGroup={group} />
+                ))}
+            </div>
+        </section>
+    );
 }

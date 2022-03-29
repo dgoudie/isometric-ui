@@ -13,6 +13,7 @@
         scroll-snap-align: center;
         width: calc(100vw - 2rem);
         max-width: var(--max-width);
+        padding: 1rem;
 
         &:first-child {
             margin-left: 2rem;
@@ -22,4 +23,14 @@
             margin-right: 2rem;
         }
     }
+}
+
+.header {
+    font-size: 1.3rem;
+}
+
+.groups {
+    display: flex;
+    margin-top: 0.5rem;
+    gap: 0.5rem;
 }

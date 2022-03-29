@@ -1,13 +1,39 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+    Suspense,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+    useTransition,
+} from 'react';
 
 import ActiveExerciseView from '../../components/ActiveExerciseView/ActiveExerciseView';
 import EndWorkoutBottomSheet from '../../components/BottomSheet/components/EndWorkoutBottomSheet/EndWorkoutBottomSheet';
+import { IExercise } from '@dgoudie/isometric-types';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import { WorkoutContext } from '../../providers/Workout/Workout';
 import classNames from 'classnames';
+import { fetchFromApi2 } from '../../utils/fetch-from-api';
 import styles from './index.module.scss';
 
+let initialExercisesResponse = fetchFromApi2<IExercise[]>(`/api/exercises`);
+
 export default function Workout() {
+    const [exercisesResponse, setExercisesResponse] = useState(
+        initialExercisesResponse
+    );
+
+    const [_isPending, startTransaction] = useTransition();
+
+    useEffect(() => {
+        startTransaction(() => {
+            const updatedExercisesResponse =
+                fetchFromApi2<IExercise[]>(`/api/exercises`);
+            setExercisesResponse(updatedExercisesResponse);
+            initialExercisesResponse = updatedExercisesResponse;
+        });
+    }, []);
+
     useEffect(() => {
         document.title = `Workout | ISOMETRIC`;
     }, []);
@@ -54,11 +80,14 @@ export default function Workout() {
                     Exercises
                 </button>
             </header>
-            <ActiveExerciseView
-                exercises={workout.exercises}
-                focusedIndex={initialActiveExercise}
-                focusedIndexChanged={setActiveExercise}
-            />
+            <Suspense fallback={<RouteLoader />}>
+                <ActiveExerciseView
+                    exercises={workout.exercises}
+                    exercisesResponse={exercisesResponse}
+                    focusedIndex={initialActiveExercise}
+                    focusedIndexChanged={setActiveExercise}
+                />
+            </Suspense>
             <div className={styles.paginator}>
                 {workout.exercises.map((exercise, index) => (
                     <div
