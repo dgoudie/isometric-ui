@@ -1,6 +1,5 @@
 import { IExercise, IWorkoutExercise } from '@dgoudie/isometric-types';
 import React, {
-    Suspense,
     useCallback,
     useEffect,
     useMemo,
@@ -8,12 +7,9 @@ import React, {
     useState,
 } from 'react';
 
-import MuscleGroupTag from '../MuscleGroupTag/MuscleGroupTag';
+import ActiveExerciseViewExercise from './components/ActiveExerciseViewExercise/ActiveExerciseViewExercise';
 import { ReadableResource } from '../../utils/fetch-from-api';
-import RouteLoader from '../RouteLoader/RouteLoader';
-import SwipeDeadZone from '../SwipeDeadZone/SwipeDeadZone';
 import styles from './ActiveExerciseView.module.scss';
-import { useInView } from 'react-intersection-observer';
 
 interface Props {
     exercises: IWorkoutExercise[];
@@ -66,7 +62,7 @@ export default function ActiveExerciseView({
     return (
         <div className={styles.root} ref={rootRef}>
             {exercises.map((exercise, index) => (
-                <Exercise
+                <ActiveExerciseViewExercise
                     key={exercise.exerciseId}
                     data={exerciseMap.get(exercise.exerciseId)!}
                     exercise={exercise}
@@ -74,41 +70,5 @@ export default function ActiveExerciseView({
                 />
             ))}
         </div>
-    );
-}
-
-interface ExerciseProps {
-    exercise: IWorkoutExercise;
-    data: IExercise;
-    selected: () => void;
-}
-
-function Exercise({
-    exercise,
-    data,
-    selected = () => undefined,
-}: ExerciseProps) {
-    const { ref, inView } = useInView({
-        threshold: 0.6,
-    });
-    useEffect(() => {
-        !!inView && selected();
-    }, [inView, selected]);
-    return (
-        <section ref={ref}>
-            <SwipeDeadZone className={styles.deadZone} />
-            <div className='body'>
-                <div className={styles.header}>{data.name}</div>
-                <div className={styles.groups}>
-                    {[
-                        data.primaryMuscleGroup,
-                        ...(data.secondaryMuscleGroups ?? []),
-                    ].map((group) => (
-                        <MuscleGroupTag key={group} muscleGroup={group} />
-                    ))}
-                </div>
-            </div>
-            <SwipeDeadZone className={styles.deadZone} />
-        </section>
     );
 }
