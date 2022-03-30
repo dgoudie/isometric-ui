@@ -1,0 +1,18 @@
+.root {
+    border: 1px solid var(--divider);
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 200ms, border-color 200ms;
+
+    pre {
+        margin: 0;
+    }
+
+    &.selected {
+        &.highlighted {
+            background-color: var(--coral);
+            border-color: var(--coral);
+            color: white;
+        }
+    }
+}

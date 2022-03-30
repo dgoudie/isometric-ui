@@ -67,7 +67,7 @@ export default function ActiveExerciseView({
                     key={exercise.exerciseId}
                     data={exerciseMap.get(exercise.exerciseId)!}
                     exercise={exercise}
-                    selected={() => focusedIndexChanged(index)}
+                    onSelected={() => focusedIndexChanged(index)}
                 />
             ))}
         </div>
