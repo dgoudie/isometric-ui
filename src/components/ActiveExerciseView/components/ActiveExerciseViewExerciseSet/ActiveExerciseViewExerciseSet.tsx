@@ -14,23 +14,39 @@ interface Props {
     selected: boolean;
     highlighted: boolean;
 }
-export default function ActiveExerciseViewExerciseSet({
-    set,
-    data,
-    selected,
-    highlighted,
-}: Props) {
+export default function ActiveExerciseViewExerciseSet(props: Props) {
+    let children = <DefaultSet {...props} />;
+    if (props.data.exerciseType === 'timed') {
+        children = <TimedSet {...props} />;
+    } else if (props.data.exerciseType === 'rep_based') {
+        children = <RepBasedSet {...props} />;
+    }
     return (
         <div
             className={classNames(
                 styles.root,
-                selected && styles.selected,
-                highlighted && styles.highlighted
+                props.selected && styles.selected,
+                props.highlighted && styles.highlighted
             )}
         >
-            <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                {JSON.stringify(data)}
-            </pre>
+            {children}
         </div>
     );
+}
+
+function DefaultSet({}: Props) {
+    return (
+        <div className={styles.defaultSet}>
+            <div>0 lbs</div>
+            <div></div>
+        </div>
+    );
+}
+
+function TimedSet({}: Props) {
+    return <div></div>;
+}
+
+function RepBasedSet({}: Props) {
+    return <div></div>;
 }

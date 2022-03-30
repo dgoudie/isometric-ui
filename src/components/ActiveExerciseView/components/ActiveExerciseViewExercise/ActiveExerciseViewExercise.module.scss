@@ -1,11 +1,12 @@
 .section {
     border-radius: 8px;
-    background-color: var(--background-alt);
+    background-color: var(--background);
     border: 1px solid var(--divider);
     scroll-snap-align: center;
     width: calc(100vw - 2.5rem);
     max-width: var(--max-width);
     padding: 1rem 1.25rem;
+    overflow-y: auto;
 
     &:first-child {
         margin-left: 2rem;
