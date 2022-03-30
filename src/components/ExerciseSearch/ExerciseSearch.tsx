@@ -167,7 +167,7 @@ const ExerciseButton = ({ exercise, onSelect }: ExerciseButtonProps) => {
         return (
             <button
                 type='button'
-                className={styles.item}
+                className={classNames(styles.item, 'fade-in')}
                 onClick={() => onSelect(exercise._id)}
             >
                 {itemInnards}
@@ -175,7 +175,10 @@ const ExerciseButton = ({ exercise, onSelect }: ExerciseButtonProps) => {
         );
     } else {
         return (
-            <Link to={`/exercises/${exercise.name}`} className={styles.item}>
+            <Link
+                to={`/exercises/${exercise.name}`}
+                className={classNames(styles.item, 'fade-in')}
+            >
                 {itemInnards}
             </Link>
         );

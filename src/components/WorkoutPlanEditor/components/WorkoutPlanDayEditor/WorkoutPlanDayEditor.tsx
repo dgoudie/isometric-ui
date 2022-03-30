@@ -95,7 +95,7 @@ export default function WorkoutPlanDayEditor({
             {(provided) => (
                 <div
                     ref={provided.innerRef}
-                    className={styles.day}
+                    className={classNames(styles.day, 'fade-in')}
                     {...provided.draggableProps}
                 >
                     <div className={styles.dayHeader}>

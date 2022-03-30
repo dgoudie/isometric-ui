@@ -88,7 +88,7 @@ function HomeContent({ scheduleResponse }: HomeContentProps) {
         <div className={styles.wrapper}>
             <h1>{greeting}</h1>
             <div className={styles.root}>
-                <div className={styles.day}>
+                <div className={classNames(styles.day, 'fade-in')}>
                     <div className={styles.dayHeader}>
                         <div className={styles.dayHeaderNumber}>
                             <div>

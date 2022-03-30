@@ -11,6 +11,7 @@ import ActiveExerciseView from '../../components/ActiveExerciseView/ActiveExerci
 import EndWorkoutBottomSheet from '../../components/BottomSheet/components/EndWorkoutBottomSheet/EndWorkoutBottomSheet';
 import { IExercise } from '@dgoudie/isometric-types';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
+import SwipeDeadZone from '../../components/SwipeDeadZone/SwipeDeadZone';
 import { WorkoutContext } from '../../providers/Workout/Workout';
 import classNames from 'classnames';
 import { fetchFromApi2 } from '../../utils/fetch-from-api';
@@ -98,6 +99,12 @@ export default function Workout() {
                     />
                 ))}
             </div>
+            <SwipeDeadZone
+                className={classNames(styles.deadZone, styles.deadZoneStart)}
+            />
+            <SwipeDeadZone
+                className={classNames(styles.deadZone, styles.deadZoneEnd)}
+            />
             {showEndWorkoutBottomSheet && (
                 <EndWorkoutBottomSheet onResult={onEndWorkoutResult} />
             )}

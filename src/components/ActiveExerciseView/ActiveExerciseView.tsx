@@ -9,6 +9,7 @@ import React, {
 
 import ActiveExerciseViewExercise from './components/ActiveExerciseViewExercise/ActiveExerciseViewExercise';
 import { ReadableResource } from '../../utils/fetch-from-api';
+import classNames from 'classnames';
 import styles from './ActiveExerciseView.module.scss';
 
 interface Props {
@@ -60,7 +61,7 @@ export default function ActiveExerciseView({
     }, [rootChildren, focusedIndex]);
 
     return (
-        <div className={styles.root} ref={rootRef}>
+        <div className={classNames(styles.root, 'fade-in')} ref={rootRef}>
             {exercises.map((exercise, index) => (
                 <ActiveExerciseViewExercise
                     key={exercise.exerciseId}

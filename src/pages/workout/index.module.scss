@@ -60,3 +60,17 @@
         }
     }
 }
+
+.deadZone {
+    width: 2rem;
+    bottom: 0;
+    top: 0;
+    position: fixed;
+
+    &Start {
+        right: 0;
+    }
+    &End {
+        left: 0;
+    }
+}
