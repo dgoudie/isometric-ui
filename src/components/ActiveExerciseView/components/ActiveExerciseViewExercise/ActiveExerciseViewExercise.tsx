@@ -1,22 +1,28 @@
-import { IExercise, IWorkoutExercise } from '@dgoudie/isometric-types';
+import {
+    IExercise,
+    IWorkoutExercise,
+    IWorkoutExerciseSet,
+} from '@dgoudie/isometric-types';
+import { useEffect, useState } from 'react';
 
 import ActiveExerciseViewExerciseSet from '../ActiveExerciseViewExerciseSet/ActiveExerciseViewExerciseSet';
 import MuscleGroupTag from '../../../MuscleGroupTag/MuscleGroupTag';
 import SwipeDeadZone from '../../../SwipeDeadZone/SwipeDeadZone';
 import styles from './ActiveExerciseViewExercise.module.scss';
-import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 interface Props {
     exercise: IWorkoutExercise;
     data: IExercise;
     onSelected: () => void;
+    setUpdated: (setIndex: number, set: IWorkoutExerciseSet) => void;
 }
 
 export default function ActiveExerciseViewExercise({
     exercise,
     data,
-    onSelected = () => undefined,
+    onSelected,
+    setUpdated,
 }: Props) {
     const firstNotComplete = exercise.sets.findIndex((set) => !set.complete);
     const { ref, inView } = useInView({
@@ -39,10 +45,12 @@ export default function ActiveExerciseViewExercise({
             <div className={styles.sets}>
                 {exercise.sets.map((set, index) => (
                     <ActiveExerciseViewExerciseSet
+                        key={index}
                         set={set}
                         data={data}
                         selected={inView}
                         highlighted={firstNotComplete === index}
+                        setUpdated={(set) => setUpdated(index, set)}
                     />
                 ))}
             </div>

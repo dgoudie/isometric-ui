@@ -1,4 +1,8 @@
-import { IExercise, IWorkoutExercise } from '@dgoudie/isometric-types';
+import {
+    IExercise,
+    IWorkoutExercise,
+    IWorkoutExerciseSet,
+} from '@dgoudie/isometric-types';
 import React, {
     useCallback,
     useEffect,
@@ -17,6 +21,11 @@ interface Props {
     exercisesResponse: ReadableResource<IExercise[]>;
     focusedIndex?: number;
     focusedIndexChanged?: (index: number) => void;
+    setUpdated?: (
+        exerciseIndex: number,
+        setIndex: number,
+        set: IWorkoutExerciseSet
+    ) => void;
 }
 
 export default function ActiveExerciseView({
@@ -24,6 +33,7 @@ export default function ActiveExerciseView({
     exercisesResponse,
     focusedIndex = 0,
     focusedIndexChanged = () => undefined,
+    setUpdated = () => undefined,
 }: Props) {
     const exerciseMap: Map<string, IExercise> = useMemo(
         () =>
@@ -68,6 +78,9 @@ export default function ActiveExerciseView({
                     data={exerciseMap.get(exercise.exerciseId)!}
                     exercise={exercise}
                     onSelected={() => focusedIndexChanged(index)}
+                    setUpdated={(setIndex, set) =>
+                        setUpdated(index, setIndex, set)
+                    }
                 />
             ))}
         </div>

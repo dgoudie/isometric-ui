@@ -39,7 +39,8 @@ export default function Workout() {
     useEffect(() => {
         document.title = `Workout | ISOMETRIC`;
     }, []);
-    const { workout, endWorkout, discardWorkout } = useContext(WorkoutContext);
+    const { workout, endWorkout, discardWorkout, persistSet } =
+        useContext(WorkoutContext);
 
     const [showEndWorkoutBottomSheet, setShowEndWorkoutBottomSheet] =
         useState(false);
@@ -88,6 +89,7 @@ export default function Workout() {
                     exercisesResponse={exercisesResponse}
                     focusedIndex={initialActiveExercise}
                     focusedIndexChanged={setActiveExercise}
+                    setUpdated={persistSet}
                 />
             </Suspense>
             <div className={styles.paginator}>

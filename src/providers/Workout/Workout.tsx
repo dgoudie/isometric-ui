@@ -1,19 +1,30 @@
+import {
+    IWorkout,
+    IWorkoutExerciseSet,
+    WSWorkoutUpdate,
+} from '@dgoudie/isometric-types';
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 
-import { IWorkout } from '@dgoudie/isometric-types';
 import { usePageVisibility } from 'react-page-visibility';
+import { verifyType } from '../../utils/verify-type';
 
 export const WorkoutContext = createContext<{
     workout?: IWorkout | null;
     startWorkout: () => void;
     endWorkout: () => void;
     discardWorkout: () => void;
+    persistSet: (
+        exerciseIndex: number,
+        setIndex: number,
+        set: IWorkoutExerciseSet
+    ) => void;
 }>({
     startWorkout: () => undefined,
     endWorkout: () => undefined,
     discardWorkout: () => undefined,
+    persistSet: () => undefined,
 });
 
 export default function WorkoutProvider({
@@ -40,14 +51,27 @@ export default function WorkoutProvider({
     }, [workoutString]);
 
     const startWorkout = useCallback(() => {
-        sendJsonMessage({ type: 'START' });
+        sendJsonMessage(verifyType<WSWorkoutUpdate>({ type: 'START' }));
     }, [sendJsonMessage]);
     const endWorkout = useCallback(() => {
-        sendJsonMessage({ type: 'END' });
+        sendJsonMessage(verifyType<WSWorkoutUpdate>({ type: 'END' }));
     }, [sendJsonMessage]);
     const discardWorkout = useCallback(() => {
-        sendJsonMessage({ type: 'DISCARD' });
+        sendJsonMessage(verifyType<WSWorkoutUpdate>({ type: 'DISCARD' }));
     }, [sendJsonMessage]);
+    const persistSet = useCallback(
+        (exerciseIndex: number, setIndex: number, set: IWorkoutExerciseSet) => {
+            sendJsonMessage(
+                verifyType<WSWorkoutUpdate>({
+                    type: 'PERSIST_SET',
+                    exerciseIndex,
+                    setIndex,
+                    set,
+                })
+            );
+        },
+        [sendJsonMessage]
+    );
 
     const navigate = useNavigate();
     const { pathname } = useLocation();
@@ -69,6 +93,7 @@ export default function WorkoutProvider({
                 startWorkout,
                 endWorkout,
                 discardWorkout,
+                persistSet,
             }}
         >
             {children}
