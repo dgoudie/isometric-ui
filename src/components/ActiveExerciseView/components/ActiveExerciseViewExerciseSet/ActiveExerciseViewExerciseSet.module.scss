@@ -15,11 +15,11 @@
 
     .set {
         &Input {
-            display: grid;
-            grid-template-columns: auto max-content;
+            display: flex;
             align-items: baseline;
             justify-content: center;
             &Wrapper {
+                flex: 1;
                 input {
                     background-color: transparent;
                     border: none;
@@ -29,11 +29,21 @@
                     font-size: 1.3rem;
                     text-align: right;
                     width: 100%;
+                    -moz-appearance: textfield;
+
+                    &::-webkit-outer-spin-button,
+                    &::-webkit-inner-spin-button {
+                        -webkit-appearance: none;
+                        margin: 0;
+                    }
 
                     &::placeholder {
                         color: rgba(128, 128, 128, 0.9);
                     }
                 }
+            }
+            &Suffix {
+                flex-shrink: 0;
             }
         }
         &Type {

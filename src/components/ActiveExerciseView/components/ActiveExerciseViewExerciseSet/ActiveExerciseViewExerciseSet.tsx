@@ -68,7 +68,7 @@ function DefaultSet({ set, data, selected, completeToggled }: SetProps) {
                     />
                 </div>
 
-                <span className={styles.setInput}>lbs</span>
+                <span className={styles.setInputSuffix}>lbs</span>
             </div>
             <div className={styles.setInput}>
                 <div className={styles.setInputWrapper}>
@@ -79,7 +79,7 @@ function DefaultSet({ set, data, selected, completeToggled }: SetProps) {
                         placeholder={`${data.minimumRecommendedRepetitions}-${data.maximumRecommendedRepetitions}`}
                     />
                 </div>
-                <span className={styles.setInput}>reps</span>
+                <span className={styles.setInputSuffix}>reps</span>
             </div>
             <button
                 type='button'
