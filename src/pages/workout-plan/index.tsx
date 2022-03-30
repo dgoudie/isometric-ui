@@ -1,7 +1,10 @@
 import * as Yup from 'yup';
 
 import { IExercise, ISchedule, IScheduleDay } from '@dgoudie/isometric-types';
-import { ReadableResource, fetchFromApi2 } from '../../utils/fetch-from-api';
+import {
+    ReadableResource,
+    fetchFromApiAsReadableResource,
+} from '../../utils/fetch-from-api';
 import {
     Suspense,
     useCallback,
@@ -10,12 +13,10 @@ import {
     useState,
     useTransition,
 } from 'react';
-import WorkoutPlanEditor, {
-    IScheduleDayWithId,
-} from '../../components/WorkoutPlanEditor/WorkoutPlanEditor';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
+import WorkoutPlanEditor from '../../components/WorkoutPlanEditor/WorkoutPlanEditor';
 import axios from 'axios';
 import classNames from 'classnames';
 import styles from './index.module.scss';
@@ -33,8 +34,11 @@ const WorkoutPlanSchema = Yup.array()
         })
     );
 
-let initialExercisesResponse = fetchFromApi2<IExercise[]>(`/api/exercises`);
-let initialScheduleResponse = fetchFromApi2<ISchedule>(`/api/schedule`);
+let initialExercisesResponse =
+    fetchFromApiAsReadableResource<IExercise[]>(`/api/exercises`);
+let initialScheduleResponse = fetchFromApiAsReadableResource<ISchedule | null>(
+    `/api/schedule`
+);
 
 export default function WorkoutPlan() {
     const [exercisesResponse, setExercisesResponse] = useState(
@@ -49,9 +53,11 @@ export default function WorkoutPlan() {
     useEffect(() => {
         startTransaction(() => {
             const updatedExercisesResponse =
-                fetchFromApi2<IExercise[]>(`/api/exercises`);
+                fetchFromApiAsReadableResource<IExercise[]>(`/api/exercises`);
             const updatedScheduleResponse =
-                fetchFromApi2<ISchedule>(`/api/schedule`);
+                fetchFromApiAsReadableResource<ISchedule | null>(
+                    `/api/schedule`
+                );
             setExercisesResponse(updatedExercisesResponse);
             setScheduleResponse(updatedScheduleResponse);
             initialExercisesResponse = updatedExercisesResponse;
@@ -73,7 +79,7 @@ export default function WorkoutPlan() {
 
 interface WorkoutPlanContentProps {
     exercisesResponse: ReadableResource<IExercise[]>;
-    scheduleResponse: ReadableResource<ISchedule>;
+    scheduleResponse: ReadableResource<ISchedule | null>;
 }
 
 function WorkoutPlanContent({
@@ -90,11 +96,12 @@ function WorkoutPlanContent({
         [exercises]
     );
 
-    const [workoutScheduleDays, setWorkoutScheduleDays] = useState<
-        IScheduleDayWithId[]
-    >(addIds(schedule.days));
+    const days = schedule?.days ?? [];
 
-    useEffect(() => setWorkoutScheduleDays(addIds(schedule.days)), [schedule]);
+    const [workoutScheduleDays, setWorkoutScheduleDays] =
+        useState<IScheduleDay[]>(days);
+
+    useEffect(() => setWorkoutScheduleDays(days), [schedule]);
 
     const valid = useMemo(() => {
         try {
@@ -165,6 +172,3 @@ function WorkoutPlanContent({
         </div>
     );
 }
-
-const addIds = (days: IScheduleDay[]): IScheduleDayWithId[] =>
-    days.map((day) => ({ ...day, id: v4() }));

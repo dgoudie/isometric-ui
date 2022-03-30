@@ -14,10 +14,11 @@ import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import SwipeDeadZone from '../../components/SwipeDeadZone/SwipeDeadZone';
 import { WorkoutContext } from '../../providers/Workout/Workout';
 import classNames from 'classnames';
-import { fetchFromApi2 } from '../../utils/fetch-from-api';
+import { fetchFromApiAsReadableResource } from '../../utils/fetch-from-api';
 import styles from './index.module.scss';
 
-let initialExercisesResponse = fetchFromApi2<IExercise[]>(`/api/exercises`);
+let initialExercisesResponse =
+    fetchFromApiAsReadableResource<IExercise[]>(`/api/exercises`);
 
 export default function Workout() {
     const [exercisesResponse, setExercisesResponse] = useState(
@@ -29,7 +30,7 @@ export default function Workout() {
     useEffect(() => {
         startTransaction(() => {
             const updatedExercisesResponse =
-                fetchFromApi2<IExercise[]>(`/api/exercises`);
+                fetchFromApiAsReadableResource<IExercise[]>(`/api/exercises`);
             setExercisesResponse(updatedExercisesResponse);
             initialExercisesResponse = updatedExercisesResponse;
         });

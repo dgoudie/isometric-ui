@@ -29,15 +29,35 @@ function wrapPromise<T>(promise: Promise<T>): ReadableResource<T> {
     };
 }
 
-export const fetchFromApi2 = <T>(
+export const fetchFromApi = async <T>(
     path: string,
-    params?: URLSearchParams,
+    params?: URLSearchParams | Record<string, string>,
+    headers?: HeadersInit
+): Promise<T> => {
+    if (!!params) {
+        if (!(params instanceof URLSearchParams)) {
+            params = new URLSearchParams(params);
+        }
+    }
+    const res = await fetch(`${path}?${params ? params.toString() : ''}`, {
+        credentials: 'same-origin',
+        headers,
+    });
+    if (res.headers.get('content-length') === '0') {
+        return Promise.resolve(null) as unknown as Promise<T>;
+    }
+    return res.json() as Promise<T>;
+};
+
+export const fetchFromApiAsReadableResource = <T>(
+    path: string,
+    params?: URLSearchParams | Record<string, string>,
     headers?: HeadersInit
 ) => {
-    return wrapPromise(
-        fetch(`${path}?${params ? params.toString() : ''}`, {
-            credentials: 'same-origin',
-            headers,
-        }).then((res) => res.json() as Promise<T>)
-    );
+    if (!!params) {
+        if (!(params instanceof URLSearchParams)) {
+            params = new URLSearchParams(params);
+        }
+    }
+    return wrapPromise(fetchFromApi<T>(path, params, headers));
 };

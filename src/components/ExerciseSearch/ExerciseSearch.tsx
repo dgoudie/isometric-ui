@@ -1,7 +1,12 @@
 import { ExerciseMuscleGroup, IExercise } from '@dgoudie/isometric-types';
-import { ReadableResource, fetchFromApi2 } from '../../utils/fetch-from-api';
+import {
+    ReadableResource,
+    fetchFromApi,
+    fetchFromApiAsReadableResource,
+} from '../../utils/fetch-from-api';
 import {
     Suspense,
+    useCallback,
     useEffect,
     useMemo,
     useRef,
@@ -9,6 +14,7 @@ import {
     useTransition,
 } from 'react';
 
+import InfiniteScroll from '../InfiniteScroll/InfiniteScroll';
 import { Link } from 'react-router-dom';
 import MuscleGroupPicker from '../MuscleGroupPicker/MuscleGroupPicker';
 import MuscleGroupTag from '../MuscleGroupTag/MuscleGroupTag';
@@ -16,7 +22,12 @@ import RouteLoader from '../RouteLoader/RouteLoader';
 import classNames from 'classnames';
 import styles from './ExerciseSearch.module.scss';
 
-let initialExercisesResponse = fetchFromApi2<IExercise[]>(`/api/exercises`);
+let initialExercisesResponse = fetchFromApiAsReadableResource<IExercise[]>(
+    `/api/exercises`,
+    {
+        page: '1',
+    }
+);
 
 interface Props {
     search: string | undefined;
@@ -44,7 +55,11 @@ export default function ExerciseSearch(props: Props) {
 
     useEffect(() => {
         startTransaction(() => {
-            setExercisesResponse(fetchFromApi2(`/api/exercises`, searchParams));
+            const params = new URLSearchParams(searchParams);
+            params.set('page', '1');
+            setExercisesResponse(
+                fetchFromApiAsReadableResource(`/api/exercises`, params)
+            );
         });
     }, [searchParams]);
 
@@ -71,11 +86,45 @@ function ExerciseSearchContent({
     muscleGroupChanged,
     onSelect,
 }: ExerciseSearchContentProps) {
+    const itemsRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const exercises = exercisesResponse.read();
+
+    const [exercises, setExercises] = useState(exercisesResponse.read());
+    const [moreExercises, setMoreExercises] = useState(exercises.length >= 10);
+    const [page, setPage] = useState(2);
+
+    useEffect(() => {
+        const exs = exercisesResponse.read();
+        setExercises(exs);
+        setMoreExercises(exs.length >= 10);
+        setPage(2);
+    }, [exercisesResponse]);
+
+    const searchParams = useMemo(() => {
+        const searchParams = new URLSearchParams();
+        !!search && searchParams.set('search', search);
+        !!muscleGroup && searchParams.set('muscleGroup', muscleGroup);
+        return searchParams;
+    }, [muscleGroup, search]);
+
+    const loadMore = useCallback(async () => {
+        const params = new URLSearchParams(searchParams);
+        params.set('page', page.toString());
+        const nextPage = await fetchFromApi<IExercise[]>(
+            `/api/exercises`,
+            params
+        );
+        if (!nextPage.length) {
+            setMoreExercises(false);
+        } else {
+            setExercises([...exercises, ...nextPage]);
+        }
+        setPage(page + 1);
+    }, [searchParams, exercises, setExercises, setMoreExercises, page]);
+
     const items = useMemo(
         () =>
-            exercises?.map((ex) => (
+            exercises.map((ex) => (
                 <ExerciseButton
                     key={ex.name}
                     exercise={ex}
@@ -121,7 +170,18 @@ function ExerciseSearchContent({
                     />
                 </div>
             </div>
-            <div className={styles.items}>{items}</div>
+            <div className={styles.items}>
+                <InfiniteScroll
+                    //@ts-ignore
+                    className={styles.itemsInfiniteScroll}
+                    pageStart={1}
+                    loadMore={loadMore}
+                    hasMore={moreExercises}
+                    useWindow={false}
+                >
+                    {items}
+                </InfiniteScroll>
+            </div>
         </div>
     );
 }
@@ -167,7 +227,7 @@ const ExerciseButton = ({ exercise, onSelect }: ExerciseButtonProps) => {
         return (
             <button
                 type='button'
-                className={classNames(styles.item, 'fade-in')}
+                className={classNames('fade-in', styles.item)}
                 onClick={() => onSelect(exercise._id)}
             >
                 {itemInnards}
@@ -177,7 +237,7 @@ const ExerciseButton = ({ exercise, onSelect }: ExerciseButtonProps) => {
         return (
             <Link
                 to={`/exercises/${exercise.name}`}
-                className={classNames(styles.item, 'fade-in')}
+                className={classNames('fade-in', styles.item)}
             >
                 {itemInnards}
             </Link>

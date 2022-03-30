@@ -1,7 +1,10 @@
 import * as Yup from 'yup';
 
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { ReadableResource, fetchFromApi2 } from '../../utils/fetch-from-api';
+import {
+    ReadableResource,
+    fetchFromApiAsReadableResource,
+} from '../../utils/fetch-from-api';
 import { Suspense, useMemo, useState } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
@@ -31,7 +34,10 @@ export default function Exercise() {
     const { exerciseName } = useParams();
 
     const exerciseResponse = useMemo(
-        () => fetchFromApi2<IExercise>(`/api/exercise/${exerciseName}`),
+        () =>
+            fetchFromApiAsReadableResource<IExercise>(
+                `/api/exercise/${exerciseName}`
+            ),
         [exerciseName]
     );
 

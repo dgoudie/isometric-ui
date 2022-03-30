@@ -12,14 +12,13 @@ import {
 } from '../../../../utils/array-helpers';
 
 import ExercisePickerBottomSheet from '../../../BottomSheet/components/ExercisePickerBottomSheet/ExercisePickerBottomSheet';
-import { IScheduleDayWithId } from '../../WorkoutPlanEditor';
 import WorkoutPlanDayExerciseEditor from '../WorkoutPlanDayExerciseEditor/WorkoutPlanDayExerciseEditor';
 import classNames from 'classnames';
 import styles from './WorkoutPlanDayEditor.module.scss';
 
 interface Props {
-    day: IScheduleDayWithId;
-    dayChanged: (day: IScheduleDayWithId) => void;
+    day: IScheduleDay;
+    dayChanged: (day: IScheduleDay) => void;
     index: number;
     exerciseMap: Map<string, IExercise>;
     onDelete: () => void;
@@ -91,7 +90,7 @@ export default function WorkoutPlanDayEditor({
     );
 
     return (
-        <Draggable draggableId={day.id} index={index}>
+        <Draggable draggableId={day._id} index={index}>
             {(provided) => (
                 <div
                     ref={provided.innerRef}
@@ -127,7 +126,7 @@ export default function WorkoutPlanDayEditor({
                         </button>
                     </div>
                     <DragDropContext onDragEnd={onDragEnd}>
-                        <Droppable droppableId={day.id}>
+                        <Droppable droppableId={day._id}>
                             {(provided) => (
                                 <div
                                     className={classNames(

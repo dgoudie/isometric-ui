@@ -1,5 +1,8 @@
 import { IExercise, IScheduleDayWithExercises } from '@dgoudie/isometric-types';
-import { ReadableResource, fetchFromApi2 } from '../../utils/fetch-from-api';
+import {
+    ReadableResource,
+    fetchFromApiAsReadableResource,
+} from '../../utils/fetch-from-api';
 import {
     Suspense,
     useContext,
@@ -22,9 +25,10 @@ import styles from './index.module.scss';
 
 const TIME_PER_SET = 60;
 
-let initialScheduleResponse = fetchFromApi2<IScheduleDayWithExercises>(
-    `/api/schedule/next-day`
-);
+let initialScheduleResponse =
+    fetchFromApiAsReadableResource<IScheduleDayWithExercises>(
+        `/api/schedule/next-day`
+    );
 
 export default function Home() {
     const [scheduleResponse, setScheduleResponse] = useState(
@@ -35,9 +39,10 @@ export default function Home() {
 
     useEffect(() => {
         startTransaction(() => {
-            const updatedResponse = fetchFromApi2<IScheduleDayWithExercises>(
-                `/api/schedule/next-day`
-            );
+            const updatedResponse =
+                fetchFromApiAsReadableResource<IScheduleDayWithExercises>(
+                    `/api/schedule/next-day`
+                );
             setScheduleResponse(updatedResponse);
             initialScheduleResponse = updatedResponse;
         });

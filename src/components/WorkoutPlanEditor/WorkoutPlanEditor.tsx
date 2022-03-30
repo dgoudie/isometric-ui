@@ -8,16 +8,15 @@ import {
 } from '../../utils/array-helpers';
 
 import CopyDayBottomSheet from '../BottomSheet/components/CopyDayBottomSheet/CopyDayBottomSheet';
+import { ObjectId } from 'bson';
 import WorkoutPlanDayEditor from './components/WorkoutPlanDayEditor/WorkoutPlanDayEditor';
 import classNames from 'classnames';
 import styles from './WorkoutPlanEditor.module.scss';
 import { v4 } from 'uuid';
 
-export type IScheduleDayWithId = IScheduleDay & { id: string };
-
 interface Props {
-    days: IScheduleDayWithId[];
-    daysChanged: (days: IScheduleDayWithId[]) => void;
+    days: IScheduleDay[];
+    daysChanged: (days: IScheduleDay[]) => void;
     exerciseMap: Map<string, IExercise>;
     dayReorderModeEnabled?: boolean;
 }
@@ -43,7 +42,7 @@ export default function WorkoutPlanEditor({
     }, [listRef, dayReorderModeEnabled]);
 
     const updateAndReportDays = useCallback(
-        (updatedDays: IScheduleDayWithId[]) => {
+        (updatedDays: IScheduleDay[]) => {
             daysChanged(updatedDays);
         },
         [daysChanged]
@@ -67,7 +66,7 @@ export default function WorkoutPlanEditor({
     const handleAdd = useCallback(() => {
         updateAndReportDays([
             ...days,
-            { exerciseIds: [], nickname: '', id: v4() },
+            { exerciseIds: [], nickname: '', _id: new ObjectId().toString() },
         ]);
     }, [days, updateAndReportDays]);
 
@@ -79,7 +78,7 @@ export default function WorkoutPlanEditor({
     );
 
     const dayChanged = useCallback(
-        (day: IScheduleDayWithId, index: number) => {
+        (day: IScheduleDay, index: number) => {
             updateAndReportDays(replaceItemInArray(days, index, day));
         },
         [days, updateAndReportDays]
@@ -89,7 +88,10 @@ export default function WorkoutPlanEditor({
         (result: number | undefined) => {
             if (typeof result !== 'undefined') {
                 const day = days[result];
-                daysChanged([...days, { ...day, id: v4() }]);
+                daysChanged([
+                    ...days,
+                    { ...day, _id: new ObjectId().toString() },
+                ]);
             }
             setCopyDayVisible(false);
         },
@@ -125,7 +127,7 @@ export default function WorkoutPlanEditor({
                         >
                             {days.map((day, index) => (
                                 <WorkoutPlanDayEditor
-                                    key={day.id}
+                                    key={day._id}
                                     day={day}
                                     dayChanged={(day) => dayChanged(day, index)}
                                     index={index}

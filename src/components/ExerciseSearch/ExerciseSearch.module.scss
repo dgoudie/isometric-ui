@@ -37,13 +37,16 @@
 }
 .items {
     overflow-y: auto;
-    display: grid;
-    grid-auto-flow: row;
     border-radius: 8px 8px 0 0;
-    gap: 0.75rem;
-    align-items: start;
     padding-bottom: 0.75rem;
-    align-content: start;
+
+    &InfiniteScroll {
+        display: grid;
+        grid-auto-flow: row;
+        gap: 0.75rem;
+        align-items: start;
+        align-content: start;
+    }
 }
 .item {
     border: 1px solid var(--divider);
