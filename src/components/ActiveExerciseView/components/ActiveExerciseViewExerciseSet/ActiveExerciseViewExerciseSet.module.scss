@@ -1,78 +1,94 @@
 .root {
-    border: 1px solid var(--divider);
-    background-color: var(--background-alt);
-    padding: 0.5rem;
-    height: 4rem;
-    border-radius: 8px;
-    transition: background-color 200ms, border-color 200ms, color 200ms;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  border: 1px solid var(--divider);
+  background-color: var(--background-alt-2);
+  padding: 0.5rem;
+  height: 4rem;
+  border-radius: 8px;
+  transition: background-color 200ms, border-color 200ms, color 200ms;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
-    pre {
-        margin: 0;
+  pre {
+    margin: 0;
+  }
+
+  .set {
+    &Input {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      &Wrapper {
+        flex: 1;
+        input {
+          background-color: transparent;
+          border: none;
+          outline: none;
+          color: inherit;
+          font-family: inherit;
+          font-size: 1.3rem;
+          text-align: right;
+          width: 100%;
+          -moz-appearance: textfield;
+
+          &::-webkit-outer-spin-button,
+          &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+          }
+
+          &::placeholder {
+            color: rgba(128, 128, 128, 0.9);
+          }
+        }
+      }
+      &Suffix {
+        flex-shrink: 0;
+      }
     }
+    &Type {
+      &Weighted {
+        display: grid;
+        grid-template-columns: auto auto 4rem;
+        gap: 0.5rem;
+      }
+      &RepBased {
+        display: grid;
+        grid-template-columns: auto 4rem;
+        gap: 0.5rem;
+      }
+    }
+    &CompletedButton {
+      transition: color 100ms transform 150ms;
+      color: transparent;
+      font-size: 1.3rem;
 
+      &:active {
+        transform: scale(0.9);
+      }
+    }
+  }
+
+  &.completed {
+    background-color: rgba(var(--green), 0.2);
+    border-color: rgb(var(--green));
     .set {
-        &Input {
-            display: flex;
-            align-items: baseline;
-            justify-content: center;
-            &Wrapper {
-                flex: 1;
-                input {
-                    background-color: transparent;
-                    border: none;
-                    outline: none;
-                    color: inherit;
-                    font-family: inherit;
-                    font-size: 1.3rem;
-                    text-align: right;
-                    width: 100%;
-                    -moz-appearance: textfield;
+      &CompletedButton {
+        color: rgb(var(--green));
+      }
+    }
+  }
 
-                    &::-webkit-outer-spin-button,
-                    &::-webkit-inner-spin-button {
-                        -webkit-appearance: none;
-                        margin: 0;
-                    }
+  &.selected {
+    &.highlighted {
+      background-color: rgba(var(--coral), 0.2);
+      border-color: rgb(var(--coral));
 
-                    &::placeholder {
-                        color: rgba(128, 128, 128, 0.9);
-                    }
-                }
-            }
-            &Suffix {
-                flex-shrink: 0;
-            }
-        }
-        &Type {
-            &Default {
-                display: grid;
-                grid-template-columns: auto auto 4rem;
-                gap: 0.5rem;
-            }
-        }
+      .set {
         &CompletedButton {
-            transition: color 100ms;
+          color: var(--color);
         }
+      }
     }
-
-    &.completed {
-        border-color: forestgreen;
-        opacity: 0.7;
-        .set {
-            &CompletedButton {
-                color: forestgreen;
-            }
-        }
-    }
-
-    &.selected {
-        &.highlighted {
-            background-color: var(--scrub);
-            border-color: var(--scrub);
-            color: black;
-        }
-    }
+  }
 }

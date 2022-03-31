@@ -1,76 +1,75 @@
 .root {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: grid;
-    grid-template-rows: max-content auto max-content;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-rows: max-content auto max-content;
 }
 
 .header {
-    height: 3rem;
-    display: grid;
-    grid-template-columns: 1fr max-content 1fr;
+  height: 3rem;
+  display: grid;
+  grid-template-columns: 1fr max-content 1fr;
+  align-items: center;
+  justify-items: center;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  width: 100%;
+
+  button {
+    min-width: 1rem;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: center;
     align-items: center;
-    justify-items: center;
-    max-width: var(--max-width);
-    margin: 0 auto;
-    width: 100%;
-
-    button {
-        min-width: 1rem;
-        padding: 0 1rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.4rem;
-        transition: transform 200ms;
-        &:active {
-            transform: scale(0.95, 0.9);
-        }
-
-        &:first-child {
-            justify-self: start;
-            color: var(--coral);
-        }
-
-        &:last-child {
-            justify-self: end;
-        }
+    gap: 0.4rem;
+    transition: transform 200ms;
+    &:active {
+      transform: scale(0.95, 0.9);
     }
+
+    &:first-child {
+      justify-self: start;
+      color: rgb(var(--coral));
+    }
+
+    &:last-child {
+      justify-self: end;
+    }
+  }
 }
 
 .paginator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 1.25rem 2rem;
 
-    div {
-        width: 0.5rem;
-        height: 0.5rem;
-        border-radius: 10000px;
-        background-color: var(--background-alt);
-        border: 1px solid var(--divider);
-        &.active {
-            background-color: var(--coral);
-            border: 1px solid var(--coral);
-        }
+  div {
+    flex: 1;
+    max-width: 1.5rem;
+    height: 0.2rem;
+    background-color: var(--background-alt-2);
+    &.active {
+      background-color: rgb(var(--coral));
+      border: 1px solid rgb(var(--coral));
     }
+  }
 }
 
 .deadZone {
-    width: 2.5rem;
-    bottom: 0;
-    top: 3rem;
-    position: fixed;
+  width: 2.5rem;
+  bottom: 0;
+  top: 3rem;
+  position: fixed;
 
-    &Start {
-        right: 0;
-    }
-    &End {
-        left: 0;
-    }
+  &Start {
+    right: 0;
+  }
+  &End {
+    left: 0;
+  }
 }

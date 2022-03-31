@@ -21,10 +21,9 @@ interface Props {
     exercisesResponse: ReadableResource<IExercise[]>;
     focusedIndex?: number;
     focusedIndexChanged?: (index: number) => void;
-    setUpdated?: (
+    exerciseUpdated?: (
         exerciseIndex: number,
-        setIndex: number,
-        set: IWorkoutExerciseSet
+        exercise: IWorkoutExercise
     ) => void;
 }
 
@@ -33,7 +32,7 @@ export default function ActiveExerciseView({
     exercisesResponse,
     focusedIndex = 0,
     focusedIndexChanged = () => undefined,
-    setUpdated = () => undefined,
+    exerciseUpdated = () => undefined,
 }: Props) {
     const exerciseMap: Map<string, IExercise> = useMemo(
         () =>
@@ -63,12 +62,19 @@ export default function ActiveExerciseView({
         };
     }, [rootRef]);
 
+    const scrollExerciseIntoViewByIndex = useCallback(
+        (index: number) => {
+            rootChildren &&
+                rootChildren[index]?.scrollIntoView({
+                    behavior: 'smooth',
+                });
+        },
+        [rootChildren]
+    );
+
     useEffect(() => {
-        rootChildren &&
-            rootChildren[focusedIndex]?.scrollIntoView({
-                behavior: 'smooth',
-            });
-    }, [rootChildren, focusedIndex]);
+        scrollExerciseIntoViewByIndex(focusedIndex);
+    }, [scrollExerciseIntoViewByIndex, focusedIndex]);
 
     return (
         <div className={classNames(styles.root, 'fade-in')} ref={rootRef}>
@@ -78,8 +84,11 @@ export default function ActiveExerciseView({
                     data={exerciseMap.get(exercise.exerciseId)!}
                     exercise={exercise}
                     onSelected={() => focusedIndexChanged(index)}
-                    setUpdated={(setIndex, set) =>
-                        setUpdated(index, setIndex, set)
+                    exerciseUpdated={(exercise) =>
+                        exerciseUpdated(index, exercise)
+                    }
+                    exerciseCompleted={() =>
+                        scrollExerciseIntoViewByIndex(index + 1)
                     }
                 />
             ))}

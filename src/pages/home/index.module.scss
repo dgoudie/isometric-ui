@@ -39,15 +39,16 @@
 
 .headerItem {
     &Title {
-        color: var(--scrub);
+        color: rgb(var(--scrub));
         font-size: 0.9rem;
         margin-bottom: 0.25rem;
     }
     &Value {
         font-size: 1.2rem;
         &Suffix {
+            margin-left: 0.15rem;
             font-size: 0.7rem;
-            color: var(--scrub);
+            color: rgb(var(--scrub));
         }
     }
 }
@@ -73,7 +74,7 @@
         }
         &Duration {
             font-size: 0.9rem;
-            color: var(--scrub);
+            color: rgb(var(--scrub));
         }
     }
 }

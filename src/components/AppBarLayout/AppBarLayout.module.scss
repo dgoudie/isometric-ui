@@ -41,7 +41,7 @@
             transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
             -webkit-tap-highlight-color: transparent;
             &.active {
-                color: var(--coral);
+                color: rgb(var(--coral));
             }
 
             &:active,

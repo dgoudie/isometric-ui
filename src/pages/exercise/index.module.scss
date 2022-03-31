@@ -2,7 +2,7 @@
     padding: 1rem;
     label {
         font-size: 0.9rem;
-        color: var(--scrub);
+        color: rgb(var(--scrub));
         margin-bottom: 0.2rem;
         display: block;
 
@@ -17,7 +17,7 @@
 }
 
 .errorMessage {
-    color: var(--coral);
+    color: rgb(var(--coral));
     font-size: 0.9rem;
     padding-top: 0.3rem;
     display: block;

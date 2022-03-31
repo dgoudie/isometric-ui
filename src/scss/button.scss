@@ -18,7 +18,7 @@
     -webkit-tap-highlight-color: transparent;
 
     &.primary {
-        background-color: var(--coral);
+        background-color: rgb(var(--coral));
         color: white;
     }
 
@@ -28,7 +28,7 @@
         border-color: var(--divider);
 
         &.highlighted {
-            border-color: var(--scrub);
+            border-color: rgb(var(--scrub));
         }
     }
 

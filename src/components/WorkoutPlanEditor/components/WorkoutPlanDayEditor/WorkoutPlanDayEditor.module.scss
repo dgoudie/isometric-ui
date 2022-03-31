@@ -26,7 +26,7 @@
                 padding: 6px 10px;
                 font-family: inherit;
                 &::placeholder {
-                    color: var(--coral);
+                    color: rgb(var(--coral));
                 }
             }
         }
@@ -55,7 +55,7 @@
     &DeleteIcon {
         height: 3rem;
         width: 3rem;
-        color: var(--coral);
+        color: rgb(var(--coral));
     }
 }
 
@@ -71,7 +71,7 @@
 
 .noExercises {
     padding: 0 0.75rem;
-    color: var(--coral);
+    color: rgb(var(--coral));
 }
 
 .addExercise {
@@ -109,5 +109,5 @@
 .deleteIcon {
     height: 3rem;
     width: 3rem;
-    color: var(--coral);
+    color: rgb(var(--coral));
 }

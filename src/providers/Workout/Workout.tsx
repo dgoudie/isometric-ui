@@ -1,5 +1,6 @@
 import {
     IWorkout,
+    IWorkoutExercise,
     IWorkoutExerciseSet,
     WSWorkoutUpdate,
 } from '@dgoudie/isometric-types';
@@ -15,16 +16,15 @@ export const WorkoutContext = createContext<{
     startWorkout: () => void;
     endWorkout: () => void;
     discardWorkout: () => void;
-    persistSet: (
+    persistExercise: (
         exerciseIndex: number,
-        setIndex: number,
-        set: IWorkoutExerciseSet
+        exercise: IWorkoutExercise
     ) => void;
 }>({
     startWorkout: () => undefined,
     endWorkout: () => undefined,
     discardWorkout: () => undefined,
-    persistSet: () => undefined,
+    persistExercise: () => undefined,
 });
 
 export default function WorkoutProvider({
@@ -60,13 +60,12 @@ export default function WorkoutProvider({
         sendJsonMessage(verifyType<WSWorkoutUpdate>({ type: 'DISCARD' }));
     }, [sendJsonMessage]);
     const persistSet = useCallback(
-        (exerciseIndex: number, setIndex: number, set: IWorkoutExerciseSet) => {
+        (exerciseIndex: number, exercise: IWorkoutExercise) => {
             sendJsonMessage(
                 verifyType<WSWorkoutUpdate>({
-                    type: 'PERSIST_SET',
+                    type: 'PERSIST_EXERCISE',
                     exerciseIndex,
-                    setIndex,
-                    set,
+                    exercise,
                 })
             );
         },
@@ -93,7 +92,7 @@ export default function WorkoutProvider({
                 startWorkout,
                 endWorkout,
                 discardWorkout,
-                persistSet,
+                persistExercise: persistSet,
             }}
         >
             {children}

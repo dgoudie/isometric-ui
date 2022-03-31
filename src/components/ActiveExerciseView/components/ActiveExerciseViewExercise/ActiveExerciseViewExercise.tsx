@@ -3,7 +3,7 @@ import {
     IWorkoutExercise,
     IWorkoutExerciseSet,
 } from '@dgoudie/isometric-types';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import ActiveExerciseViewExerciseSet from '../ActiveExerciseViewExerciseSet/ActiveExerciseViewExerciseSet';
 import MuscleGroupTag from '../../../MuscleGroupTag/MuscleGroupTag';
@@ -15,14 +15,16 @@ interface Props {
     exercise: IWorkoutExercise;
     data: IExercise;
     onSelected: () => void;
-    setUpdated: (setIndex: number, set: IWorkoutExerciseSet) => void;
+    exerciseUpdated: (exercise: IWorkoutExercise) => void;
+    exerciseCompleted: () => void;
 }
 
 export default function ActiveExerciseViewExercise({
     exercise,
     data,
     onSelected,
-    setUpdated,
+    exerciseUpdated,
+    exerciseCompleted,
 }: Props) {
     const firstNotComplete = exercise.sets.findIndex((set) => !set.complete);
     const { ref, inView } = useInView({
@@ -31,6 +33,27 @@ export default function ActiveExerciseViewExercise({
     useEffect(() => {
         !!inView && onSelected();
     }, [inView, onSelected]);
+
+    const setUpdated = useCallback(
+        (index: number, newSetData: IWorkoutExerciseSet) => {
+            let ex: IWorkoutExercise = {
+                ...exercise,
+                sets: exercise.sets.map((set, j) =>
+                    index === j ? newSetData : set
+                ),
+            };
+            exerciseUpdated(ex);
+            let allSetsPreviouslyCompleted = exercise.sets.every(
+                (set) => set.complete
+            );
+            let allSetsNowCompleted = ex.sets.every((set) => set.complete);
+            if (!allSetsPreviouslyCompleted && allSetsNowCompleted) {
+                exerciseCompleted();
+            }
+        },
+        [exercise, exerciseUpdated, exerciseCompleted]
+    );
+
     return (
         <section ref={ref} className={styles.section}>
             <div className={styles.header}>{data.name}</div>
@@ -48,8 +71,8 @@ export default function ActiveExerciseViewExercise({
                         key={index}
                         set={set}
                         data={data}
-                        selected={inView}
-                        highlighted={firstNotComplete === index}
+                        exerciseSelected={inView}
+                        setSelected={firstNotComplete === index}
                         setUpdated={(set) => setUpdated(index, set)}
                     />
                 ))}
