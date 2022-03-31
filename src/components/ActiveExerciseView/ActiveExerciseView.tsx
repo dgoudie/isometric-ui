@@ -60,7 +60,7 @@ export default function ActiveExerciseView({
     <div className={classNames(styles.root, 'fade-in')} ref={rootRef}>
       {exercises.map((exercise, index) => (
         <ActiveExerciseViewExercise
-          key={exercise.exerciseId}
+          key={index}
           data={exerciseMap.get(exercise.exerciseId)!}
           exercise={exercise}
           exerciseIndex={index}

@@ -8,6 +8,7 @@ import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 
+import { requestNotificationPermission } from '../../utils/notification';
 import { usePageVisibility } from 'react-page-visibility';
 import { verifyType } from '../../utils/verify-type';
 
@@ -64,6 +65,7 @@ export default function WorkoutProvider({
   }, [workoutString]);
 
   const startWorkout = useCallback(() => {
+    requestNotificationPermission();
     sendJsonMessage(verifyType<WSWorkoutUpdate>({ type: 'START' }));
   }, [sendJsonMessage]);
   const endWorkout = useCallback(() => {

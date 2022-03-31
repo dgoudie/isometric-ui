@@ -3,8 +3,25 @@ import {
   IWorkoutExercise,
   IWorkoutExerciseSet,
 } from '@dgoudie/isometric-types';
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {
+  addMilliseconds,
+  addSeconds,
+  differenceInMilliseconds,
+  differenceInSeconds,
+  intervalToDuration,
+  millisecondsToSeconds,
+  secondsToMilliseconds,
+} from 'date-fns';
 
+import ProgressBar from '../../../ProgressBar/ProgressBar';
 import { WorkoutContext } from '../../../../providers/Workout/Workout';
 import classNames from 'classnames';
 import { inputForceInteger } from '../../../../utils/input-force-integer';
@@ -119,7 +136,7 @@ function WeightedSet({
         onClick={() =>
           persistSetComplete(exerciseIndex, setIndex, !set.complete)
         }
-        className={styles.setCompletedButton}
+        className={classNames(styles.setButton, styles.setButtonCompleted)}
       >
         <i className='fa-solid fa-check'></i>
       </button>
@@ -127,8 +144,105 @@ function WeightedSet({
   );
 }
 
-function TimedSet({}: Props) {
-  return <div></div>;
+function TimedSet({ set, data, exerciseIndex, setIndex }: Props) {
+  const { persistSetComplete } = useContext(WorkoutContext);
+
+  const millisecondsPerSet = useMemo(
+    () => secondsToMilliseconds(data.timePerSetInSeconds!),
+    [data]
+  );
+
+  const [millisecondsRemaining, setMillisecondsRemaining] =
+    useState(millisecondsPerSet);
+
+  const [paused, setPaused] = useState(true);
+  const [intervalId, setIntervalId] = useState<number | undefined>();
+
+  useEffect(() => {
+    clearInterval(intervalId);
+    if (!paused) {
+      const endDate = addMilliseconds(new Date(), millisecondsRemaining);
+      setIntervalId(
+        setInterval(() => {
+          const remaining = differenceInMilliseconds(endDate, new Date());
+          if (remaining > 0) {
+            setMillisecondsRemaining(remaining);
+          } else {
+            setMillisecondsRemaining(0);
+            setPaused(true);
+            if (
+              'Notification' in window &&
+              Notification.permission === 'granted'
+            ) {
+              new Notification('Timer is up!');
+            }
+          }
+        }, 50) as unknown as number
+      );
+    }
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [paused]);
+
+  const secondsRemaining = useMemo(
+    () => millisecondsToSeconds(millisecondsRemaining),
+    [millisecondsRemaining]
+  );
+
+  const formattedTime = useMemo(() => {
+    const duration = intervalToDuration({
+      start: 0,
+      end: secondsToMilliseconds(secondsRemaining),
+    });
+    return `${duration.minutes}:${duration.seconds
+      ?.toString()
+      .padStart(2, '0')}`;
+  }, [secondsRemaining]);
+
+  const percentageComplete = useMemo(() => {
+    const percentage =
+      (millisecondsPerSet - millisecondsRemaining) / millisecondsPerSet;
+    return Math.round((percentage + Number.EPSILON) * 100) / 100;
+  }, [millisecondsPerSet, millisecondsRemaining]);
+
+  return (
+    <div className={classNames(styles.set, styles.setTypeTimed)}>
+      <div className={styles.timer}>
+        <div className={styles.time}>{formattedTime}</div>
+        <ProgressBar percentage={percentageComplete} />
+      </div>
+      <button
+        type='button'
+        onClick={() => {
+          setPaused(true);
+          setMillisecondsRemaining(millisecondsPerSet);
+        }}
+        disabled={set.complete}
+        className={classNames(styles.setButton, styles.setButtonStartStop)}
+      >
+        <i className='fa-solid fa-arrow-rotate-left'></i>
+      </button>
+      <button
+        type='button'
+        onClick={() => setPaused(!paused)}
+        disabled={set.complete}
+        className={classNames(styles.setButton, styles.setButtonStartStop)}
+      >
+        <i className={`fa-solid fa-${paused ? 'play' : 'pause'}`}></i>
+      </button>
+      <button
+        type='button'
+        onClick={() => {
+          setPaused(true);
+          persistSetComplete(exerciseIndex, setIndex, !set.complete);
+        }}
+        className={classNames(styles.setButton, styles.setButtonCompleted)}
+      >
+        <i className='fa-solid fa-check'></i>
+      </button>
+    </div>
+  );
 }
 
 function RepBasedSet({
@@ -180,7 +294,7 @@ function RepBasedSet({
         onClick={() =>
           persistSetComplete(exerciseIndex, setIndex, !set.complete)
         }
-        className={styles.setCompletedButton}
+        className={classNames(styles.setButton, styles.setButtonCompleted)}
       >
         <i className='fa-solid fa-check'></i>
       </button>

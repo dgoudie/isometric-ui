@@ -42,7 +42,7 @@ export default function ActiveExerciseViewExercise({
   }, [firstNotComplete, onCompleted]);
 
   const { ref, inView } = useInView({
-    threshold: 0.6,
+    threshold: 0.55,
   });
   useEffect(() => {
     !!inView && onSelected();

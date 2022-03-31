@@ -13,6 +13,7 @@ import { IExercise } from '@dgoudie/isometric-types';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import SwipeDeadZone from '../../components/SwipeDeadZone/SwipeDeadZone';
 import { WorkoutContext } from '../../providers/Workout/Workout';
+import WorkoutExercisesBottomSheet from '../../components/BottomSheet/components/WorkoutExercisesBottomSheet/WorkoutExercisesBottomSheet';
 import classNames from 'classnames';
 import { fetchFromApiAsReadableResource } from '../../utils/fetch-from-api';
 import styles from './index.module.scss';
@@ -53,6 +54,16 @@ export default function Workout() {
     setShowEndWorkoutBottomSheet(false);
   }, []);
 
+  const [showWorkoutExercisesBottomSheet, setShowWorkoutExercisesBottomSheet] =
+    useState(false);
+
+  const onExeciseSelected = useCallback((resultingIndex?: number) => {
+    if (typeof resultingIndex !== 'undefined') {
+      setInitialActiveExercise(resultingIndex);
+    }
+    setShowWorkoutExercisesBottomSheet(false);
+  }, []);
+
   const [initialActiveExercise, setInitialActiveExercise] = useState(0);
   const [activeExercise, setActiveExercise] = useState(0);
 
@@ -76,7 +87,7 @@ export default function Workout() {
         </div>
         <button
           type='button'
-          onClick={() => setShowEndWorkoutBottomSheet(true)}
+          onClick={() => setShowWorkoutExercisesBottomSheet(true)}
         >
           <i className='fa-solid fa-list-check'></i>
           Exercises
@@ -106,6 +117,13 @@ export default function Workout() {
       />
       {showEndWorkoutBottomSheet && (
         <EndWorkoutBottomSheet onResult={onEndWorkoutResult} />
+      )}
+      {showWorkoutExercisesBottomSheet && (
+        <WorkoutExercisesBottomSheet
+          exercises={workout.exercises}
+          onResult={onExeciseSelected}
+          exercisesResponse={exercisesResponse}
+        />
       )}
     </div>
   );
