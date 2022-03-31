@@ -4,7 +4,7 @@
   padding: 0.5rem;
   height: 4rem;
   border-radius: 8px;
-  transition: background-color 200ms, border-color 200ms, color 200ms;
+  transition: background-color 100ms, border-color 100ms, color 100ms;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -59,12 +59,12 @@
       }
     }
     &CompletedButton {
-      transition: color 100ms transform 150ms;
+      transition: color 100ms transform 50ms;
       color: transparent;
       font-size: 1.3rem;
 
       &:active {
-        transform: scale(0.9);
+        transform: scale(0.8);
       }
     }
   }
