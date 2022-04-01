@@ -1,11 +1,13 @@
+import React, { useContext, useEffect } from 'react';
+
+import { AfterExerciseTimerContext } from '../../providers/AfterExerciseTimer/AfterExerciseTimer';
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
-import React from 'react';
 
 const Settings: React.FC = () => {
-    return (
-        <AppBarWithAppHeaderLayout pageTitle='Settings'>
-            Some Settings
-        </AppBarWithAppHeaderLayout>
-    );
+  return (
+    <AppBarWithAppHeaderLayout pageTitle='Settings'>
+      Some Settings
+    </AppBarWithAppHeaderLayout>
+  );
 };
 export default Settings;

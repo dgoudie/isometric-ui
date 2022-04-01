@@ -1,88 +1,88 @@
 .root {
-    display: grid;
-    grid-template-rows: max-content auto;
+  display: grid;
+  grid-template-rows: max-content auto;
 }
 .filters {
-    padding: 0.5rem 0 0.75rem;
-    background: var(--background);
-    z-index: 1;
-    &Input {
-        grid-column-start: span 2;
-        margin-bottom: 0.5rem;
-        display: grid;
-        grid-template-columns: auto max-content;
-        input {
-            padding: 0;
-            outline: none;
-            font-size: 1rem;
-            letter-spacing: inherit;
-            font-family: inherit;
-            background: transparent;
-            border: none;
-        }
-        &Clear {
-            width: 2rem;
-            height: 2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.3rem;
-            color: rgb(var(--scrub));
-        }
+  padding-bottom: 0.75rem;
+  background: var(--background);
+  z-index: 1;
+  &Input {
+    grid-column-start: span 2;
+    margin-bottom: 0.5rem;
+    display: grid;
+    grid-template-columns: auto max-content;
+    input {
+      padding: 0;
+      outline: none;
+      font-size: 1rem;
+      letter-spacing: inherit;
+      font-family: inherit;
+      background: transparent;
+      border: none;
     }
-    &MuscleGroup {
-        display: flex;
-        gap: 0.5rem;
+    &Clear {
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.3rem;
+      color: rgb(var(--scrub));
     }
+  }
+  &MuscleGroup {
+    display: flex;
+    gap: 0.5rem;
+  }
 }
 .items {
-    overflow-y: auto;
-    border-radius: 8px 8px 0 0;
-    padding-bottom: 0.75rem;
+  overflow-y: auto;
+  border-radius: 8px 8px 0 0;
+  padding-bottom: 0.75rem;
 
-    &InfiniteScroll {
-        display: grid;
-        grid-auto-flow: row;
-        gap: 0.75rem;
-        align-items: start;
-        align-content: start;
-    }
-}
-.item {
-    border: 1px solid var(--divider);
-    background-color: var(--background-alt);
-    border-radius: 10px;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.9rem;
+  &InfiniteScroll {
     display: grid;
     grid-auto-flow: row;
-    gap: 0.4rem;
-    justify-items: start;
+    gap: 0.75rem;
+    align-items: start;
+    align-content: start;
+  }
+}
+.item {
+  border: 1px solid var(--divider);
+  background-color: var(--background-alt);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  display: grid;
+  grid-auto-flow: row;
+  gap: 0.4rem;
+  justify-items: start;
 
-    &:active,
-    &:focus {
-        transform: scale(0.98);
-    }
+  &:active,
+  &:focus {
+    transform: scale(0.98);
+  }
 
-    &Title {
-        font-size: 1.1rem;
-        font-weight: bold;
-    }
+  &Title {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
 
-    &Muscles {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        padding-bottom: 0.5rem;
-        justify-self: stretch;
-        border-bottom: 1px solid var(--divider);
-    }
+  &Muscles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    justify-self: stretch;
+    border-bottom: 1px solid var(--divider);
+  }
 
-    &Meta {
-        margin: 0;
-        padding: 0;
-        list-style-type: none;
-        line-height: 1.5rem;
-        text-align: start;
-    }
+  &Meta {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    line-height: 1.5rem;
+    text-align: start;
+  }
 }

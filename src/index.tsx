@@ -2,6 +2,7 @@ import './index.css';
 
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
+import AfterExerciseTimerProvider from './providers/AfterExerciseTimer/AfterExerciseTimer';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
@@ -14,13 +15,15 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-    <SnackbarProvider>
-        <BrowserRouter>
-            <WorkoutProvider>
-                <App />
-            </WorkoutProvider>
-        </BrowserRouter>
-    </SnackbarProvider>
+  <SnackbarProvider>
+    <AfterExerciseTimerProvider>
+      <BrowserRouter>
+        <WorkoutProvider>
+          <App />
+        </WorkoutProvider>
+      </BrowserRouter>
+    </AfterExerciseTimerProvider>
+  </SnackbarProvider>
 );
 
 // If you want your app to work offline and load faster, you can change

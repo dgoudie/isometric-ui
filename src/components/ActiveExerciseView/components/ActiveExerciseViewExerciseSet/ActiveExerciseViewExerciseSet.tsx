@@ -26,6 +26,7 @@ import { WorkoutContext } from '../../../../providers/Workout/Workout';
 import classNames from 'classnames';
 import { inputForceInteger } from '../../../../utils/input-force-integer';
 import { inputSelectAllOnFocus } from '../../../../utils/input-select-all-on-focus';
+import { showNotification } from '../../../../utils/notification';
 import styles from './ActiveExerciseViewExerciseSet.module.scss';
 
 interface Props {
@@ -170,12 +171,7 @@ function TimedSet({ set, data, exerciseIndex, setIndex }: Props) {
           } else {
             setMillisecondsRemaining(0);
             setPaused(true);
-            if (
-              'Notification' in window &&
-              Notification.permission === 'granted'
-            ) {
-              new Notification('Timer is up!');
-            }
+            showNotification('Time is up...');
           }
         }, 50) as unknown as number
       );
