@@ -3,9 +3,10 @@ import {
   IWorkoutExercise,
   IWorkoutExerciseSet,
 } from '@dgoudie/isometric-types';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import ActiveExerciseViewExerciseSet from '../ActiveExerciseViewExerciseSet/ActiveExerciseViewExerciseSet';
+import { AfterExerciseTimerContext } from '../../../../providers/AfterExerciseTimer/AfterExerciseTimer';
 import MuscleGroupTag from '../../../MuscleGroupTag/MuscleGroupTag';
 import SwipeDeadZone from '../../../SwipeDeadZone/SwipeDeadZone';
 import styles from './ActiveExerciseViewExercise.module.scss';
@@ -14,8 +15,9 @@ import { useInView } from 'react-intersection-observer';
 interface Props {
   exercise: IWorkoutExercise;
   data: IExercise;
+  nextExercise: IExercise | undefined;
   exerciseIndex: number;
-  onSelected: () => void;
+  onSelected: (i: number) => void;
   onCompleted: () => void;
 }
 
@@ -23,30 +25,53 @@ export default function ActiveExerciseViewExercise({
   exercise,
   data,
   exerciseIndex,
+  nextExercise,
   onSelected,
   onCompleted,
 }: Props) {
-  const getFirstNotComplete = useCallback(
-    () => exercise.sets.findIndex((set) => !set.complete),
+  const { show, showAfterLastExercise, showAfterLastSet } = useContext(
+    AfterExerciseTimerContext
+  );
+
+  const getNumberOfCompletedSets = useCallback(
+    () => exercise.sets.filter((set) => set.complete).length,
     [exercise]
   );
 
-  const previouslyFirstNotComplete = useRef(getFirstNotComplete());
-  const firstNotComplete = getFirstNotComplete();
+  const previousNumberOfCompletedSets = useRef(getNumberOfCompletedSets());
+
+  const numberOfCompletedSets = getNumberOfCompletedSets();
 
   useEffect(() => {
-    if (previouslyFirstNotComplete.current >= 0 && firstNotComplete < 0) {
-      onCompleted();
+    if (numberOfCompletedSets > previousNumberOfCompletedSets.current) {
+      let allSetsCompleted = numberOfCompletedSets === exercise.sets.length;
+      if (allSetsCompleted) {
+        if (!!nextExercise) {
+          showAfterLastSet(
+            data.breakTimeInSeconds,
+            nextExercise.name,
+            nextExercise.primaryMuscleGroup,
+            () => onCompleted()
+          );
+        } else {
+          showAfterLastExercise(data.breakTimeInSeconds);
+        }
+      } else {
+        show(data.breakTimeInSeconds);
+      }
     }
-    previouslyFirstNotComplete.current = firstNotComplete;
-  }, [firstNotComplete, onCompleted]);
+    previousNumberOfCompletedSets.current = numberOfCompletedSets;
+  }, [exercise, nextExercise]);
 
   const { ref, inView } = useInView({
     threshold: 0.55,
   });
+
   useEffect(() => {
-    !!inView && onSelected();
-  }, [inView, onSelected]);
+    if (inView) {
+      onSelected(exerciseIndex);
+    }
+  }, [inView, onSelected, exerciseIndex]);
 
   return (
     <section ref={ref} className={styles.section}>
@@ -65,7 +90,7 @@ export default function ActiveExerciseViewExercise({
             set={set}
             data={data}
             exerciseSelected={inView}
-            setSelected={firstNotComplete === index}
+            setSelected={numberOfCompletedSets === index}
             exerciseIndex={exerciseIndex}
             setIndex={index}
           />

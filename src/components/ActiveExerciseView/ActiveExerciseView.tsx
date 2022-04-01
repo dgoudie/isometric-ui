@@ -11,6 +11,7 @@ import React, {
   useState,
 } from 'react';
 
+import { ActiveExercise } from '../../pages/workout';
 import ActiveExerciseViewExercise from './components/ActiveExerciseViewExercise/ActiveExerciseViewExercise';
 import { ReadableResource } from '../../utils/fetch-from-api';
 import classNames from 'classnames';
@@ -19,25 +20,22 @@ import styles from './ActiveExerciseView.module.scss';
 interface Props {
   exercises: IWorkoutExercise[];
   exercisesResponse: ReadableResource<IExercise[]>;
-  focusedIndex?: number;
-  focusedIndexChanged?: (index: number) => void;
+  focusedExercise: ActiveExercise;
+  focusedExerciseChanged: (exercise: ActiveExercise) => void;
 }
 
 export default function ActiveExerciseView({
   exercises,
   exercisesResponse,
-  focusedIndex = 0,
-  focusedIndexChanged = () => undefined,
+  focusedExercise,
+  focusedExerciseChanged,
 }: Props) {
-  const [focusedIndexInternal, setFocusedIndexInternal] =
-    useState(focusedIndex);
-
   const exerciseMap: Map<string, IExercise> = useMemo(
     () =>
       new Map<string, IExercise>(
         exercisesResponse.read().map(({ _id, ...ex }) => [_id, { _id, ...ex }])
       ),
-    [exercises]
+    [exercisesResponse]
   );
 
   const rootRef = useRef<HTMLDivElement>(null);
@@ -53,8 +51,46 @@ export default function ActiveExerciseView({
   );
 
   useEffect(() => {
-    scrollExerciseIntoViewByIndex(focusedIndex);
-  }, [scrollExerciseIntoViewByIndex, focusedIndex]);
+    !!focusedExercise.scrollIntoView &&
+      scrollExerciseIntoViewByIndex(focusedExercise.index);
+  }, [scrollExerciseIntoViewByIndex, focusedExercise]);
+
+  const [nextNoncompleteExercise, setNextNoncompleteExercise] = useState<{
+    index: number;
+    exerciseData: IExercise;
+  }>();
+
+  useEffect(() => {
+    let indexOfNextNonCompleteExercise = exercises.findIndex(
+      (exercise, i) =>
+        focusedExercise.index !== i &&
+        !exercise.sets.every((set) => set.complete)
+    );
+    if (indexOfNextNonCompleteExercise >= 0) {
+      setNextNoncompleteExercise({
+        index: indexOfNextNonCompleteExercise,
+        exerciseData: exerciseMap.get(
+          exercises[indexOfNextNonCompleteExercise].exerciseId
+        )!,
+      });
+    } else {
+      setNextNoncompleteExercise(undefined);
+    }
+  }, [exercises, focusedExercise, exerciseMap]);
+
+  const onSelected = useCallback(
+    (index: number) => focusedExerciseChanged({ index, scrollIntoView: false }),
+    [focusedExerciseChanged]
+  );
+
+  const onCompleted = useCallback(() => {
+    if (typeof nextNoncompleteExercise !== 'undefined') {
+      focusedExerciseChanged({
+        index: nextNoncompleteExercise.index,
+        scrollIntoView: true,
+      });
+    }
+  }, [nextNoncompleteExercise, focusedExerciseChanged]);
 
   return (
     <div className={classNames(styles.root, 'fade-in')} ref={rootRef}>
@@ -63,12 +99,10 @@ export default function ActiveExerciseView({
           key={index}
           data={exerciseMap.get(exercise.exerciseId)!}
           exercise={exercise}
+          nextExercise={nextNoncompleteExercise?.exerciseData}
           exerciseIndex={index}
-          onSelected={() => {
-            focusedIndexChanged(index);
-            setFocusedIndexInternal(index);
-          }}
-          onCompleted={() => scrollExerciseIntoViewByIndex(index + 1)}
+          onSelected={onSelected}
+          onCompleted={onCompleted}
         />
       ))}
     </div>

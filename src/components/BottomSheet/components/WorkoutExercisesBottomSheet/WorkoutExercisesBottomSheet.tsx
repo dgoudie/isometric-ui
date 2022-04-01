@@ -19,7 +19,7 @@ export default function WorkoutExercisesBottomSheet({
   ...props
 }: Props) {
   return (
-    <BottomSheet onResult={onResult} title={`Today's Exercises`}>
+    <BottomSheet onResult={onResult} title={`Today`}>
       {(onResult) => (
         <div className={styles.root}>
           <Suspense fallback={<RouteLoader />}>
@@ -49,7 +49,7 @@ function WorkoutExercisesBottomSheetContent({
       new Map<string, IExercise>(
         exercisesResponse.read().map(({ _id, ...ex }) => [_id, { _id, ...ex }])
       ),
-    [exercises]
+    [exercisesResponse]
   );
 
   const exerciseElements = exercises.map((exercise, index) => {

@@ -21,6 +21,11 @@ import styles from './index.module.scss';
 let initialExercisesResponse =
   fetchFromApiAsReadableResource<IExercise[]>(`/api/exercises`);
 
+export type ActiveExercise = {
+  index: number;
+  scrollIntoView: boolean;
+};
+
 export default function Workout() {
   const [exercisesResponse, setExercisesResponse] = useState(
     initialExercisesResponse
@@ -45,6 +50,13 @@ export default function Workout() {
   const [showEndWorkoutBottomSheet, setShowEndWorkoutBottomSheet] =
     useState(false);
 
+  const [exerciseIndexInView, setExerciseIndexInView] = useState(0);
+
+  const [activeExercise, setActiveExercise] = useState<ActiveExercise>({
+    index: 0,
+    scrollIntoView: false,
+  });
+
   const onEndWorkoutResult = useCallback((result?: 'END' | 'DISCARD') => {
     if (result === 'END') {
       endWorkout();
@@ -54,18 +66,24 @@ export default function Workout() {
     setShowEndWorkoutBottomSheet(false);
   }, []);
 
+  const focusedExerciseChanged = useCallback((exercise: ActiveExercise) => {
+    startTransaction(() => {
+      setActiveExercise(exercise);
+      if (!exercise.scrollIntoView) {
+        setExerciseIndexInView(exercise.index);
+      }
+    });
+  }, []);
+
   const [showWorkoutExercisesBottomSheet, setShowWorkoutExercisesBottomSheet] =
     useState(false);
 
-  const onExeciseSelected = useCallback((resultingIndex?: number) => {
-    if (typeof resultingIndex !== 'undefined') {
-      setInitialActiveExercise(resultingIndex);
+  const onExeciseSelected = useCallback((index?: number) => {
+    if (typeof index !== 'undefined') {
+      setActiveExercise({ index, scrollIntoView: true });
     }
     setShowWorkoutExercisesBottomSheet(false);
   }, []);
-
-  const [initialActiveExercise, setInitialActiveExercise] = useState(0);
-  const [activeExercise, setActiveExercise] = useState(0);
 
   if (!workout) {
     return <RouteLoader />;
@@ -83,7 +101,7 @@ export default function Workout() {
         </button>
 
         <div className={styles.headerExerciseNumber}>
-          {activeExercise + 1} / {workout.exercises.length}
+          {exerciseIndexInView + 1} / {workout.exercises.length}
         </div>
         <button
           type='button'
@@ -97,15 +115,17 @@ export default function Workout() {
         <ActiveExerciseView
           exercises={workout.exercises}
           exercisesResponse={exercisesResponse}
-          focusedIndex={initialActiveExercise}
-          focusedIndexChanged={setActiveExercise}
+          focusedExercise={activeExercise}
+          focusedExerciseChanged={focusedExerciseChanged}
         />
       </Suspense>
       <div className={styles.paginator}>
         {workout.exercises.map((exercise, index) => (
           <div
             key={exercise.exerciseId}
-            className={classNames(activeExercise === index && styles.active)}
+            className={classNames(
+              exerciseIndexInView === index && styles.active
+            )}
           />
         ))}
       </div>

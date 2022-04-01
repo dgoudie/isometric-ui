@@ -36,39 +36,37 @@ export default function BottomSheet<T>({
 }: PropsLocked<T> | PropsNotLocked<T>) {
   const paneRef = useRef<CupertinoPane>();
   const paneDivRef = useRef<HTMLDivElement>(null);
-  const headerDivRef = useRef<HTMLDivElement>(null);
+
+  const result = useRef<T>();
 
   const onClosedNoResult = useCallback(
     (event: MouseEvent<HTMLElement>) => {
       event.preventDefault();
       event.stopPropagation();
       if (!locked) {
+        result.current = undefined;
         paneRef.current?.hide();
         paneRef.current?.destroy({ animate: true });
-        setTimeout(() => onResult(undefined), TIMEOUT);
       }
     },
     [onResult, locked, paneRef]
   );
 
   const paneDismissed = useCallback(() => {
-    !locked && onResult(undefined);
-  }, [paneRef, locked, onResult]);
+    !locked && onResult(result.current);
+  }, [locked, onResult]);
 
   const onClosedWithResult = useCallback(
-    (result: T) => {
+    (_result: T) => {
+      result.current = _result;
       paneRef.current?.hide();
       paneRef.current?.destroy({ animate: true });
-      setTimeout(() => onResult(result), TIMEOUT);
     },
     [onResult, paneRef]
   );
 
   useEffect(() => {
-    if (!paneDivRef.current || !!paneRef.current) {
-      return;
-    }
-    paneRef.current = new CupertinoPane(paneDivRef.current, {
+    paneRef.current = new CupertinoPane(paneDivRef.current!, {
       fitHeight: true,
       buttonDestroy: false,
       showDraggable: false,
@@ -84,7 +82,7 @@ export default function BottomSheet<T>({
     if (!!locked) {
       paneRef.current.preventDismiss(true);
     }
-  }, [paneDivRef, paneRef]);
+  }, []);
 
   return (
     <Portal>
