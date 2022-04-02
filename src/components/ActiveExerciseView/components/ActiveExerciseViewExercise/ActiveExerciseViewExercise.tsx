@@ -50,9 +50,8 @@ export default function ActiveExerciseViewExercise({
           showAfterLastSet(
             data.breakTimeInSeconds,
             nextExercise.name,
-            nextExercise.primaryMuscleGroup,
-            () => onCompleted()
-          );
+            nextExercise.primaryMuscleGroup
+          ).then(onCompleted);
         } else {
           showAfterLastExercise(data.breakTimeInSeconds);
         }

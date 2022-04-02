@@ -1,4 +1,5 @@
 import React, {
+  ReactNode,
   createContext,
   useCallback,
   useEffect,
@@ -21,24 +22,20 @@ import { showNotification } from '../../utils/notification';
 import styles from './AfterExerciseTimer.module.scss';
 
 type AfterExerciseTimerContextType = {
-  show: (durationInSeconds: number, onFinished?: () => void) => void;
+  show: (durationInSeconds: number) => Promise<void>;
   showAfterLastSet: (
     durationInSeconds: number,
     nextExerciseName: string,
-    nextExerciseMuscleGroup: ExerciseMuscleGroup,
-    onFinished?: () => void
-  ) => void;
-  showAfterLastExercise: (
-    durationInSeconds: number,
-    onFinished?: () => void
-  ) => void;
+    nextExerciseMuscleGroup: ExerciseMuscleGroup
+  ) => Promise<void>;
+  showAfterLastExercise: (durationInSeconds: number) => Promise<void>;
 };
 
 export const AfterExerciseTimerContext =
   createContext<AfterExerciseTimerContextType>({
-    show: () => undefined,
-    showAfterLastSet: () => undefined,
-    showAfterLastExercise: () => undefined,
+    show: () => Promise.resolve(),
+    showAfterLastSet: () => Promise.resolve(),
+    showAfterLastExercise: () => Promise.resolve(),
   });
 
 const TIMEOUT = 250;
@@ -48,8 +45,18 @@ export default function AfterExerciseTimerProvider({
 }: React.PropsWithChildren<{}>) {
   const [durationInMilliSeconds, setDurationInMilliSeconds] = useState(0);
   const [onFinished, setOnFinished] = useState<() => void>();
+  const [type, setType] = useState<
+    'AFTER_SET' | 'AFTER_EXERCISE' | 'END_OF_WORKOUT'
+  >('AFTER_SET');
   const [millisecondsRemaining, setMillisecondsRemaining] = useState(0);
   const [intervalId, setIntervalId] = useState<number>();
+
+  const buildPromise = useCallback(() => {
+    if (typeof onFinished !== 'undefined') {
+      onFinished();
+    }
+    return new Promise<void>((resolve) => setOnFinished(() => resolve));
+  }, [setOnFinished, onFinished]);
 
   useEffect(() => {
     clearInterval(intervalId);
@@ -87,47 +94,46 @@ export default function AfterExerciseTimerProvider({
       .padStart(2, '0')}`;
   }, [secondsRemaining]);
 
-  const percentageComplete = useMemo(() => {
-    const percentage =
-      (durationInMilliSeconds - millisecondsRemaining) / durationInMilliSeconds;
-    return Math.round((percentage + Number.EPSILON) * 100) / 100;
-  }, [durationInMilliSeconds, millisecondsRemaining]);
-
   const show = useCallback<AfterExerciseTimerContextType['show']>(
-    (durationInSeconds, onFinished) => {
+    (durationInSeconds) => {
       const millis = secondsToMilliseconds(durationInSeconds);
       setDurationInMilliSeconds(millis);
       setMillisecondsRemaining(millis);
-      setOnFinished(() => onFinished);
+      setType('AFTER_SET');
+      return buildPromise();
     },
-    []
+    [buildPromise]
   );
 
   const showAfterLastSet = useCallback<
     AfterExerciseTimerContextType['showAfterLastSet']
   >(
-    (durationInSeconds, nextName, nextMuscleGroup, onFinished) => {
+    (durationInSeconds, nextName, nextMuscleGroup) => {
       const millis = secondsToMilliseconds(durationInSeconds);
       setDurationInMilliSeconds(millis);
       setMillisecondsRemaining(millis);
-      setOnFinished(() => onFinished);
+      setType('AFTER_EXERCISE');
+      return buildPromise();
     },
-    [setDurationInMilliSeconds]
+    [buildPromise]
   );
 
   const showAfterLastExercise = useCallback<
     AfterExerciseTimerContextType['showAfterLastExercise']
   >(
-    (durationInSeconds, onFinished) => {
+    (durationInSeconds) => {
       const millis = secondsToMilliseconds(durationInSeconds);
       setDurationInMilliSeconds(millis);
       setMillisecondsRemaining(millis);
-      setOnFinished(() => onFinished);
+      setType('END_OF_WORKOUT');
+      return buildPromise();
     },
-    [setDurationInMilliSeconds]
+    [buildPromise]
   );
 
   const rootRef = useRef<HTMLDivElement>(null);
+
+  let modalContent: ReactNode;
 
   return (
     <AfterExerciseTimerContext.Provider
