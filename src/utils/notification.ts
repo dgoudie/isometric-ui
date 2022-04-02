@@ -9,7 +9,7 @@ export const requestNotificationPermission =
 export const showNotification = (text: string) => {
   if ('Notification' in window && Notification.permission === 'granted') {
     new Notification(text, {
-      icon: 'https://cdn.goudie.dev/images/isometric.png',
+      icon: 'images/isometric.png',
     });
   }
 };
