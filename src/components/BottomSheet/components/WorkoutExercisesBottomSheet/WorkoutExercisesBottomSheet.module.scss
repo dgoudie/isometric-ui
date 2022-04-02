@@ -18,7 +18,7 @@
   align-items: center;
   grid-template-columns: min-content auto max-content;
   border-radius: 8px;
-  border: 1px solid var(--divider);
+  border: 2px solid transparent;
   background-color: var(--background-alt);
   padding: 0.5rem 1rem;
   min-height: 3rem;
@@ -29,7 +29,7 @@
   }
 
   i {
-    color: rgb(var(--green));
+    color: var(--completed-color);
     margin-right: 0.75rem;
   }
 
@@ -39,7 +39,7 @@
   }
 
   &Complete {
-    background-color: rgba(var(--green), 0.2);
-    border-color: rgb(var(--green));
+    background-color: transparent;
+    border-color: var(--completed-color);
   }
 }

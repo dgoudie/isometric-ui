@@ -33,7 +33,7 @@
 
     &:first-child {
       justify-self: start;
-      color: rgb(var(--coral));
+      color: var(--accent-color);
     }
 
     &:last-child {
@@ -54,9 +54,9 @@
     max-width: 1.5rem;
     height: 0.2rem;
     background-color: var(--background-alt-2);
+    border-radius: 2px;
     &.active {
-      background-color: rgb(var(--coral));
-      border: 1px solid rgb(var(--coral));
+      background-color: var(--accent-color);
     }
   }
 }

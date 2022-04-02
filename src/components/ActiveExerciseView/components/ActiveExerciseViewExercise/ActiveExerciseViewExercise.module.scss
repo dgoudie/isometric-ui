@@ -1,9 +1,8 @@
 .section {
   border-radius: 8px;
   background-color: var(--background-alt);
-  border: 1px solid var(--divider);
   scroll-snap-align: center;
-  width: calc(100vw - 2.5rem);
+  width: calc(100vw - 3rem);
   padding: 1rem 1.25rem;
   overflow-y: auto;
 

@@ -1,10 +1,9 @@
 .root {
-  border: 1px solid var(--divider);
   background-color: var(--background-alt-2);
   padding: 0.5rem;
   height: 4rem;
   border-radius: 8px;
-  transition: background-color 100ms, border-color 100ms, color 100ms;
+  transition: all 200ms;
 
   pre {
     margin: 0;
@@ -35,10 +34,6 @@
           &::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
-          }
-
-          &::placeholder {
-            color: rgba(128, 128, 128, 0.9);
           }
         }
       }
@@ -76,12 +71,14 @@
   }
 
   &.completed {
-    background-color: rgba(var(--green), 0.2);
-    border-color: rgb(var(--green));
+    border: 2px solid var(--completed-color);
+    background: transparent;
+    height: 3.5rem;
+    padding: 0 0.5rem;
     .set {
       &Button {
         &Completed {
-          color: rgb(var(--green));
+          color: var(--completed-color);
         }
         &StartStop {
           color: transparent;
@@ -92,12 +89,15 @@
 
   &.selected {
     &.highlighted {
-      background-color: rgba(var(--coral), 0.2);
-      border-color: rgb(var(--coral));
-
+      background-color: var(--maximum-blue-green);
+      height: 6rem;
+      color: black;
       .set {
         &Button {
-          color: var(--color);
+          color: black;
+        }
+        input::placeholder {
+          color: #00000044;
         }
       }
     }
@@ -105,10 +105,6 @@
 }
 
 .timer {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  .time {
-    font-size: 1.3rem;
-  }
+  padding-left: 0.5rem;
+  font-size: 1.3rem;
 }

@@ -73,6 +73,7 @@ export default function BottomSheet<T>({
       bottomClose: true,
       animationDuration: TIMEOUT,
       backdrop: true,
+      backdropOpacity: 0.7,
       cssClass: styles.pane,
       dragBy: [`.${styles.sheetHeader}`],
       bottomOffset: 0,

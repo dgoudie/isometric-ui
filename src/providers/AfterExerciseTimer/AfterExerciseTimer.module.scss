@@ -10,8 +10,7 @@
   justify-content: center;
 
   .modal {
-    background: white;
-    color: black;
+    background: var(--background-alt);
     width: 250px;
     max-width: calc(100vw - 4rem);
     display: grid;
@@ -32,7 +31,7 @@
 
   &.enterActive,
   &.enterDone {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.7);
 
     .modal {
       opacity: 1;

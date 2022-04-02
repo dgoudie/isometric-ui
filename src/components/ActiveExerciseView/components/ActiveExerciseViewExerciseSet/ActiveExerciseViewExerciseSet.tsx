@@ -21,7 +21,6 @@ import {
   secondsToMilliseconds,
 } from 'date-fns';
 
-import ProgressBar from '../../../ProgressBar/ProgressBar';
 import { WorkoutContext } from '../../../../providers/Workout/Workout';
 import classNames from 'classnames';
 import { inputForceInteger } from '../../../../utils/input-force-integer';
@@ -206,7 +205,6 @@ function TimedSet({ set, data, exerciseIndex, setIndex }: Props) {
     <div className={classNames(styles.set, styles.setTypeTimed)}>
       <div className={styles.timer}>
         <div className={styles.time}>{formattedTime}</div>
-        <ProgressBar percentage={percentageComplete} />
       </div>
       <button
         type='button'
