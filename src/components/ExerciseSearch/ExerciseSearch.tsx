@@ -18,6 +18,7 @@ import {
   useTransition,
 } from 'react';
 
+import ExerciseMetadata from '../ExerciseMetadata/ExerciseMetadata';
 import InfiniteScroll from '../InfiniteScroll/InfiniteScroll';
 import { Link } from 'react-router-dom';
 import MuscleGroupPicker from '../MuscleGroupPicker/MuscleGroupPicker';
@@ -204,58 +205,12 @@ const ExerciseButton = ({ exercise, onSelect }: ExerciseButtonProps) => {
     [exercise]
   );
 
-  let itemMetaLineOne = (
-    <li>
-      PR: <span className={styles.itemMetaNone}>None</span>
-    </li>
-  );
-  if (!!exercise.bestSet) {
-    switch (exercise.exerciseType) {
-      case 'rep_based': {
-        itemMetaLineOne = (
-          <li>
-            PR: {exercise.bestInstance!.totalRepsForInstance} reps (
-            {format.format(new Date(exercise.bestInstance!.createdAt))})
-          </li>
-        );
-        break;
-      }
-      case 'timed': {
-        itemMetaLineOne = <></>;
-        break;
-      }
-      default: {
-        itemMetaLineOne = (
-          <li>
-            PR: {exercise.bestSet.resistanceInPounds} lbs (
-            {format.format(new Date(exercise.bestInstance!.createdAt))})
-          </li>
-        );
-      }
-    }
-  }
-
-  let itemMetaLineTwo = (
-    <li>
-      Last Performed: <span className={styles.itemMetaNone}>Never</span>
-    </li>
-  );
-
-  if (!!exercise.lastPerformed) {
-    itemMetaLineTwo = (
-      <li>Last Performed: {format.format(new Date(exercise.lastPerformed))}</li>
-    );
-  }
-
   const itemInnards = useMemo(
     () => (
       <>
         <div className={styles.itemTitle}>{exercise.name}</div>
         <div className={styles.itemMuscles}>{muscleGroupTags}</div>
-        <ol className={styles.itemMeta}>
-          {itemMetaLineOne}
-          {itemMetaLineTwo}
-        </ol>
+        <ExerciseMetadata exercise={exercise} />
       </>
     ),
     [exercise.name, format, muscleGroupTags]

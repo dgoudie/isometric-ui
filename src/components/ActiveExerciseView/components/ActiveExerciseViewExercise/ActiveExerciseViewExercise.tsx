@@ -1,13 +1,18 @@
 import {
+  ExerciseType,
   IExercise,
   IExerciseExtended,
+  IExerciseInstance,
+  IWorkout,
   IWorkoutExercise,
 } from '@dgoudie/isometric-types';
-import { useCallback, useContext, useEffect, useRef } from 'react';
+import { ReactNode, useCallback, useContext, useEffect, useRef } from 'react';
 
 import ActiveExerciseViewExerciseSet from '../ActiveExerciseViewExerciseSet/ActiveExerciseViewExerciseSet';
 import { AfterExerciseTimerContext } from '../../../../providers/AfterExerciseTimer/AfterExerciseTimer';
+import ExerciseMetadata from '../../../ExerciseMetadata/ExerciseMetadata';
 import MuscleGroupTag from '../../../MuscleGroupTag/MuscleGroupTag';
+import classNames from 'classnames';
 import styles from './ActiveExerciseViewExercise.module.scss';
 import { useInView } from 'react-intersection-observer';
 
@@ -81,7 +86,7 @@ export default function ActiveExerciseViewExercise({
           )
         )}
       </div>
-      <ExerciseHistory data={data} />
+      {!!data.instances.length && <ExerciseHistory data={data} />}
       <div className={styles.sets}>
         {exercise.sets.map((set, index) => (
           <ActiveExerciseViewExerciseSet
@@ -104,9 +109,94 @@ type ExerciseHistoryProps = {
 };
 
 function ExerciseHistory({ data }: ExerciseHistoryProps) {
+  const itemsDivRef = useRef<HTMLDivElement>(null);
+
+  const move = useCallback(
+    (index: number) => {
+      itemsDivRef.current?.children[index]?.scrollIntoView({
+        behavior: 'smooth',
+      });
+    },
+    [itemsDivRef]
+  );
+
   return (
     <div className={styles.history}>
       <h2>History</h2>
+      <ExerciseMetadata exercise={data} />
+      {/* {data.exerciseType !== 'timed' && (
+        <div className={styles.historyItems} ref={itemsDivRef}>
+          {data.instances.map((instance, index) => (
+            <ExerciseHistoryItem
+              exerciseType={data.exerciseType}
+              key={instance.createdAt}
+              instance={instance}
+              first={index === 0}
+              last={index === data.instances.length - 1}
+              next={() => move(index + 1)}
+              previous={() => move(index - 1)}
+            />
+          ))}
+        </div>
+      )} */}
+    </div>
+  );
+}
+
+interface ExerciseHistoryItemProps {
+  exerciseType: ExerciseType;
+  instance: IExerciseInstance;
+  first: boolean;
+  last: boolean;
+  next: () => void;
+  previous: () => void;
+}
+
+const format = new Intl.DateTimeFormat('en-US');
+
+function ExerciseHistoryItem({
+  exerciseType,
+  instance,
+  first,
+  last,
+  next,
+  previous,
+}: ExerciseHistoryItemProps) {
+  const { ref, inView } = useInView({
+    threshold: 0.55,
+  });
+
+  let weightItems: ReactNode;
+
+  if (exerciseType === 'assisted' || exerciseType === 'weighted') {
+    weightItems = instance.sets.map((set, index) => (
+      <div key={index} className={styles.historyItemBodyItem}>
+        {set.repetitions}
+        <i className='fa-solid fa-xmark'></i>
+        {set.resistanceInPounds}
+      </div>
+    ));
+  }
+  return (
+    <div
+      ref={ref}
+      className={classNames(
+        styles.historyItem,
+        inView && styles.visible,
+        first && styles.first,
+        last && styles.last
+      )}
+    >
+      <button type='button' onClick={previous} disabled={first}>
+        <i className='fa-solid fa-chevron-left'></i>
+      </button>
+      <div className={styles.historyItemBody}>
+        <div>{format.format(new Date(instance.createdAt))}</div>
+        <div className={styles.historyItemBodyItems}>{weightItems}</div>
+      </div>
+      <button type='button' onClick={next} disabled={last}>
+        <i className='fa-solid fa-chevron-right '></i>
+      </button>
     </div>
   );
 }
