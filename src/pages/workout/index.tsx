@@ -1,3 +1,4 @@
+import { IExercise, IExerciseExtended } from '@dgoudie/isometric-types';
 import React, {
   Suspense,
   useCallback,
@@ -9,7 +10,6 @@ import React, {
 
 import ActiveExerciseView from '../../components/ActiveExerciseView/ActiveExerciseView';
 import EndWorkoutBottomSheet from '../../components/BottomSheet/components/EndWorkoutBottomSheet/EndWorkoutBottomSheet';
-import { IExercise } from '@dgoudie/isometric-types';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import SwipeDeadZone from '../../components/SwipeDeadZone/SwipeDeadZone';
 import { WorkoutContext } from '../../providers/Workout/Workout';
@@ -19,7 +19,7 @@ import { fetchFromApiAsReadableResource } from '../../utils/fetch-from-api';
 import styles from './index.module.scss';
 
 let initialExercisesResponse =
-  fetchFromApiAsReadableResource<IExercise[]>(`/api/exercises`);
+  fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
 
 export type ActiveExercise = {
   index: number;
@@ -36,7 +36,7 @@ export default function Workout() {
   useEffect(() => {
     startTransaction(() => {
       const updatedExercisesResponse =
-        fetchFromApiAsReadableResource<IExercise[]>(`/api/exercises`);
+        fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
       setExercisesResponse(updatedExercisesResponse);
       initialExercisesResponse = updatedExercisesResponse;
     });

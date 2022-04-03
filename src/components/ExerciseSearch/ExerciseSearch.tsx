@@ -1,4 +1,8 @@
-import { ExerciseMuscleGroup, IExercise } from '@dgoudie/isometric-types';
+import {
+  ExerciseMuscleGroup,
+  IExercise,
+  IExerciseExtended,
+} from '@dgoudie/isometric-types';
 import {
   ReadableResource,
   fetchFromApi,
@@ -22,12 +26,11 @@ import RouteLoader from '../RouteLoader/RouteLoader';
 import classNames from 'classnames';
 import styles from './ExerciseSearch.module.scss';
 
-let initialExercisesResponse = fetchFromApiAsReadableResource<IExercise[]>(
-  `/api/exercises`,
-  {
-    page: '1',
-  }
-);
+let initialExercisesResponse = fetchFromApiAsReadableResource<
+  IExerciseExtended[]
+>(`/api/exercises`, {
+  page: '1',
+});
 
 interface Props {
   search: string | undefined;
@@ -70,7 +73,7 @@ export default function ExerciseSearch(props: Props) {
 }
 
 interface ExerciseSearchContentProps extends Props {
-  exercisesResponse: ReadableResource<IExercise[]>;
+  exercisesResponse: ReadableResource<IExerciseExtended[]>;
 }
 
 function ExerciseSearchContent({
@@ -106,7 +109,10 @@ function ExerciseSearchContent({
   const loadMore = useCallback(async () => {
     const params = new URLSearchParams(searchParams);
     params.set('page', page.toString());
-    const nextPage = await fetchFromApi<IExercise[]>(`/api/exercises`, params);
+    const nextPage = await fetchFromApi<IExerciseExtended[]>(
+      `/api/exercises`,
+      params
+    );
     if (!nextPage.length) {
       setMoreExercises(false);
     } else {
@@ -176,7 +182,7 @@ function ExerciseSearchContent({
 }
 
 interface ExerciseButtonProps {
-  exercise: IExercise & { _id: string };
+  exercise: IExerciseExtended;
   onSelect?: (exerciseId: string) => void;
 }
 
@@ -198,14 +204,57 @@ const ExerciseButton = ({ exercise, onSelect }: ExerciseButtonProps) => {
     [exercise]
   );
 
+  let itemMetaLineOne = (
+    <li>
+      PR: <span className={styles.itemMetaNone}>None</span>
+    </li>
+  );
+  if (!!exercise.bestSet) {
+    switch (exercise.exerciseType) {
+      case 'rep_based': {
+        itemMetaLineOne = (
+          <li>
+            PR: {exercise.bestInstance!.totalRepsForInstance} reps (
+            {format.format(new Date(exercise.bestInstance!.createdAt))})
+          </li>
+        );
+        break;
+      }
+      case 'timed': {
+        itemMetaLineOne = <></>;
+        break;
+      }
+      default: {
+        itemMetaLineOne = (
+          <li>
+            PR: {exercise.bestSet.resistanceInPounds} lbs (
+            {format.format(new Date(exercise.bestInstance!.createdAt))})
+          </li>
+        );
+      }
+    }
+  }
+
+  let itemMetaLineTwo = (
+    <li>
+      Last Performed: <span className={styles.itemMetaNone}>Never</span>
+    </li>
+  );
+
+  if (!!exercise.lastPerformed) {
+    itemMetaLineTwo = (
+      <li>Last Performed: {format.format(new Date(exercise.lastPerformed))}</li>
+    );
+  }
+
   const itemInnards = useMemo(
     () => (
       <>
         <div className={styles.itemTitle}>{exercise.name}</div>
         <div className={styles.itemMuscles}>{muscleGroupTags}</div>
         <ol className={styles.itemMeta}>
-          <li>PR: 185 lbs ({format.format(new Date())})</li>
-          <li>Last Performed: {format.format(new Date())}</li>
+          {itemMetaLineOne}
+          {itemMetaLineTwo}
         </ol>
       </>
     ),

@@ -1,5 +1,6 @@
 import {
   IExercise,
+  IExerciseExtended,
   IWorkoutExercise,
   IWorkoutExerciseSet,
 } from '@dgoudie/isometric-types';
@@ -19,7 +20,7 @@ import styles from './ActiveExerciseView.module.scss';
 
 interface Props {
   exercises: IWorkoutExercise[];
-  exercisesResponse: ReadableResource<IExercise[]>;
+  exercisesResponse: ReadableResource<IExerciseExtended[]>;
   focusedExercise: ActiveExercise;
   focusedExerciseChanged: (exercise: ActiveExercise) => void;
 }
@@ -30,9 +31,9 @@ export default function ActiveExerciseView({
   focusedExercise,
   focusedExerciseChanged,
 }: Props) {
-  const exerciseMap: Map<string, IExercise> = useMemo(
+  const exerciseMap: Map<string, IExerciseExtended> = useMemo(
     () =>
-      new Map<string, IExercise>(
+      new Map<string, IExerciseExtended>(
         exercisesResponse.read().map(({ _id, ...ex }) => [_id, { _id, ...ex }])
       ),
     [exercisesResponse]
@@ -57,7 +58,7 @@ export default function ActiveExerciseView({
 
   const [nextNoncompleteExercise, setNextNoncompleteExercise] = useState<{
     index: number;
-    exerciseData: IExercise;
+    exerciseData: IExerciseExtended;
   }>();
 
   useEffect(() => {

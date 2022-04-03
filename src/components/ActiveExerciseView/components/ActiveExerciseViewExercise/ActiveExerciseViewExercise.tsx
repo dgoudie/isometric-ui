@@ -1,21 +1,20 @@
 import {
   IExercise,
+  IExerciseExtended,
   IWorkoutExercise,
-  IWorkoutExerciseSet,
 } from '@dgoudie/isometric-types';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 
 import ActiveExerciseViewExerciseSet from '../ActiveExerciseViewExerciseSet/ActiveExerciseViewExerciseSet';
 import { AfterExerciseTimerContext } from '../../../../providers/AfterExerciseTimer/AfterExerciseTimer';
 import MuscleGroupTag from '../../../MuscleGroupTag/MuscleGroupTag';
-import SwipeDeadZone from '../../../SwipeDeadZone/SwipeDeadZone';
 import styles from './ActiveExerciseViewExercise.module.scss';
 import { useInView } from 'react-intersection-observer';
 
 interface Props {
   exercise: IWorkoutExercise;
-  data: IExercise;
-  nextExercise: IExercise | undefined;
+  data: IExerciseExtended;
+  nextExercise: IExerciseExtended | undefined;
   exerciseIndex: number;
   onSelected: (i: number) => void;
   onCompleted: () => void;
@@ -82,6 +81,7 @@ export default function ActiveExerciseViewExercise({
           )
         )}
       </div>
+      <ExerciseHistory data={data} />
       <div className={styles.sets}>
         {exercise.sets.map((set, index) => (
           <ActiveExerciseViewExerciseSet
@@ -96,5 +96,17 @@ export default function ActiveExerciseViewExercise({
         ))}
       </div>
     </section>
+  );
+}
+
+type ExerciseHistoryProps = {
+  data: IExerciseExtended;
+};
+
+function ExerciseHistory({ data }: ExerciseHistoryProps) {
+  return (
+    <div className={styles.history}>
+      <h2>History</h2>
+    </div>
   );
 }
