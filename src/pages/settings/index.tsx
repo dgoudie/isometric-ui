@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from 'react';
 
-import { AfterExerciseTimerContext } from '../../providers/AfterExerciseTimer/AfterExerciseTimer';
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 
 const Settings: React.FC = () => {

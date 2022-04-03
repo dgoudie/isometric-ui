@@ -29,6 +29,7 @@ type AfterExerciseTimerContextType = {
     nextExerciseMuscleGroup: ExerciseMuscleGroup
   ) => Promise<void>;
   showAfterLastExercise: (durationInSeconds: number) => Promise<void>;
+  cancel: () => void;
 };
 
 export const AfterExerciseTimerContext =
@@ -36,6 +37,7 @@ export const AfterExerciseTimerContext =
     show: () => Promise.resolve(),
     showAfterLastSet: () => Promise.resolve(),
     showAfterLastExercise: () => Promise.resolve(),
+    cancel: () => undefined,
   });
 
 const TIMEOUT = 250;
@@ -131,13 +133,16 @@ export default function AfterExerciseTimerProvider({
     [buildPromise]
   );
 
-  const rootRef = useRef<HTMLDivElement>(null);
+  const cancel = useCallback(() => {
+    setDurationInMilliSeconds(0);
+    setOnFinished(undefined);
+  }, []);
 
-  let modalContent: ReactNode;
+  const rootRef = useRef<HTMLDivElement>(null);
 
   return (
     <AfterExerciseTimerContext.Provider
-      value={{ show, showAfterLastExercise, showAfterLastSet }}
+      value={{ show, showAfterLastExercise, showAfterLastSet, cancel }}
     >
       {children}
       <Portal>

@@ -188,8 +188,6 @@ interface ExerciseButtonProps {
 }
 
 const ExerciseButton = ({ exercise, onSelect }: ExerciseButtonProps) => {
-  const format = useMemo(() => new Intl.DateTimeFormat('en-US'), []);
-
   const muscleGroupTags = useMemo(
     () =>
       [
@@ -213,7 +211,7 @@ const ExerciseButton = ({ exercise, onSelect }: ExerciseButtonProps) => {
         <ExerciseMetadata exercise={exercise} />
       </>
     ),
-    [exercise.name, format, muscleGroupTags]
+    [exercise.name, muscleGroupTags]
   );
 
   if (!!onSelect) {

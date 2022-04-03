@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "@dgoudie/isometric-types": "^1.0.18",
+        "@dgoudie/isometric-types": "^1.0.19",
         "@dgoudie/service-error": "^3.0.0-4",
         "@fortawesome/fontawesome-free": "^6.0.0",
         "@primer/react": "^35.1.0",

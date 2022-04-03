@@ -1,14 +1,16 @@
 import { IExerciseExtended } from '@dgoudie/isometric-types';
 import React from 'react';
+import classNames from 'classnames';
 import styles from './ExerciseMetadata.module.scss';
 
 interface Props {
   exercise: IExerciseExtended;
+  className?: string;
 }
 
 const format = new Intl.DateTimeFormat('en-US');
 
-export default function ExerciseMetadata({ exercise }: Props) {
+export default function ExerciseMetadata({ exercise, className }: Props) {
   let itemMetaLineOne = (
     <li>
       PR: <span className={styles.metaNone}>None</span>
@@ -52,7 +54,7 @@ export default function ExerciseMetadata({ exercise }: Props) {
     );
   }
   return (
-    <ol className={styles.meta}>
+    <ol className={classNames(styles.meta, className)}>
       {itemMetaLineOne}
       {itemMetaLineTwo}
     </ol>
