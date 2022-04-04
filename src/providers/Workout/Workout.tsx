@@ -46,11 +46,10 @@ export const WorkoutContext = createContext<{
 export default function WorkoutProvider({
   children,
 }: React.PropsWithChildren<{}>) {
-  const [workoutString, setWorkoutString] = useState<string | null>();
   const [workout, setWorkout] = useState<IWorkout | null>();
 
   const pageVisible: boolean = usePageVisibility();
-  const { lastMessage, sendJsonMessage, readyState } = useWebSocket(
+  const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
     process.env.REACT_APP_WS!,
     { shouldReconnect: () => true },
     pageVisible
@@ -58,13 +57,9 @@ export default function WorkoutProvider({
 
   useEffect(() => {
     if (readyState === ReadyState.OPEN) {
-      setWorkoutString(lastMessage?.data);
+      setWorkout(lastJsonMessage);
     }
-  }, [lastMessage]);
-
-  useEffect(() => {
-    setWorkout(workoutString ? JSON.parse(workoutString) : workoutString);
-  }, [workoutString]);
+  }, [lastJsonMessage]);
 
   const startWorkout = useCallback(() => {
     requestNotificationPermission();
