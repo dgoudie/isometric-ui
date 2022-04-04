@@ -32,6 +32,7 @@ export const WorkoutContext = createContext<{
     setIndex: number,
     resistanceInPounds: number | undefined
   ) => void;
+  replaceExercise: (exericiseIndex: number, newExerciseId: string) => void;
 }>({
   startWorkout: () => undefined,
   endWorkout: () => undefined,
@@ -39,6 +40,7 @@ export const WorkoutContext = createContext<{
   persistSetComplete: () => undefined,
   persistSetRepetitions: () => undefined,
   persistSetResistance: () => undefined,
+  replaceExercise: () => undefined,
 });
 
 export default function WorkoutProvider({
@@ -82,6 +84,18 @@ export default function WorkoutProvider({
           exerciseIndex,
           setIndex,
           complete,
+        })
+      );
+    },
+    [sendJsonMessage]
+  );
+  const replaceExercise = useCallback(
+    (exerciseIndex: number, newExerciseId: string) => {
+      sendJsonMessage(
+        verifyType<WSWorkoutUpdate>({
+          type: 'REPLACE_EXERCISE',
+          exerciseIndex,
+          newExerciseId,
         })
       );
     },
@@ -144,6 +158,7 @@ export default function WorkoutProvider({
         persistSetComplete,
         persistSetRepetitions,
         persistSetResistance,
+        replaceExercise,
       }}
     >
       {children}

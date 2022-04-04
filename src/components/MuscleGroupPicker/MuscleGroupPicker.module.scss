@@ -1,36 +1,36 @@
 .root {
-    position: relative;
-    summary {
-        -webkit-tap-highlight-color: transparent;
-        cursor: pointer;
-        list-style: none;
-        display: grid;
-        grid-template-columns: max-content max-content;
-        align-items: center;
-        gap: 0.5rem;
-        &::-webkit-details-marker {
-            display: none;
-        }
+  position: relative;
+  summary {
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+    list-style: none;
+    display: grid;
+    grid-template-columns: max-content max-content;
+    align-items: center;
+    gap: 0.5rem;
+    &::-webkit-details-marker {
+      display: none;
     }
+  }
 }
 
 .body {
-    position: absolute;
-    display: grid;
-    gap: 0.5rem;
-    background: var(--background);
-    padding: 0.75rem;
-    grid-template-columns: auto auto;
-    border-radius: 8px;
-    left: -25%;
-    box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+  position: absolute;
+  display: grid;
+  gap: 0.5rem;
+  background: var(--background);
+  padding: 0.75rem;
+  grid-template-columns: auto auto;
+  border-radius: 8px;
+  left: -25%;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
 }
 
 .clear {
-    border-radius: 5px;
-    padding: 0.1rem 0.4rem;
-    font-size: 0.8rem;
-    border: 2px solid;
-    color: var(--color);
-    margin: -2px;
+  border-radius: 8px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.8rem;
+  border: 2px solid;
+  color: var(--color);
+  margin: -2px;
 }

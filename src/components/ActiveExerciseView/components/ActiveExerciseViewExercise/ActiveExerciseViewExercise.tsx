@@ -4,13 +4,22 @@ import {
   IExerciseInstance,
   IWorkoutExercise,
 } from '@dgoudie/isometric-types';
-import { ReactNode, useCallback, useContext, useEffect, useRef } from 'react';
+import {
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import ActiveExerciseViewExerciseSet from '../ActiveExerciseViewExerciseSet/ActiveExerciseViewExerciseSet';
 import { AfterExerciseTimerContext } from '../../../../providers/AfterExerciseTimer/AfterExerciseTimer';
 import ExerciseMetadata from '../../../ExerciseMetadata/ExerciseMetadata';
+import ExercisePickerBottomSheet from '../../../BottomSheet/components/ExercisePickerBottomSheet/ExercisePickerBottomSheet';
 import MuscleGroupTag from '../../../MuscleGroupTag/MuscleGroupTag';
 import SetView from '../../../SetView/SetView';
+import { WorkoutContext } from '../../../../providers/Workout/Workout';
 import classNames from 'classnames';
 import styles from './ActiveExerciseViewExercise.module.scss';
 import { useInView } from 'react-intersection-observer';
@@ -96,6 +105,20 @@ export default function ActiveExerciseViewExercise({
     };
   }, [inView, onSelected, exerciseIndex, sectionInnerRef]);
 
+  const { replaceExercise } = useContext(WorkoutContext);
+
+  const [showExercisePicker, setShowExercisePicker] = useState(false);
+
+  const newExerciseSelected = useCallback(
+    (exerciseId: string | undefined) => {
+      if (!!exerciseId) {
+        replaceExercise(exerciseIndex, exerciseId);
+      }
+      setShowExercisePicker(false);
+    },
+    [exerciseIndex]
+  );
+
   return (
     <section ref={ref} className={styles.section}>
       <div className={styles.sectionInner} ref={sectionInnerRef}>
@@ -126,6 +149,23 @@ export default function ActiveExerciseViewExercise({
                 />
               ))}
             </div>
+            <button
+              type='button'
+              onClick={() => setShowExercisePicker(true)}
+              className={classNames(
+                'standard-button outlined',
+                styles.replaceExercise
+              )}
+            >
+              <i className='fa-solid fa-dumbbell'></i>
+              Replace Exercise
+            </button>
+            {showExercisePicker && (
+              <ExercisePickerBottomSheet
+                muscleGroup={data.primaryMuscleGroup}
+                onResult={newExerciseSelected}
+              />
+            )}
           </div>
           <div
             className={classNames(

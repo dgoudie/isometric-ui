@@ -122,7 +122,7 @@ export default function Workout() {
       <div className={styles.paginator}>
         {workout.exercises.map((exercise, index) => (
           <div
-            key={exercise.exerciseId}
+            key={index}
             className={classNames(
               exerciseIndexInView === index && styles.active
             )}

@@ -49,7 +49,7 @@
   background-color: var(--background-alt);
   padding: 1rem 1.25rem;
   display: grid;
-  grid-template-rows: max-content auto;
+  grid-template-rows: max-content max-content;
   min-height: 20vh;
   max-height: 40vh;
   &Header {
@@ -57,15 +57,14 @@
   }
 
   &Items {
-    margin-top: 0.5rem;
+    margin-top: 0.75rem;
     display: grid;
     gap: 0.75rem;
     overflow-y: auto;
 
     &Item {
-      display: flex;
+      display: grid;
       gap: 0.3rem;
-      flex-direction: column;
     }
   }
 
@@ -100,4 +99,9 @@
 
 .metadata {
   margin-top: 0.5rem;
+}
+
+.replaceExercise {
+  float: right;
+  margin-top: 0.75rem;
 }
