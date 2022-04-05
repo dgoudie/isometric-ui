@@ -1,66 +1,201 @@
+import {
+  IExerciseExtended,
+  IWorkout,
+  IWorkoutExercise,
+} from '@dgoudie/isometric-types';
+import React, {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from 'react';
+import {
+  ReadableResource,
+  fetchFromApi,
+  fetchFromApiAsReadableResource,
+} from '../../utils/fetch-from-api';
+import { formatDistance, formatDuration, intervalToDuration } from 'date-fns';
+
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
-import React from 'react';
+import InfiniteScroll from '../../components/InfiniteScroll/InfiniteScroll';
+import MuscleGroupTag from '../../components/MuscleGroupTag/MuscleGroupTag';
+import RouteLoader from '../../components/RouteLoader/RouteLoader';
+import SetView from '../../components/SetView/SetView';
+import classNames from 'classnames';
+import { secondsToMilliseconds } from 'date-fns/esm';
+import styles from './index.module.scss';
 
-type Props = {};
+const format = new Intl.DateTimeFormat('en-US', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+});
 
-const History: React.FC<Props> = () => {
+let initialResource = fetchFromApiAsReadableResource<IWorkout[]>(
+  `/api/workouts`,
+  { page: '1' }
+);
+
+let initialExercisesResource =
+  fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
+
+export default function History() {
+  const [resource, setResponse] = useState(initialResource);
+  const [exercisesResource, setExercisesResource] = useState(
+    initialExercisesResource
+  );
+
+  const [_isPending, startTransaction] = useTransition();
+
+  useEffect(() => {
+    startTransaction(() => {
+      const updatedResource = fetchFromApiAsReadableResource<IWorkout[]>(
+        `/api/workouts`,
+        { page: '1' }
+      );
+      setResponse(updatedResource);
+      initialResource = updatedResource;
+      const updatedExercisesResource =
+        fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
+      setExercisesResource(updatedExercisesResource);
+      initialExercisesResource = updatedExercisesResource;
+    });
+  }, []);
+
   return (
     <AppBarWithAppHeaderLayout pageTitle='History'>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Scelerisque viverra
-      mauris in aliquam sem. Odio euismod lacinia at quis risus sed vulputate
-      odio. Velit scelerisque in dictum non consectetur a. Nibh venenatis cras
-      sed felis eget velit aliquet sagittis. Maecenas accumsan lacus vel
-      facilisis volutpat est velit egestas dui. Dui nunc mattis enim ut tellus
-      elementum sagittis vitae et. Arcu odio ut sem nulla pharetra diam sit amet
-      nisl. Felis imperdiet proin fermentum leo vel orci porta non. Orci ac
-      auctor augue mauris. Nullam non nisi est sit amet facilisis magna. Arcu ac
-      tortor dignissim convallis. Ut morbi tincidunt augue interdum. Diam quis
-      enim lobortis scelerisque fermentum dui. Pulvinar mattis nunc sed blandit
-      libero. Nisi quis eleifend quam adipiscing vitae proin sagittis. A iaculis
-      at erat pellentesque adipiscing commodo elit at imperdiet. Bibendum enim
-      facilisis gravida neque. Mi sit amet mauris commodo quis imperdiet massa
-      tincidunt. Libero justo laoreet sit amet. Id semper risus in hendrerit
-      gravida rutrum quisque. At erat pellentesque adipiscing commodo elit at.
-      In pellentesque massa placerat duis ultricies lacus sed turpis. Auctor
-      augue mauris augue neque gravida in fermentum et sollicitudin. Integer
-      malesuada nunc vel risus commodo viverra maecenas accumsan lacus.
-      Vulputate odio ut enim blandit volutpat maecenas. Nisi est sit amet
-      facilisis magna etiam. Mus mauris vitae ultricies leo integer malesuada
-      nunc vel risus. Eleifend donec pretium vulputate sapien nec sagittis
-      aliquam malesuada. Convallis tellus id interdum velit laoreet id donec.
-      Etiam dignissim diam quis enim. Dignissim sodales ut eu sem integer vitae
-      justo. Viverra nibh cras pulvinar mattis. Eget duis at tellus at urna
-      condimentum. Elementum curabitur vitae nunc sed velit dignissim sodales.
-      Risus quis varius quam quisque id diam vel quam elementum. Scelerisque
-      felis imperdiet proin fermentum leo. Suscipit tellus mauris a diam
-      maecenas sed. Mollis nunc sed id semper. Aliquet eget sit amet tellus.
-      Quisque non tellus orci ac auctor augue. Blandit cursus risus at ultrices
-      mi. Eu consequat ac felis donec et odio pellentesque. Viverra mauris in
-      aliquam sem fringilla ut morbi tincidunt. Nisi scelerisque eu ultrices
-      vitae auctor eu. Augue neque gravida in fermentum et sollicitudin ac.
-      Interdum varius sit amet mattis vulputate enim. Vel turpis nunc eget lorem
-      dolor sed viverra ipsum. Amet consectetur adipiscing elit duis. Aenean sed
-      adipiscing diam donec adipiscing tristique risus nec feugiat. Quis viverra
-      nibh cras pulvinar mattis nunc sed blandit libero. Faucibus interdum
-      posuere lorem ipsum dolor. Id neque aliquam vestibulum morbi blandit
-      cursus risus at ultrices. Neque ornare aenean euismod elementum nisi quis.
-      Velit euismod in pellentesque massa placerat. Ornare lectus sit amet est
-      placerat. Arcu non odio euismod lacinia at quis. Non enim praesent
-      elementum facilisis leo vel. Est sit amet facilisis magna etiam tempor.
-      Orci a scelerisque purus semper eget duis at. Faucibus scelerisque
-      eleifend donec pretium vulputate sapien nec sagittis. Turpis nunc eget
-      lorem dolor sed viverra ipsum nunc. In hac habitasse platea dictumst
-      quisque. Blandit cursus risus at ultrices mi. Quis varius quam quisque id
-      diam vel quam elementum. Adipiscing diam donec adipiscing tristique risus
-      nec feugiat in fermentum. Eleifend quam adipiscing vitae proin sagittis.
-      Egestas dui id ornare arcu odio. Non odio euismod lacinia at quis risus.
-      Lacus sed turpis tincidunt id aliquet risus feugiat in. Sed libero enim
-      sed faucibus turpis. Tellus rutrum tellus pellentesque eu. Vestibulum
-      rhoncus est pellentesque elit ullamcorper dignissim cras tincidunt
-      lobortis.
+      <Suspense fallback={<RouteLoader />}>
+        <HistoryContent
+          resource={resource}
+          exercisesResource={exercisesResource}
+        />
+      </Suspense>
     </AppBarWithAppHeaderLayout>
   );
-};
+}
 
-export default History;
+interface HistoryContentProps {
+  resource: ReadableResource<IWorkout[]>;
+  exercisesResource: ReadableResource<IExerciseExtended[]>;
+}
+
+function HistoryContent({ resource, exercisesResource }: HistoryContentProps) {
+  const exerciseMap: Map<string, IExerciseExtended> = useMemo(
+    () =>
+      new Map<string, IExerciseExtended>(
+        exercisesResource.read().map(({ _id, ...ex }) => [_id, { _id, ...ex }])
+      ),
+    [exercisesResource]
+  );
+
+  const [workouts, setWorkouts] = useState(resource.read());
+  const [moreWorkouts, setMoreWorkouts] = useState(workouts.length >= 10);
+  const [page, setPage] = useState(2);
+
+  const items = useMemo(
+    () =>
+      workouts.map((workout) => (
+        <Workout
+          workout={workout}
+          key={workout._id}
+          exerciseMap={exerciseMap}
+        />
+      )),
+    [workouts]
+  );
+
+  const loadMore = useCallback(async () => {
+    const params = new URLSearchParams();
+    params.set('page', page.toString());
+    const nextPage = await fetchFromApi<IWorkout[]>(`/api/workouts`, params);
+    if (!nextPage.length) {
+      setMoreWorkouts(false);
+    } else {
+      setWorkouts([...workouts, ...nextPage]);
+    }
+    setPage(page + 1);
+  }, [workouts, page]);
+
+  return (
+    <AppBarWithAppHeaderLayout pageTitle='History'>
+      <div className={styles.root}>
+        <h1>Workout History</h1>
+        <InfiniteScroll
+          //@ts-ignore
+          className={styles.workouts}
+          pageStart={1}
+          loadMore={loadMore}
+          hasMore={moreWorkouts}
+          useWindow={false}
+        >
+          {items}
+        </InfiniteScroll>
+      </div>
+    </AppBarWithAppHeaderLayout>
+  );
+}
+
+interface WorkoutProps {
+  workout: IWorkout;
+  exerciseMap: Map<string, IExerciseExtended>;
+}
+
+function Workout({ workout, exerciseMap }: WorkoutProps) {
+  const howLongAgo = useMemo(
+    () =>
+      formatDistance(new Date(workout.createdAt), new Date(), {
+        addSuffix: true,
+      }),
+    [workout]
+  );
+  const duration = useMemo(
+    () =>
+      formatDuration(
+        intervalToDuration({
+          start: 0,
+          end: secondsToMilliseconds(workout.durationInSeconds!),
+        }),
+        { format: ['hours', 'minutes'] }
+      ),
+    [workout]
+  );
+
+  const exercises = useMemo(
+    () =>
+      workout.exercises.map((exercise, index) => {
+        const exerciseData = exerciseMap.get(exercise.exerciseId)!;
+        return (
+          <div key={index} className={styles.exercise}>
+            <div className={styles.exerciseHeader}>
+              <div>{exerciseData.name}</div>
+              <MuscleGroupTag muscleGroup={exerciseData.primaryMuscleGroup} />
+            </div>
+            <SetView
+              exerciseType={exerciseData.exerciseType}
+              sets={exercise.sets.filter((set) => set.complete)}
+            />
+          </div>
+        );
+      }),
+    [workout]
+  );
+
+  return (
+    <div className={classNames(styles.workout, 'fade-in')}>
+      <div className={styles.item}>
+        <div className={styles.header}>{workout.nickname}</div>
+      </div>
+      <div className={styles.item}>
+        <label>Date</label>
+        <div>{format.format(new Date(workout.createdAt))}</div>
+        <div className={styles.suffix}>{howLongAgo}</div>
+      </div>
+      <div className={styles.item}>
+        <label>Duration</label>
+        <div>{duration}</div>
+      </div>
+      <div className={styles.exercises}>{exercises}</div>
+    </div>
+  );
+}
