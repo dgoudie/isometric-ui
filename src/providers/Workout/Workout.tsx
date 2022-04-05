@@ -1,13 +1,15 @@
-import {
-  IWorkout,
-  IWorkoutExercise,
-  IWorkoutExerciseSet,
-  WSWorkoutUpdate,
-} from '@dgoudie/isometric-types';
-import React, { createContext, useCallback, useEffect, useState } from 'react';
+import { IWorkout, WSWorkoutUpdate } from '@dgoudie/isometric-types';
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 
+import equal from 'deep-equal';
 import { requestNotificationPermission } from '../../utils/notification';
 import { usePageVisibility } from 'react-page-visibility';
 import { verifyType } from '../../utils/verify-type';
@@ -55,9 +57,16 @@ export default function WorkoutProvider({
     pageVisible
   );
 
+  const previousWorkoutState = useRef<IWorkout>();
+
   useEffect(() => {
-    if (readyState === ReadyState.OPEN) {
+    if (
+      readyState === ReadyState.OPEN &&
+      !!lastJsonMessage &&
+      !equal(lastJsonMessage, previousWorkoutState.current)
+    ) {
       setWorkout(lastJsonMessage);
+      previousWorkoutState.current = lastJsonMessage;
     }
   }, [lastJsonMessage]);
 

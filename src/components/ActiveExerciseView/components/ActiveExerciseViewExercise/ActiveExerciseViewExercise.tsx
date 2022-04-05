@@ -21,6 +21,7 @@ import MuscleGroupTag from '../../../MuscleGroupTag/MuscleGroupTag';
 import SetView from '../../../SetView/SetView';
 import { WorkoutContext } from '../../../../providers/Workout/Workout';
 import classNames from 'classnames';
+import equal from 'deep-equal';
 import styles from './ActiveExerciseViewExercise.module.scss';
 import { useInView } from 'react-intersection-observer';
 
@@ -36,13 +37,21 @@ interface Props {
 const format = new Intl.DateTimeFormat('en-US');
 
 export default function ActiveExerciseViewExercise({
-  exercise,
+  exercise: exerciseUnmemoized,
   data,
   exerciseIndex,
   nextExercise,
   onSelected,
   onCompleted,
 }: Props) {
+  const [exercise, setExercise] = useState(exerciseUnmemoized);
+
+  useEffect(() => {
+    if (!equal(exercise, exerciseUnmemoized)) {
+      setExercise(exerciseUnmemoized);
+    }
+  }, [exerciseUnmemoized]);
+
   const { show, showAfterLastExercise, showAfterLastSet, cancel } = useContext(
     AfterExerciseTimerContext
   );
