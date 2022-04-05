@@ -58,11 +58,7 @@ export default function WorkoutProvider({
   const [workout, setWorkout] = useState<IWorkout | null>(lastJsonMessage);
 
   useEffect(() => {
-    if (
-      readyState === ReadyState.OPEN &&
-      !!lastJsonMessage &&
-      !equal(lastJsonMessage, workout)
-    ) {
+    if (readyState === ReadyState.OPEN && !equal(lastJsonMessage, workout)) {
       setWorkout(lastJsonMessage);
     }
   }, [lastJsonMessage]);
