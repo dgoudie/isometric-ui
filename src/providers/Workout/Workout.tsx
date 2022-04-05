@@ -48,8 +48,6 @@ export const WorkoutContext = createContext<{
 export default function WorkoutProvider({
   children,
 }: React.PropsWithChildren<{}>) {
-  const [workout, setWorkout] = useState<IWorkout | null>();
-
   const pageVisible: boolean = usePageVisibility();
   const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
     process.env.REACT_APP_WS!,
@@ -57,16 +55,15 @@ export default function WorkoutProvider({
     pageVisible
   );
 
-  const previousWorkoutState = useRef<IWorkout>();
+  const [workout, setWorkout] = useState<IWorkout | null>(lastJsonMessage);
 
   useEffect(() => {
     if (
       readyState === ReadyState.OPEN &&
       !!lastJsonMessage &&
-      !equal(lastJsonMessage, previousWorkoutState.current)
+      !equal(lastJsonMessage, workout)
     ) {
       setWorkout(lastJsonMessage);
-      previousWorkoutState.current = lastJsonMessage;
     }
   }, [lastJsonMessage]);
 
