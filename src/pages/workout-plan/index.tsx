@@ -19,11 +19,9 @@ import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayou
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import { SnackbarContext } from '../../providers/Snackbar/Snackbar';
 import WorkoutPlanEditor from '../../components/WorkoutPlanEditor/WorkoutPlanEditor';
-import axios from 'axios';
 import classNames from 'classnames';
 import styles from './index.module.scss';
 import { useNavigate } from 'react-router-dom';
-import { v4 } from 'uuid';
 
 const WorkoutPlanSchema = Yup.array()
   .min(1)
@@ -118,11 +116,12 @@ function WorkoutPlanContent({
   const { openSnackbar } = useContext(SnackbarContext);
 
   const save = useCallback(async () => {
-    await axios.put(
-      `/api/schedule`,
-      { days: workoutScheduleDays },
-      { withCredentials: true }
-    );
+    await fetch(`/api/schedule`, {
+      method: 'PUT',
+      body: JSON.stringify({ days: workoutScheduleDays }),
+      headers: { 'content-type': 'application/json' },
+      credentials: 'same-origin',
+    });
     openSnackbar('Schedule saved successfully.');
     navigate('/home');
   }, [workoutScheduleDays, navigate]);
