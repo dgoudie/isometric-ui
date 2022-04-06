@@ -37,14 +37,8 @@ let initialResource = fetchFromApiAsReadableResource<IWorkout[]>(
   { page: '1' }
 );
 
-let initialExercisesResource =
-  fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
-
 export default function History() {
   const [resource, setResponse] = useState(initialResource);
-  const [exercisesResource, setExercisesResource] = useState(
-    initialExercisesResource
-  );
 
   const [_isPending, startTransaction] = useTransition();
 
@@ -56,20 +50,13 @@ export default function History() {
       );
       setResponse(updatedResource);
       initialResource = updatedResource;
-      const updatedExercisesResource =
-        fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
-      setExercisesResource(updatedExercisesResource);
-      initialExercisesResource = updatedExercisesResource;
     });
   }, []);
 
   return (
     <AppBarWithAppHeaderLayout pageTitle='History'>
       <Suspense fallback={<RouteLoader />}>
-        <HistoryContent
-          resource={resource}
-          exercisesResource={exercisesResource}
-        />
+        <HistoryContent resource={resource} />
       </Suspense>
     </AppBarWithAppHeaderLayout>
   );
@@ -77,18 +64,9 @@ export default function History() {
 
 interface HistoryContentProps {
   resource: ReadableResource<IWorkout[]>;
-  exercisesResource: ReadableResource<IExerciseExtended[]>;
 }
 
-function HistoryContent({ resource, exercisesResource }: HistoryContentProps) {
-  const exerciseMap: Map<string, IExerciseExtended> = useMemo(
-    () =>
-      new Map<string, IExerciseExtended>(
-        exercisesResource.read().map(({ _id, ...ex }) => [_id, { _id, ...ex }])
-      ),
-    [exercisesResource]
-  );
-
+function HistoryContent({ resource }: HistoryContentProps) {
   const [workouts, setWorkouts] = useState(resource.read());
   const [moreWorkouts, setMoreWorkouts] = useState(workouts.length >= 10);
   const [page, setPage] = useState(2);
@@ -96,11 +74,7 @@ function HistoryContent({ resource, exercisesResource }: HistoryContentProps) {
   const items = useMemo(
     () =>
       workouts.map((workout) => (
-        <Workout
-          workout={workout}
-          key={workout._id}
-          exerciseMap={exerciseMap}
-        />
+        <Workout workout={workout} key={workout._id} />
       )),
     [workouts]
   );
@@ -138,10 +112,9 @@ function HistoryContent({ resource, exercisesResource }: HistoryContentProps) {
 
 interface WorkoutProps {
   workout: IWorkout;
-  exerciseMap: Map<string, IExerciseExtended>;
 }
 
-function Workout({ workout, exerciseMap }: WorkoutProps) {
+function Workout({ workout }: WorkoutProps) {
   const howLongAgo = useMemo(
     () =>
       formatDistance(new Date(workout.createdAt), new Date(), {
@@ -164,15 +137,16 @@ function Workout({ workout, exerciseMap }: WorkoutProps) {
   const exercises = useMemo(
     () =>
       workout.exercises.map((exercise, index) => {
-        const exerciseData = exerciseMap.get(exercise.exerciseId)!;
         return (
           <div key={index} className={styles.exercise}>
             <div className={styles.exerciseHeader}>
-              <div>{exerciseData.name}</div>
-              <MuscleGroupTag muscleGroup={exerciseData.primaryMuscleGroup} />
+              <div>{exercise.exercise.name}</div>
+              <MuscleGroupTag
+                muscleGroup={exercise.exercise.primaryMuscleGroup}
+              />
             </div>
             <SetView
-              exerciseType={exerciseData.exerciseType}
+              exerciseType={exercise.exercise.exerciseType}
               sets={exercise.sets.filter((set) => set.complete)}
             />
           </div>

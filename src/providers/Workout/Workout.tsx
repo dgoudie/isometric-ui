@@ -15,7 +15,7 @@ import { usePageVisibility } from 'react-page-visibility';
 import { verifyType } from '../../utils/verify-type';
 
 export const WorkoutContext = createContext<{
-  workout?: IWorkout | null;
+  workout: IWorkout | null;
   startWorkout: () => void;
   endWorkout: () => void;
   discardWorkout: () => void;
@@ -36,6 +36,7 @@ export const WorkoutContext = createContext<{
   ) => void;
   replaceExercise: (exericiseIndex: number, newExerciseId: string) => void;
 }>({
+  workout: null,
   startWorkout: () => undefined,
   endWorkout: () => undefined,
   discardWorkout: () => undefined,

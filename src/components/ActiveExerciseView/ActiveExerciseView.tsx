@@ -71,7 +71,7 @@ export default function ActiveExerciseView({
       setNextNoncompleteExercise({
         index: indexOfNextNonCompleteExercise,
         exerciseData: exerciseMap.get(
-          exercises[indexOfNextNonCompleteExercise].exerciseId
+          exercises[indexOfNextNonCompleteExercise].exercise._id
         )!,
       });
     } else {
@@ -98,7 +98,7 @@ export default function ActiveExerciseView({
       {exercises.map((exercise, index) => (
         <ActiveExerciseViewExercise
           key={index}
-          data={exerciseMap.get(exercise.exerciseId)!}
+          data={exerciseMap.get(exercise.exercise._id)!}
           exercise={exercise}
           nextExercise={nextNoncompleteExercise?.exerciseData}
           exerciseIndex={index}

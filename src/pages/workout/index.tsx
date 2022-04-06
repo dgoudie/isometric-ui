@@ -1,9 +1,15 @@
-import { IExercise, IExerciseExtended } from '@dgoudie/isometric-types';
+import {
+  IExercise,
+  IExerciseExtended,
+  IWorkout,
+} from '@dgoudie/isometric-types';
 import React, {
   Suspense,
   useCallback,
   useContext,
   useEffect,
+  useMemo,
+  useRef,
   useState,
   useTransition,
 } from 'react';
@@ -18,34 +24,28 @@ import classNames from 'classnames';
 import { fetchFromApiAsReadableResource } from '../../utils/fetch-from-api';
 import styles from './index.module.scss';
 
-let initialExercisesResponse =
-  fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
-
 export type ActiveExercise = {
   index: number;
   scrollIntoView: boolean;
 };
 
 export default function Workout() {
-  const [exercisesResponse, setExercisesResponse] = useState(
-    initialExercisesResponse
-  );
-
-  const [_isPending, startTransaction] = useTransition();
-
-  useEffect(() => {
-    startTransaction(() => {
-      const updatedExercisesResponse =
-        fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
-      setExercisesResponse(updatedExercisesResponse);
-      initialExercisesResponse = updatedExercisesResponse;
-    });
-  }, []);
-
   useEffect(() => {
     document.title = `Workout | ISOMETRIC`;
   }, []);
   const { workout, endWorkout, discardWorkout } = useContext(WorkoutContext);
+
+  useEffect(() => console.log('workout', workout), [workout]);
+
+  const exercisesResponse = useMemo(() => {
+    console.log('workout2', workout);
+    const params = new URLSearchParams();
+    workoutToExerciseIdSet(workout).forEach((id) => params.append('ids', id));
+    return fetchFromApiAsReadableResource<IExerciseExtended[]>(
+      `/api/exercises`,
+      params
+    );
+  }, [workout]);
 
   const [showEndWorkoutBottomSheet, setShowEndWorkoutBottomSheet] =
     useState(false);
@@ -65,6 +65,8 @@ export default function Workout() {
     }
     setShowEndWorkoutBottomSheet(false);
   }, []);
+
+  const [_isPending, startTransaction] = useTransition();
 
   const focusedExerciseChanged = useCallback((exercise: ActiveExercise) => {
     startTransaction(() => {
@@ -142,9 +144,19 @@ export default function Workout() {
         <WorkoutExercisesBottomSheet
           exercises={workout.exercises}
           onResult={onExeciseSelected}
-          exercisesResponse={exercisesResponse}
         />
       )}
     </div>
   );
+}
+
+function workoutToExerciseIdSet(workout: IWorkout | null) {
+  let exerciseIdSet = new Set<string>();
+  if (!workout) {
+    return exerciseIdSet;
+  }
+  workout.exercises.forEach((exercise) =>
+    exerciseIdSet.add(exercise.exercise._id)
+  );
+  return exerciseIdSet;
 }

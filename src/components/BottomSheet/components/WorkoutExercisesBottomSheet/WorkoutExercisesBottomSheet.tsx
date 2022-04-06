@@ -10,7 +10,6 @@ import styles from './WorkoutExercisesBottomSheet.module.scss';
 
 interface Props {
   exercises: IWorkoutExercise[];
-  exercisesResponse: ReadableResource<IExercise[]>;
   onResult: (resultIndex: number | undefined) => void;
 }
 
@@ -41,19 +40,9 @@ interface WorkoutExercisesBottomSheetContentProps
 
 function WorkoutExercisesBottomSheetContent({
   onResult,
-  exercisesResponse,
   exercises,
 }: WorkoutExercisesBottomSheetContentProps) {
-  const exerciseMap: Map<string, IExercise> = useMemo(
-    () =>
-      new Map<string, IExercise>(
-        exercisesResponse.read().map(({ _id, ...ex }) => [_id, { _id, ...ex }])
-      ),
-    [exercisesResponse]
-  );
-
   const exerciseElements = exercises.map((exercise, index) => {
-    const exerciseData = exerciseMap.get(exercise.exerciseId)!;
     const exerciseComplete = exercise.sets.every((set) => set.complete);
     return (
       <button
@@ -67,8 +56,8 @@ function WorkoutExercisesBottomSheetContent({
         <i
           className={classNames('fa-solid', exerciseComplete && 'fa-check')}
         ></i>
-        <div className={styles.itemText}>{exerciseData.name}</div>
-        <MuscleGroupTag muscleGroup={exerciseData.primaryMuscleGroup} />
+        <div className={styles.itemText}>{exercise.exercise.name}</div>
+        <MuscleGroupTag muscleGroup={exercise.exercise.primaryMuscleGroup} />
       </button>
     );
   });
