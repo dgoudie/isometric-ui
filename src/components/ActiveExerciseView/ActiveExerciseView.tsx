@@ -20,23 +20,23 @@ import styles from './ActiveExerciseView.module.scss';
 
 interface Props {
   exercises: IWorkoutExercise[];
-  exercisesResponse: ReadableResource<IExerciseExtended[]>;
+  exercisesResource: ReadableResource<IExerciseExtended[]>;
   focusedExercise: ActiveExercise;
   focusedExerciseChanged: (exercise: ActiveExercise) => void;
 }
 
 export default function ActiveExerciseView({
   exercises,
-  exercisesResponse,
+  exercisesResource,
   focusedExercise,
   focusedExerciseChanged,
 }: Props) {
   const exerciseMap: Map<string, IExerciseExtended> = useMemo(
     () =>
       new Map<string, IExerciseExtended>(
-        exercisesResponse.read().map(({ _id, ...ex }) => [_id, { _id, ...ex }])
+        exercisesResource.read().map(({ _id, ...ex }) => [_id, { _id, ...ex }])
       ),
-    [exercisesResponse]
+    [exercisesResource]
   );
 
   const rootRef = useRef<HTMLDivElement>(null);

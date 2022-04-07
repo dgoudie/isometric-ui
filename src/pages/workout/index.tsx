@@ -29,23 +29,29 @@ export type ActiveExercise = {
   scrollIntoView: boolean;
 };
 
+let initialExercisesResource =
+  fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
+
 export default function Workout() {
   useEffect(() => {
     document.title = `Workout | ISOMETRIC`;
   }, []);
   const { workout, endWorkout, discardWorkout } = useContext(WorkoutContext);
 
-  useEffect(() => console.log('workout', workout), [workout]);
+  const [exercisesResource, setExercisesResource] = useState(
+    initialExercisesResource
+  );
 
-  const exercisesResponse = useMemo(() => {
-    console.log('workout2', workout);
-    const params = new URLSearchParams();
-    workoutToExerciseIdSet(workout).forEach((id) => params.append('ids', id));
-    return fetchFromApiAsReadableResource<IExerciseExtended[]>(
-      `/api/exercises`,
-      params
-    );
-  }, [workout]);
+  const [_isPending, startTransaction] = useTransition();
+
+  useEffect(() => {
+    startTransaction(() => {
+      const newExercisesResource =
+        fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
+      setExercisesResource(newExercisesResource);
+      initialExercisesResource = newExercisesResource;
+    });
+  }, []);
 
   const [showEndWorkoutBottomSheet, setShowEndWorkoutBottomSheet] =
     useState(false);
@@ -65,8 +71,6 @@ export default function Workout() {
     }
     setShowEndWorkoutBottomSheet(false);
   }, []);
-
-  const [_isPending, startTransaction] = useTransition();
 
   const focusedExerciseChanged = useCallback((exercise: ActiveExercise) => {
     startTransaction(() => {
@@ -116,7 +120,7 @@ export default function Workout() {
       <Suspense fallback={<RouteLoader />}>
         <ActiveExerciseView
           exercises={workout.exercises}
-          exercisesResponse={exercisesResponse}
+          exercisesResource={exercisesResource}
           focusedExercise={activeExercise}
           focusedExerciseChanged={focusedExerciseChanged}
         />

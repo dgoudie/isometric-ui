@@ -56,7 +56,7 @@ export default function WorkoutProvider({
     pageVisible
   );
 
-  const [workout, setWorkout] = useState<IWorkout | null>(lastJsonMessage);
+  const [workout, setWorkout] = useState<IWorkout>(lastJsonMessage);
 
   useEffect(() => {
     if (readyState === ReadyState.OPEN && !equal(lastJsonMessage, workout)) {
