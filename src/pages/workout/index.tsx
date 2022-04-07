@@ -1,15 +1,9 @@
-import {
-  IExercise,
-  IExerciseExtended,
-  IWorkout,
-} from '@dgoudie/isometric-types';
+import { IExercise, IExerciseExtended } from '@dgoudie/isometric-types';
 import React, {
   Suspense,
   useCallback,
   useContext,
   useEffect,
-  useMemo,
-  useRef,
   useState,
   useTransition,
 } from 'react';
@@ -24,34 +18,34 @@ import classNames from 'classnames';
 import { fetchFromApiAsReadableResource } from '../../utils/fetch-from-api';
 import styles from './index.module.scss';
 
+let initialExercisesResponse =
+  fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
+
 export type ActiveExercise = {
   index: number;
   scrollIntoView: boolean;
 };
 
-let initialExercisesResource =
-  fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
-
 export default function Workout() {
-  useEffect(() => {
-    document.title = `Workout | ISOMETRIC`;
-  }, []);
-  const { workout, endWorkout, discardWorkout } = useContext(WorkoutContext);
-
-  const [exercisesResource, setExercisesResource] = useState(
-    initialExercisesResource
+  const [exercisesResponse, setExercisesResponse] = useState(
+    initialExercisesResponse
   );
 
   const [_isPending, startTransaction] = useTransition();
 
   useEffect(() => {
     startTransaction(() => {
-      const newExercisesResource =
+      const updatedExercisesResponse =
         fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
-      setExercisesResource(newExercisesResource);
-      initialExercisesResource = newExercisesResource;
+      setExercisesResponse(updatedExercisesResponse);
+      initialExercisesResponse = updatedExercisesResponse;
     });
   }, []);
+
+  useEffect(() => {
+    document.title = `Workout | ISOMETRIC`;
+  }, []);
+  const { workout, endWorkout, discardWorkout } = useContext(WorkoutContext);
 
   const [showEndWorkoutBottomSheet, setShowEndWorkoutBottomSheet] =
     useState(false);
@@ -120,7 +114,7 @@ export default function Workout() {
       <Suspense fallback={<RouteLoader />}>
         <ActiveExerciseView
           exercises={workout.exercises}
-          exercisesResource={exercisesResource}
+          exercisesResource={exercisesResponse}
           focusedExercise={activeExercise}
           focusedExerciseChanged={focusedExerciseChanged}
         />
@@ -152,15 +146,4 @@ export default function Workout() {
       )}
     </div>
   );
-}
-
-function workoutToExerciseIdSet(workout: IWorkout | null) {
-  let exerciseIdSet = new Set<string>();
-  if (!workout) {
-    return exerciseIdSet;
-  }
-  workout.exercises.forEach((exercise) =>
-    exerciseIdSet.add(exercise.exercise._id)
-  );
-  return exerciseIdSet;
 }
