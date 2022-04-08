@@ -1,5 +1,9 @@
 import { IExercise, IScheduleDayWithExercises } from '@dgoudie/isometric-types';
 import {
+  ReadableResource,
+  fetchFromApiAsReadableResource,
+} from '../../utils/fetch-from-api';
+import {
   Suspense,
   useContext,
   useEffect,
@@ -17,33 +21,48 @@ import classNames from 'classnames';
 import { getGreeting } from '../../utils/get-greeting';
 import { secondsToMinutes } from 'date-fns';
 import styles from './index.module.scss';
-import { useFetch } from 'usehooks-ts';
 
 const TIME_PER_SET = 60;
 
-export default function Home() {
-  const { data: scheduleResponse } = useFetch<IScheduleDayWithExercises>(
+let initialScheduleResponse =
+  fetchFromApiAsReadableResource<IScheduleDayWithExercises>(
     `/api/schedule/next-day`
   );
 
-  let children = <RouteLoader />;
+export default function Home() {
+  const [scheduleResponse, setScheduleResponse] = useState(
+    initialScheduleResponse
+  );
 
-  if (!!scheduleResponse) {
-    children = <HomeContent schedule={scheduleResponse} />;
-  }
+  const [_isPending, startTransaction] = useTransition();
+
+  useEffect(() => {
+    startTransaction(() => {
+      const updatedResponse =
+        fetchFromApiAsReadableResource<IScheduleDayWithExercises>(
+          `/api/schedule/next-day`
+        );
+      setScheduleResponse(updatedResponse);
+      initialScheduleResponse = updatedResponse;
+    });
+  }, []);
 
   return (
     <AppBarWithAppHeaderLayout pageTitle='Home'>
-      {children}
+      <Suspense fallback={<RouteLoader />}>
+        <HomeContent scheduleResponse={scheduleResponse} />
+      </Suspense>
     </AppBarWithAppHeaderLayout>
   );
 }
 
 interface HomeContentProps {
-  schedule: IScheduleDayWithExercises;
+  scheduleResponse: ReadableResource<IScheduleDayWithExercises>;
 }
 
-function HomeContent({ schedule }: HomeContentProps) {
+function HomeContent({ scheduleResponse }: HomeContentProps) {
+  const schedule = scheduleResponse.read();
+
   const greeting = useMemo(() => getGreeting(), []);
 
   const dayDurationInSeconds = useMemo(() => {

@@ -2,6 +2,10 @@ import * as Yup from 'yup';
 
 import { IExercise, ISchedule, IScheduleDay } from '@dgoudie/isometric-types';
 import {
+  ReadableResource,
+  fetchFromApiAsReadableResource,
+} from '../../utils/fetch-from-api';
+import {
   Suspense,
   useCallback,
   useContext,
@@ -17,7 +21,6 @@ import { SnackbarContext } from '../../providers/Snackbar/Snackbar';
 import WorkoutPlanEditor from '../../components/WorkoutPlanEditor/WorkoutPlanEditor';
 import classNames from 'classnames';
 import styles from './index.module.scss';
-import { useFetch } from 'usehooks-ts';
 import { useNavigate } from 'react-router-dom';
 
 const WorkoutPlanSchema = Yup.array()
@@ -30,36 +33,58 @@ const WorkoutPlanSchema = Yup.array()
     })
   );
 
+let initialExercisesResponse =
+  fetchFromApiAsReadableResource<IExercise[]>(`/api/exercises`);
+let initialScheduleResponse = fetchFromApiAsReadableResource<ISchedule | null>(
+  `/api/schedule`
+);
+
 export default function WorkoutPlan() {
-  const { data: exercisesResponse } = useFetch<IExercise[]>(`/api/exercises`);
-  const { data: scheduleResponse } = useFetch<ISchedule | null>(
-    `/api/schedule`
+  const [exercisesResponse, setExercisesResponse] = useState(
+    initialExercisesResponse
+  );
+  const [scheduleResponse, setScheduleResponse] = useState(
+    initialScheduleResponse
   );
 
-  let children = <RouteLoader />;
+  const [_isPending, startTransaction] = useTransition();
 
-  if (!!exercisesResponse && !!scheduleResponse) {
-    children = (
-      <WorkoutPlanContent
-        schedule={scheduleResponse}
-        exercises={exercisesResponse}
-      />
-    );
-  }
+  useEffect(() => {
+    startTransaction(() => {
+      const updatedExercisesResponse =
+        fetchFromApiAsReadableResource<IExercise[]>(`/api/exercises`);
+      const updatedScheduleResponse =
+        fetchFromApiAsReadableResource<ISchedule | null>(`/api/schedule`);
+      setExercisesResponse(updatedExercisesResponse);
+      setScheduleResponse(updatedScheduleResponse);
+      initialExercisesResponse = updatedExercisesResponse;
+      initialScheduleResponse = updatedScheduleResponse;
+    });
+  }, []);
 
   return (
     <AppBarWithAppHeaderLayout pageTitle='Workout Plan'>
-      {children}
+      <Suspense fallback={<RouteLoader />}>
+        <WorkoutPlanContent
+          scheduleResponse={scheduleResponse}
+          exercisesResponse={exercisesResponse}
+        />
+      </Suspense>
     </AppBarWithAppHeaderLayout>
   );
 }
 
 interface WorkoutPlanContentProps {
-  exercises: IExercise[];
-  schedule: ISchedule | null;
+  exercisesResponse: ReadableResource<IExercise[]>;
+  scheduleResponse: ReadableResource<ISchedule | null>;
 }
 
-function WorkoutPlanContent({ exercises, schedule }: WorkoutPlanContentProps) {
+function WorkoutPlanContent({
+  exercisesResponse,
+  scheduleResponse,
+}: WorkoutPlanContentProps) {
+  let exercises = exercisesResponse.read();
+  let schedule = scheduleResponse.read();
   const exerciseMap: Map<string, IExercise> = useMemo(
     () =>
       new Map<string, IExercise>(
