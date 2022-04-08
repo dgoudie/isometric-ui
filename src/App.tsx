@@ -39,7 +39,7 @@ export default function App() {
           path='exercises/:exerciseName'
           element={
             <Suspense fallback={<RouteLoader />}>
-              <ExerciseEdit />
+              <Exercise />
             </Suspense>
           }
         />
