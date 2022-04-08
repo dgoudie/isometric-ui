@@ -92,21 +92,19 @@ function HistoryContent({ resource }: HistoryContentProps) {
   }, [workouts, page]);
 
   return (
-    <AppBarWithAppHeaderLayout pageTitle='History'>
-      <div className={styles.root}>
-        <h1>Workout History</h1>
-        <InfiniteScroll
-          //@ts-ignore
-          className={styles.workouts}
-          pageStart={1}
-          loadMore={loadMore}
-          hasMore={moreWorkouts}
-          useWindow={false}
-        >
-          {items}
-        </InfiniteScroll>
-      </div>
-    </AppBarWithAppHeaderLayout>
+    <div className={styles.root}>
+      <h1>Workout History</h1>
+      <InfiniteScroll
+        //@ts-ignore
+        className={styles.workouts}
+        pageStart={1}
+        loadMore={loadMore}
+        hasMore={moreWorkouts}
+        useWindow={false}
+      >
+        {items}
+      </InfiniteScroll>
+    </div>
   );
 }
 
