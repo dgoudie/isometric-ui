@@ -54,7 +54,7 @@ export default function ExerciseSearch(props: Props) {
     return searchParams;
   }, [props.muscleGroup, props.search]);
 
-  const [_isPending, startTransaction] = useTransition();
+  const [isPending, startTransaction] = useTransition();
 
   useEffect(() => {
     startTransaction(() => {

@@ -24,7 +24,6 @@ interface Props {
   focusedExercise: ActiveExercise;
   focusedExerciseChanged: (exercise: ActiveExercise) => void;
 }
-
 export default function ActiveExerciseView({
   exercises,
   exercisesResource,
@@ -38,9 +37,7 @@ export default function ActiveExerciseView({
       ),
     [exercisesResource]
   );
-
   const rootRef = useRef<HTMLDivElement>(null);
-
   const scrollExerciseIntoViewByIndex = useCallback(
     (index: number) => {
       rootRef.current?.children &&
@@ -50,17 +47,14 @@ export default function ActiveExerciseView({
     },
     [rootRef]
   );
-
   useEffect(() => {
     !!focusedExercise.scrollIntoView &&
       scrollExerciseIntoViewByIndex(focusedExercise.index);
   }, [scrollExerciseIntoViewByIndex, focusedExercise]);
-
   const [nextNoncompleteExercise, setNextNoncompleteExercise] = useState<{
     index: number;
     exerciseData: IExerciseExtended;
   }>();
-
   useEffect(() => {
     let indexOfNextNonCompleteExercise = exercises.findIndex(
       (exercise, i) =>
@@ -78,12 +72,10 @@ export default function ActiveExerciseView({
       setNextNoncompleteExercise(undefined);
     }
   }, [exercises, focusedExercise, exerciseMap]);
-
   const onSelected = useCallback(
     (index: number) => focusedExerciseChanged({ index, scrollIntoView: false }),
     [focusedExerciseChanged]
   );
-
   const onCompleted = useCallback(() => {
     if (typeof nextNoncompleteExercise !== 'undefined') {
       focusedExerciseChanged({
@@ -92,7 +84,6 @@ export default function ActiveExerciseView({
       });
     }
   }, [nextNoncompleteExercise, focusedExerciseChanged]);
-
   return (
     <div className={classNames(styles.root, 'fade-in')} ref={rootRef}>
       {exercises.map((exercise, index) => (

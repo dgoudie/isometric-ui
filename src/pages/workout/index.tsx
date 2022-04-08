@@ -7,6 +7,10 @@ import React, {
   useState,
   useTransition,
 } from 'react';
+import {
+  emptyReadableResource,
+  fetchFromApiAsReadableResource,
+} from '../../utils/fetch-from-api';
 
 import ActiveExerciseView from '../../components/ActiveExerciseView/ActiveExerciseView';
 import EndWorkoutBottomSheet from '../../components/BottomSheet/components/EndWorkoutBottomSheet/EndWorkoutBottomSheet';
@@ -15,11 +19,9 @@ import SwipeDeadZone from '../../components/SwipeDeadZone/SwipeDeadZone';
 import { WorkoutContext } from '../../providers/Workout/Workout';
 import WorkoutExercisesBottomSheet from '../../components/BottomSheet/components/WorkoutExercisesBottomSheet/WorkoutExercisesBottomSheet';
 import classNames from 'classnames';
-import { fetchFromApiAsReadableResource } from '../../utils/fetch-from-api';
 import styles from './index.module.scss';
 
-let initialExercisesResponse =
-  fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
+let initialExercisesResponse = emptyReadableResource();
 
 export type ActiveExercise = {
   index: number;

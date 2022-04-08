@@ -3,9 +3,10 @@ import * as Yup from 'yup';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import {
   ReadableResource,
+  emptyReadableResource,
   fetchFromApiAsReadableResource,
 } from '../../utils/fetch-from-api';
-import { Suspense, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState, useTransition } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import ExerciseTypePickerField from '../../components/ExerciseTypePickerField/ExerciseTypePickerField';
@@ -31,16 +32,25 @@ const ExerciseSchema = Yup.object().shape({
     .required('Set Count is required'),
 });
 
+let initialExerciseResponse = emptyReadableResource();
+
 export default function Exercise() {
   const { exerciseName } = useParams();
 
-  const exerciseResponse = useMemo(
-    () =>
-      fetchFromApiAsReadableResource<IExercise>(
-        `/api/exercise/${exerciseName}`
-      ),
-    [exerciseName]
+  const [exerciseResponse, setExerciseResponse] = useState(
+    initialExerciseResponse
   );
+
+  const [_isPending, startTransaction] = useTransition();
+
+  useEffect(() => {
+    startTransaction(() => {
+      const updatedResponse = fetchFromApiAsReadableResource<IExercise>(
+        `/api/exercise/${exerciseName}`
+      );
+      setExerciseResponse(updatedResponse);
+    });
+  }, [exerciseName]);
 
   return (
     <AppBarWithAppHeaderLayout pageTitle={exerciseName!}>
