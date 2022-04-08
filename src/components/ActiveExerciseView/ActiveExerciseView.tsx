@@ -14,29 +14,28 @@ import React, {
 
 import { ActiveExercise } from '../../pages/workout';
 import ActiveExerciseViewExercise from './components/ActiveExerciseViewExercise/ActiveExerciseViewExercise';
-import { ReadableResource } from '../../utils/fetch-from-api';
 import classNames from 'classnames';
 import styles from './ActiveExerciseView.module.scss';
 
 interface Props {
   exercises: IWorkoutExercise[];
-  exercisesResource: ReadableResource<IExerciseExtended[]>;
+  exerciseData: IExerciseExtended[];
   focusedExercise: ActiveExercise;
   focusedExerciseChanged: (exercise: ActiveExercise) => void;
 }
 
 export default function ActiveExerciseView({
   exercises,
-  exercisesResource,
+  exerciseData,
   focusedExercise,
   focusedExerciseChanged,
 }: Props) {
   const exerciseMap: Map<string, IExerciseExtended> = useMemo(
     () =>
       new Map<string, IExerciseExtended>(
-        exercisesResource.read().map(({ _id, ...ex }) => [_id, { _id, ...ex }])
+        exerciseData.map(({ _id, ...ex }) => [_id, { _id, ...ex }])
       ),
-    [exercisesResource]
+    [exerciseData]
   );
 
   const rootRef = useRef<HTMLDivElement>(null);

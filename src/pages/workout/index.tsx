@@ -15,11 +15,8 @@ import SwipeDeadZone from '../../components/SwipeDeadZone/SwipeDeadZone';
 import { WorkoutContext } from '../../providers/Workout/Workout';
 import WorkoutExercisesBottomSheet from '../../components/BottomSheet/components/WorkoutExercisesBottomSheet/WorkoutExercisesBottomSheet';
 import classNames from 'classnames';
-import { fetchFromApiAsReadableResource } from '../../utils/fetch-from-api';
 import styles from './index.module.scss';
-
-let initialExercisesResponse =
-  fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
+import { useFetch } from 'usehooks-ts';
 
 export type ActiveExercise = {
   index: number;
@@ -27,20 +24,7 @@ export type ActiveExercise = {
 };
 
 export default function Workout() {
-  const [exercisesResponse, setExercisesResponse] = useState(
-    initialExercisesResponse
-  );
-
-  const [_isPending, startTransaction] = useTransition();
-
-  useEffect(() => {
-    startTransaction(() => {
-      const updatedExercisesResponse =
-        fetchFromApiAsReadableResource<IExerciseExtended[]>(`/api/exercises`);
-      setExercisesResponse(updatedExercisesResponse);
-      initialExercisesResponse = updatedExercisesResponse;
-    });
-  }, []);
+  const { data } = useFetch<IExerciseExtended[]>(`/api/exercises`);
 
   useEffect(() => {
     document.title = `Workout | ISOMETRIC`;
@@ -66,6 +50,8 @@ export default function Workout() {
     setShowEndWorkoutBottomSheet(false);
   }, []);
 
+  const [_isPending, startTransaction] = useTransition();
+
   const focusedExerciseChanged = useCallback((exercise: ActiveExercise) => {
     startTransaction(() => {
       setActiveExercise(exercise);
@@ -85,7 +71,7 @@ export default function Workout() {
     setShowWorkoutExercisesBottomSheet(false);
   }, []);
 
-  if (!workout) {
+  if (!workout || !data) {
     return <RouteLoader />;
   }
 
@@ -111,14 +97,12 @@ export default function Workout() {
           Exercises
         </button>
       </header>
-      <Suspense fallback={<RouteLoader />}>
-        <ActiveExerciseView
-          exercises={workout.exercises}
-          exercisesResource={exercisesResponse}
-          focusedExercise={activeExercise}
-          focusedExerciseChanged={focusedExerciseChanged}
-        />
-      </Suspense>
+      <ActiveExerciseView
+        exercises={workout.exercises}
+        exerciseData={data}
+        focusedExercise={activeExercise}
+        focusedExerciseChanged={focusedExerciseChanged}
+      />
       <div className={styles.paginator}>
         {workout.exercises.map((exercise, index) => (
           <div

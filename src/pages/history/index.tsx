@@ -11,11 +11,6 @@ import React, {
   useState,
   useTransition,
 } from 'react';
-import {
-  ReadableResource,
-  fetchFromApi,
-  fetchFromApiAsReadableResource,
-} from '../../utils/fetch-from-api';
 import { formatDistance, formatDuration, intervalToDuration } from 'date-fns';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
@@ -24,50 +19,36 @@ import MuscleGroupTag from '../../components/MuscleGroupTag/MuscleGroupTag';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import SetView from '../../components/SetView/SetView';
 import classNames from 'classnames';
+import { fetchFromApi } from '../../utils/fetch-from-api';
 import { secondsToMilliseconds } from 'date-fns/esm';
 import styles from './index.module.scss';
+import { useFetch } from 'usehooks-ts';
 
 const format = new Intl.DateTimeFormat('en-US', {
   dateStyle: 'medium',
   timeStyle: 'short',
 });
 
-let initialResource = fetchFromApiAsReadableResource<IWorkout[]>(
-  `/api/workouts`,
-  { page: '1' }
-);
-
 export default function History() {
-  const [resource, setResponse] = useState(initialResource);
+  const { data: workouts } = useFetch<IWorkout[]>(`/api/workouts?page=1`);
+  let children = <RouteLoader />;
 
-  const [_isPending, startTransaction] = useTransition();
-
-  useEffect(() => {
-    startTransaction(() => {
-      const updatedResource = fetchFromApiAsReadableResource<IWorkout[]>(
-        `/api/workouts`,
-        { page: '1' }
-      );
-      setResponse(updatedResource);
-      initialResource = updatedResource;
-    });
-  }, []);
-
+  if (!!workouts) {
+    children = <HistoryContent workouts={workouts} />;
+  }
   return (
     <AppBarWithAppHeaderLayout pageTitle='History'>
-      <Suspense fallback={<RouteLoader />}>
-        <HistoryContent resource={resource} />
-      </Suspense>
+      {children}
     </AppBarWithAppHeaderLayout>
   );
 }
 
 interface HistoryContentProps {
-  resource: ReadableResource<IWorkout[]>;
+  workouts: IWorkout[];
 }
 
-function HistoryContent({ resource }: HistoryContentProps) {
-  const [workouts, setWorkouts] = useState(resource.read());
+function HistoryContent({ workouts: _workouts }: HistoryContentProps) {
+  const [workouts, setWorkouts] = useState(_workouts);
   const [moreWorkouts, setMoreWorkouts] = useState(workouts.length >= 10);
   const [page, setPage] = useState(2);
 
