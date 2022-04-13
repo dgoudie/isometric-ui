@@ -24,10 +24,9 @@ import styles from './index.module.scss';
 
 const TIME_PER_SET = 60;
 
-let initialScheduleResponse =
-  fetchFromApiAsReadableResource<IScheduleDayWithExercises>(
-    `/api/schedule/next-day`
-  );
+let initialScheduleResponse = fetchFromApiAsReadableResource<
+  IScheduleDayWithExercises | undefined
+>(`/api/schedule/next-day`);
 
 export default function Home() {
   const [scheduleResponse, setScheduleResponse] = useState(
@@ -57,7 +56,7 @@ export default function Home() {
 }
 
 interface HomeContentProps {
-  scheduleResponse: ReadableResource<IScheduleDayWithExercises>;
+  scheduleResponse: ReadableResource<IScheduleDayWithExercises | undefined>;
 }
 
 function HomeContent({ scheduleResponse }: HomeContentProps) {
@@ -66,7 +65,7 @@ function HomeContent({ scheduleResponse }: HomeContentProps) {
   const greeting = useMemo(() => getGreeting(), []);
 
   const dayDurationInSeconds = useMemo(() => {
-    return schedule.exercises
+    return schedule?.exercises
       .map(
         (exercise) =>
           (exercise.breakTimeInSeconds + TIME_PER_SET) * exercise.setCount
@@ -75,17 +74,40 @@ function HomeContent({ scheduleResponse }: HomeContentProps) {
   }, [schedule]);
 
   const setCount = useMemo(() => {
-    return schedule.exercises
+    return schedule?.exercises
       .map((exercise) => exercise.setCount)
       .reduce((sum, exerciseDuration) => sum + exerciseDuration, 0);
   }, [schedule]);
 
   const dayDurationInMinutes = useMemo(
-    () => secondsToMinutes(dayDurationInSeconds),
+    () => secondsToMinutes(dayDurationInSeconds ?? 0),
     [dayDurationInSeconds]
   );
 
   const { startWorkout } = useContext(WorkoutContext);
+
+  if (!schedule) {
+    return (
+      <div className={styles.wrapper}>
+        <h1>{greeting}</h1>
+        <div className={styles.root}>
+          <div className={styles.noSchedule}>
+            <span>
+              You have not yet built a workout plan. Start by creating one.
+            </span>
+            <Link
+              to={'/workout-plan'}
+              draggable={false}
+              className={'standard-button primary'}
+            >
+              <i className='fa-solid fa-calendar-week'></i>
+              Edit Plan
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -106,7 +128,7 @@ function HomeContent({ scheduleResponse }: HomeContentProps) {
                 suffix='mins'
               />
               <HeaderItem title='Exercises' value={schedule.exercises.length} />
-              <HeaderItem title='Sets' value={setCount} />
+              <HeaderItem title='Sets' value={setCount!} />
             </div>
           </div>
           <div className={styles.exercises}>

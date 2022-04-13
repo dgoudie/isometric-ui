@@ -12,6 +12,16 @@
   overflow-y: auto;
 }
 
+.noSchedule {
+  padding: 0 0.25rem;
+  display: grid;
+  align-items: start;
+  justify-items: center;
+  grid-template-rows: max-content max-content;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
 .day {
   background: var(--background-alt);
   border-radius: 8px;
