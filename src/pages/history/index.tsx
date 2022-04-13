@@ -71,13 +71,18 @@ function HistoryContent({ resource }: HistoryContentProps) {
   const [moreWorkouts, setMoreWorkouts] = useState(workouts.length >= 10);
   const [page, setPage] = useState(2);
 
-  const items = useMemo(
-    () =>
-      workouts.map((workout) => (
-        <Workout workout={workout} key={workout._id} />
-      )),
-    [workouts]
-  );
+  useEffect(() => {
+    const newWorkouts = resource.read();
+    setWorkouts(newWorkouts);
+    setMoreWorkouts(newWorkouts.length >= 10);
+    setPage(2);
+  }, [resource]);
+
+  const items = useMemo(() => {
+    return workouts.map((workout) => (
+      <Workout workout={workout} key={workout._id} />
+    ));
+  }, [workouts]);
 
   const loadMore = useCallback(async () => {
     const params = new URLSearchParams();

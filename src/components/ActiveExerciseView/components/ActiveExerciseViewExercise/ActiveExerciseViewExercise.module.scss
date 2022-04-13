@@ -1,6 +1,8 @@
 .section {
   scroll-snap-align: center;
   width: calc(100vw - 3rem);
+  height: 100%;
+  min-height: 0;
   &Inner {
     overflow-y: auto;
     scroll-snap-type: y mandatory;
@@ -48,12 +50,13 @@
   border-radius: 8px;
   background-color: var(--background-alt);
   padding: 1rem 1.25rem;
-  display: grid;
-  grid-template-rows: max-content max-content;
+  display: flex;
+  flex-direction: column;
   min-height: 20vh;
-  max-height: 40vh;
+  max-height: 75vh;
   &Header {
     font-size: 1.3rem;
+    flex-shrink: 0;
   }
 
   &Items {
