@@ -1,22 +1,24 @@
-import {
-  ExerciseType,
-  IExerciseExtended,
-  IExerciseInstance,
-  IWorkoutExercise,
-} from '@dgoudie/isometric-types';
+import { IExerciseExtended, IWorkoutExercise } from '@dgoudie/isometric-types';
 import {
   ReactNode,
+  Suspense,
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
+import {
+  ReadableResource,
+  fetchFromApiAsReadableResource,
+} from '../../../../utils/fetch-from-api';
 
 import ActiveExerciseViewExerciseSet from '../ActiveExerciseViewExerciseSet/ActiveExerciseViewExerciseSet';
 import { AfterExerciseTimerContext } from '../../../../providers/AfterExerciseTimer/AfterExerciseTimer';
 import ExerciseMetadata from '../../../ExerciseMetadata/ExerciseMetadata';
 import ExercisePickerBottomSheet from '../../../BottomSheet/components/ExercisePickerBottomSheet/ExercisePickerBottomSheet';
+import Loader from '../../../Loader/Loader';
 import MuscleGroupTag from '../../../MuscleGroupTag/MuscleGroupTag';
 import SetView from '../../../SetView/SetView';
 import { WorkoutContext } from '../../../../providers/Workout/Workout';
@@ -45,12 +47,22 @@ export default function ActiveExerciseViewExercise({
   onCompleted,
 }: Props) {
   const [exercise, setExercise] = useState(exerciseUnmemoized);
+  const [exerciseName, setExerciseName] = useState(exerciseUnmemoized.name);
 
   useEffect(() => {
     if (!equal(exercise, exerciseUnmemoized)) {
       setExercise(exerciseUnmemoized);
     }
+    if (!equal(exerciseName, exerciseUnmemoized.name)) {
+      setExerciseName(exerciseUnmemoized.name);
+    }
   }, [exerciseUnmemoized]);
+
+  const instancesResource = useMemo(() => {
+    return fetchFromApiAsReadableResource<IWorkoutExercise[]>(
+      `/api/workout-instances/${exerciseName}`
+    );
+  }, [exerciseName]);
 
   const { show, showAfterLastExercise, showAfterLastSet, cancel } = useContext(
     AfterExerciseTimerContext
@@ -189,29 +201,45 @@ export default function ActiveExerciseViewExercise({
             <span>Swipe up to view history</span>
           </div>
         </div>
-        <div className={styles.instances}>
-          <div className={styles.instancesHeader}>Recent History</div>
-          {!!data.instances.length ? (
-            <div className={styles.instancesItems}>
-              {data.instances.map((instance, index) => (
-                <div className={styles.instancesItemsItem} key={index}>
-                  <div>{format.format(new Date(instance.createdAt))}</div>
-                  <SetView
-                    key={index}
-                    exerciseType={data.exerciseType}
-                    sets={instance.sets}
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className={styles.noInstances}>
-              <i className='fa-solid fa-circle-info'></i>
-              <span>You have not performed this exercise before.</span>
-            </div>
-          )}
-        </div>
+        <Suspense fallback={<Loader />}>
+          <Instances instancesResource={instancesResource} />
+        </Suspense>
       </div>
     </section>
+  );
+}
+
+interface InstancesProps {
+  instancesResource: ReadableResource<IWorkoutExercise[]>;
+}
+
+function Instances({ instancesResource }: InstancesProps) {
+  const instances = useMemo(
+    () => instancesResource.read(),
+    [instancesResource]
+  );
+  return (
+    <div className={styles.instances}>
+      <div className={styles.instancesHeader}>Recent History</div>
+      {!!instances.length ? (
+        <div className={styles.instancesItems}>
+          {instances.map((instance, index) => (
+            <div className={styles.instancesItemsItem} key={index}>
+              <div>{format.format(new Date(instance.performedAt))}</div>
+              <SetView
+                key={index}
+                exerciseType={instance.exerciseType}
+                sets={instance.sets}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className={styles.noInstances}>
+          <i className='fa-solid fa-circle-info'></i>
+          <span>You have not performed this exercise before.</span>
+        </div>
+      )}
+    </div>
   );
 }

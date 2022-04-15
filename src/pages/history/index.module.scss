@@ -41,14 +41,13 @@
 .exercises {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.5rem;
   .exercise {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    background: var(--background-alt-2);
-    padding: 0.75rem;
-    border-radius: 8px;
+    padding-left: 0.75rem;
+    border-left: 4px solid var(--divider);
     &Header {
       display: flex;
       align-items: center;

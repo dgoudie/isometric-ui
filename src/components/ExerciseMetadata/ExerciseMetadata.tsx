@@ -22,7 +22,7 @@ export default function ExerciseMetadata({ exercise, className }: Props) {
         itemMetaLineOne = (
           <li>
             PR: {exercise.bestInstance!.totalRepsForInstance} reps (
-            {format.format(new Date(exercise.bestInstance!.createdAt))})
+            {format.format(new Date(exercise.bestInstance!.performedAt))})
           </li>
         );
         break;
@@ -35,7 +35,7 @@ export default function ExerciseMetadata({ exercise, className }: Props) {
         itemMetaLineOne = (
           <li>
             PR: {exercise.bestSet.resistanceInPounds} lbs (
-            {format.format(new Date(exercise.bestInstance!.createdAt))})
+            {format.format(new Date(exercise.bestInstance!.performedAt))})
           </li>
         );
       }

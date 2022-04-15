@@ -143,13 +143,11 @@ function Workout({ workout }: WorkoutProps) {
         return (
           <div key={index} className={styles.exercise}>
             <div className={styles.exerciseHeader}>
-              <div>{exercise.exercise.name}</div>
-              <MuscleGroupTag
-                muscleGroup={exercise.exercise.primaryMuscleGroup}
-              />
+              <div>{exercise.name}</div>
+              <MuscleGroupTag muscleGroup={exercise.primaryMuscleGroup} />
             </div>
             <SetView
-              exerciseType={exercise.exercise.exerciseType}
+              exerciseType={exercise.exerciseType}
               sets={exercise.sets.filter((set) => set.complete)}
             />
           </div>

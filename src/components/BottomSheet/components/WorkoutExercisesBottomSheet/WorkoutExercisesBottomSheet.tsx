@@ -56,8 +56,8 @@ function WorkoutExercisesBottomSheetContent({
         <i
           className={classNames('fa-solid', exerciseComplete && 'fa-check')}
         ></i>
-        <div className={styles.itemText}>{exercise.exercise.name}</div>
-        <MuscleGroupTag muscleGroup={exercise.exercise.primaryMuscleGroup} />
+        <div className={styles.itemText}>{exercise.name}</div>
+        <MuscleGroupTag muscleGroup={exercise.primaryMuscleGroup} />
       </button>
     );
   });

@@ -47,6 +47,15 @@ export default function ExerciseSearch(props: Props) {
     initialExercisesResponse
   );
 
+  useEffect(() => {
+    initialExercisesResponse = fetchFromApiAsReadableResource(
+      `/api/exercises`,
+      {
+        page: '1',
+      }
+    );
+  }, []);
+
   const searchParams = useMemo(() => {
     const searchParams = new URLSearchParams();
     !!props.search && searchParams.set('search', props.search);

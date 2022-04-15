@@ -134,3 +134,10 @@ summary {
 input::placeholder {
   color: var(--placeholder);
 }
+
+label {
+  font-size: 0.9rem;
+  color: var(--accent-color);
+  margin-bottom: 0.2rem;
+  display: block;
+}

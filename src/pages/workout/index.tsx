@@ -113,7 +113,7 @@ export default function Workout() {
           Exercises
         </button>
       </header>
-      <Suspense fallback={<RouteLoader />}>
+      <Suspense fallback={<RouteLoader className={styles.loader} />}>
         <ActiveExerciseView
           exercises={workout.exercises}
           exercisesResource={exercisesResponse}
