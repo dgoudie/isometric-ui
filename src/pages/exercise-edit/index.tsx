@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 
 import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { ExerciseType, IExercise } from '@dgoudie/isometric-types';
 import {
   ReadableResource,
   emptyReadableResource,
@@ -10,7 +11,6 @@ import { Suspense, useEffect, useMemo, useState, useTransition } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import ExerciseTypePickerField from '../../components/ExerciseTypePickerField/ExerciseTypePickerField';
-import { IExercise } from '@dgoudie/isometric-types';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import SetCountPickerField from '../../components/SetCountPickerField/SetCountPickerField';
 import classNames from 'classnames';
@@ -30,6 +30,40 @@ const ExerciseSchema = Yup.object().shape({
     .positive('Set Count must be more than zero')
     .max(5, 'Set Count cannot be higher than 5')
     .required('Set Count is required'),
+  minimumRecommendedRepetitions: Yup.number()
+    .integer('Minimum must be a number')
+    .positive('Minimum must be more than zero')
+    .when(
+      ['exerciseType', 'maximumRecommendedRepetitions'],
+      //@ts-ignore
+      (
+        exerciseType: ExerciseType,
+        maximumRecommendedRepetitions: number,
+        schema: Yup.NumberSchema
+      ) => {
+        schema = schema.max(
+          maximumRecommendedRepetitions - 1,
+          'Minimum must be less than maximum'
+        );
+        if (exerciseType === 'assisted' || exerciseType === 'weighted') {
+          schema = schema.required('Minimum is required');
+        }
+        return schema;
+      }
+    ),
+  maximumRecommendedRepetitions: Yup.number()
+    .integer('Maximum must be a number')
+    .positive('Maximum must be more than zero')
+    .when(
+      ['exerciseType'],
+      //@ts-ignore
+      (exerciseType: ExerciseType, schema: Yup.NumberSchema) => {
+        if (exerciseType === 'assisted' || exerciseType === 'weighted') {
+          schema = schema.required('Maximum is required');
+        }
+        return schema;
+      }
+    ),
 });
 
 let initialExerciseResponse = emptyReadableResource();
@@ -83,7 +117,26 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
         }}
       >
         {(formik) => {
-          const { isValid, isSubmitting, resetForm } = formik;
+          const {
+            isValid,
+            isSubmitting,
+            resetForm,
+            values,
+            setFieldValue,
+            validateForm,
+          } = formik;
+
+          useEffect(() => {
+            if (
+              values.exerciseType === 'timed' ||
+              values.exerciseType === 'rep_based'
+            ) {
+              setFieldValue('minimumRecommendedRepetitions', '');
+              setFieldValue('maximumRecommendedRepetitions', '');
+              validateForm();
+            }
+          }, [values.exerciseType]);
+
           return (
             <Form>
               <label htmlFor='name'>Name</label>
@@ -127,39 +180,43 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
                 name='exerciseType'
                 disabled={isSubmitting}
               />
-              {/* <label htmlFor='minimumRecommendedRepetitions'>
-                                Recommended Repetitions
-                            </label>
-                            <Field
-                                type='number'
-                                inputMode="decimal"
-                                id='minimumRecommendedRepetitions'
-                                name='minimumRecommendedRepetitions'
-                                className={classNames(
-                                    'standard-form-input'
-                                )}
-                                disabled={isSubmitting}
-                            />
-                            <ErrorMessage
-                                name='minimumRecommendedRepetitions'
-                                component='span'
-                                className={styles.errorMessage}
-                            />
-                            <Field
-                                type='number'
-                                inputMode="decimal"
-                                id='maximumRecommendedRepetitions'
-                                name='maximumRecommendedRepetitions'
-                                className={classNames(
-                                    'standard-form-input'
-                                )}
-                                disabled={isSubmitting}
-                            />
-                            <ErrorMessage
-                                name='maximumRecommendedRepetitions'
-                                component='span'
-                                className={styles.errorMessage}
-                            /> */}
+              {(formik.values.exerciseType === 'assisted' ||
+                formik.values.exerciseType === 'weighted') && (
+                <>
+                  <label htmlFor='minimumRecommendedRepetitions'>
+                    Recommended Repetitions
+                  </label>
+                  <div className={styles.repetitions}>
+                    <Field
+                      type='number'
+                      inputMode='decimal'
+                      id='minimumRecommendedRepetitions'
+                      name='minimumRecommendedRepetitions'
+                      className={classNames('standard-form-input')}
+                      disabled={isSubmitting}
+                    />
+                    <span>to</span>
+                    <Field
+                      type='number'
+                      inputMode='decimal'
+                      id='maximumRecommendedRepetitions'
+                      name='maximumRecommendedRepetitions'
+                      className={classNames('standard-form-input')}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <ErrorMessage
+                    name='maximumRecommendedRepetitions'
+                    component='span'
+                    className={styles.errorMessage}
+                  />
+                  <ErrorMessage
+                    name='minimumRecommendedRepetitions'
+                    component='span'
+                    className={styles.errorMessage}
+                  />
+                </>
+              )}
               <div className={styles.buttonBar}>
                 <button
                   type='button'

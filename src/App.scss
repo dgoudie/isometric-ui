@@ -125,6 +125,7 @@ summary {
   background-color: transparent;
   padding: 0 0 0.2rem;
   caret-color: var(--accent-color);
+  min-width: 0;
 
   &:focus {
     border-bottom-color: var(--accent-color);
@@ -138,6 +139,6 @@ input::placeholder {
 label {
   font-size: 0.9rem;
   color: var(--accent-color);
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.5rem;
   display: block;
 }
