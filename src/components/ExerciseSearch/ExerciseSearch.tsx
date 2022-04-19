@@ -47,15 +47,6 @@ export default function ExerciseSearch(props: Props) {
     initialExercisesResponse
   );
 
-  useEffect(() => {
-    initialExercisesResponse = fetchFromApiAsReadableResource(
-      `/api/exercises`,
-      {
-        page: '1',
-      }
-    );
-  }, []);
-
   const searchParams = useMemo(() => {
     const searchParams = new URLSearchParams();
     !!props.search && searchParams.set('search', props.search);
@@ -69,9 +60,14 @@ export default function ExerciseSearch(props: Props) {
     startTransaction(() => {
       const params = new URLSearchParams(searchParams);
       params.set('page', '1');
-      setExercisesResponse(
-        fetchFromApiAsReadableResource(`/api/exercises`, params)
+      const newResource = fetchFromApiAsReadableResource<IExerciseExtended[]>(
+        `/api/exercises`,
+        params
       );
+      setExercisesResponse(newResource);
+      if (Object.keys(params).length === 1) {
+        initialExercisesResponse = newResource;
+      }
     });
   }, [searchParams]);
 

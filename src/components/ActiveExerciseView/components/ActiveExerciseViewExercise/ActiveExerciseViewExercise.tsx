@@ -47,22 +47,18 @@ export default function ActiveExerciseViewExercise({
   onCompleted,
 }: Props) {
   const [exercise, setExercise] = useState(exerciseUnmemoized);
-  const [exerciseName, setExerciseName] = useState(exerciseUnmemoized.name);
 
   useEffect(() => {
     if (!equal(exercise, exerciseUnmemoized)) {
       setExercise(exerciseUnmemoized);
     }
-    if (!equal(exerciseName, exerciseUnmemoized.name)) {
-      setExerciseName(exerciseUnmemoized.name);
-    }
   }, [exerciseUnmemoized]);
 
   const instancesResource = useMemo(() => {
     return fetchFromApiAsReadableResource<IWorkoutExercise[]>(
-      `/api/workout-instances/${exerciseName}`
+      `/api/workout-instances/${exercise.name}`
     );
-  }, [exerciseName]);
+  }, [exercise]);
 
   const { show, showAfterLastExercise, showAfterLastSet, cancel } = useContext(
     AfterExerciseTimerContext

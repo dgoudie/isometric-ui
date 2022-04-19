@@ -11,12 +11,22 @@ import { Suspense, useEffect, useMemo, useState, useTransition } from 'react';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
 import ExerciseTypePickerField from '../../components/ExerciseTypePickerField/ExerciseTypePickerField';
+import MuscleGroupPickerField from '../../components/MuscleGroupPickerField/MuscleGroupPickerField';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import SetCountPickerField from '../../components/SetCountPickerField/SetCountPickerField';
 import classNames from 'classnames';
 import { getFormikInitiallyTouchedFields } from '../../utils/formik-initially-touched';
 import styles from './index.module.scss';
 import { useParams } from 'react-router-dom';
+
+Yup.addMethod(Yup.array, 'unique', function (message, mapper = (a: any) => a) {
+  return this.test('unique', message, (list: any[] | undefined) => {
+    if (!list) {
+      return false;
+    }
+    return list.length === new Set(list.map(mapper)).size;
+  });
+});
 
 const ExerciseSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -30,6 +40,19 @@ const ExerciseSchema = Yup.object().shape({
     .positive('Set Count must be more than zero')
     .max(5, 'Set Count cannot be higher than 5')
     .required('Set Count is required'),
+  primaryMuscleGroup: Yup.string().required('Primary Muscle Group is required'),
+  secondaryMuscleGroups: Yup.array()
+    .of(Yup.string())
+    // .when(
+    //   ['primaryMuscleGroup'],
+    //   //@ts-ignore
+    //   (primaryMuscleGroup, schema) => {
+    //     console.log('primaryMuscleGroup', primaryMuscleGroup);
+    //     return schema.matches();
+    //   }
+    // )
+    //@ts-ignore
+    .unique('All muscle groups must be unique'),
   minimumRecommendedRepetitions: Yup.number()
     .integer('Minimum must be a number')
     .positive('Minimum must be more than zero')
@@ -172,6 +195,41 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
               <SetCountPickerField name='setCount' disabled={isSubmitting} />
               <ErrorMessage
                 name='setCount'
+                component='span'
+                className={styles.errorMessage}
+              />
+              <label htmlFor='setCount'>Primary Muscle Group</label>
+              <MuscleGroupPickerField
+                name='primaryMuscleGroup'
+                disabled={isSubmitting}
+                align='left'
+                className={styles.muscleGroupPicker}
+              />
+              <ErrorMessage
+                name='primaryMuscleGroup'
+                component='span'
+                className={styles.errorMessage}
+              />
+              <label htmlFor='setCount'>Secondary Muscle Groups</label>
+              <MuscleGroupPickerField
+                name='secondaryMuscleGroups[0]'
+                disabled={isSubmitting}
+                align='left'
+                className={styles.muscleGroupPicker}
+              />
+              <MuscleGroupPickerField
+                name='secondaryMuscleGroups[1]'
+                disabled={isSubmitting}
+                align='left'
+                className={styles.muscleGroupPicker}
+              />
+              <ErrorMessage
+                name='secondaryMuscleGroups[0]'
+                component='span'
+                className={styles.errorMessage}
+              />
+              <ErrorMessage
+                name='secondaryMuscleGroups[1]'
                 component='span'
                 className={styles.errorMessage}
               />

@@ -12,6 +12,18 @@
       display: none;
     }
   }
+
+  &.left .body {
+    left: 0;
+  }
+
+  &.middle .body {
+    left: -25%;
+  }
+
+  &.right .body {
+    right: 0;
+  }
 }
 
 .body {
@@ -22,8 +34,8 @@
   padding: 0.75rem;
   grid-template-columns: auto auto;
   border-radius: 8px;
-  left: -25%;
   box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+  z-index: 1;
 }
 
 .clear {

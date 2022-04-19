@@ -28,6 +28,10 @@
   align-items: center;
 }
 
+.muscleGroupPicker + .muscleGroupPicker {
+  margin-top: 0.5rem;
+}
+
 .buttonBar {
   display: grid;
   gap: 1rem;
