@@ -24,6 +24,9 @@ Yup.addMethod(Yup.array, 'unique', function (message, mapper = (a: any) => a) {
     if (!list) {
       return false;
     }
+    if (list.every((item) => !item)) {
+      return true;
+    }
     return list.length === new Set(list.map(mapper)).size;
   });
 });
@@ -42,17 +45,29 @@ const ExerciseSchema = Yup.object().shape({
     .required('Set Count is required'),
   primaryMuscleGroup: Yup.string().required('Primary Muscle Group is required'),
   secondaryMuscleGroups: Yup.array()
-    .of(Yup.string())
-    // .when(
-    //   ['primaryMuscleGroup'],
-    //   //@ts-ignore
-    //   (primaryMuscleGroup, schema) => {
-    //     console.log('primaryMuscleGroup', primaryMuscleGroup);
-    //     return schema.matches();
-    //   }
-    // )
+    .when(['primaryMuscleGroup'], (primaryMuscleGroup, schema) => {
+      return schema.of(
+        Yup.string()
+          .optional()
+          .notOneOf(
+            [primaryMuscleGroup],
+            !!primaryMuscleGroup ? 'All muscle groups must be unique' : ''
+          )
+      );
+    })
     //@ts-ignore
     .unique('All muscle groups must be unique'),
+  // secondaryMuscleGroups: Yup.array()
+  //   .of(
+  //     Yup.string()
+  //       .notOneOf(
+  //         [Yup.ref('parent.primaryMuscleGroup')],
+  //         'All muscle groups must be unique'
+  //       )
+  //       .optional()
+  //   )
+  //   //@ts-ignore
+  //   .unique('All muscle groups must be unique'),
   minimumRecommendedRepetitions: Yup.number()
     .integer('Minimum must be a number')
     .positive('Minimum must be more than zero')
@@ -222,6 +237,11 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
                 disabled={isSubmitting}
                 align='left'
                 className={styles.muscleGroupPicker}
+              />
+              <ErrorMessage
+                name='secondaryMuscleGroups'
+                component='span'
+                className={styles.errorMessage}
               />
               <ErrorMessage
                 name='secondaryMuscleGroups[0]'
