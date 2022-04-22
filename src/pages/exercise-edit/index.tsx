@@ -227,22 +227,6 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
                 component='span'
                 className={styles.errorMessage}
               />
-              <label htmlFor='breakTimeInSeconds'>
-                Break Time Between Sets
-              </label>
-              <DurationInputField name='breakTimeInSeconds' />
-              <ErrorMessage
-                name='breakTimeInSeconds'
-                component='span'
-                className={styles.errorMessage}
-              />
-              <label htmlFor='setCount'>Set Count</label>
-              <SetCountPickerField name='setCount' disabled={isSubmitting} />
-              <ErrorMessage
-                name='setCount'
-                component='span'
-                className={styles.errorMessage}
-              />
               <label htmlFor='setCount'>Primary Muscle Group</label>
               <MuscleGroupPickerField
                 name='primaryMuscleGroup'
@@ -278,6 +262,22 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
               <ErrorMessage
                 name='secondaryMuscleGroups[1]'
                 component='pre'
+                className={styles.errorMessage}
+              />
+              <label htmlFor='breakTimeInSeconds'>
+                Break Time Between Sets
+              </label>
+              <DurationInputField name='breakTimeInSeconds' />
+              <ErrorMessage
+                name='breakTimeInSeconds'
+                component='span'
+                className={styles.errorMessage}
+              />
+              <label htmlFor='setCount'>Set Count</label>
+              <SetCountPickerField name='setCount' disabled={isSubmitting} />
+              <ErrorMessage
+                name='setCount'
+                component='span'
                 className={styles.errorMessage}
               />
               <label htmlFor='exerciseType'>Exercise Type</label>
