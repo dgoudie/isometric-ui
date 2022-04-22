@@ -1,7 +1,9 @@
 import {
+  ElementOf,
   ExerciseMuscleGroup,
   IExercise,
   IExerciseExtended,
+  literals,
 } from '@dgoudie/isometric-types';
 import {
   ReadableResource,
@@ -27,6 +29,14 @@ import RouteLoader from '../RouteLoader/RouteLoader';
 import classNames from 'classnames';
 import styles from './ExerciseSearch.module.scss';
 
+export const HistoryOptions = literals(
+  'all',
+  'not_performed',
+  'only_performed'
+);
+
+export type HistoryOption = ElementOf<typeof HistoryOptions>;
+
 let initialExercisesResponse = fetchFromApiAsReadableResource<
   IExerciseExtended[]
 >(`/api/exercises`, {
@@ -36,9 +46,11 @@ let initialExercisesResponse = fetchFromApiAsReadableResource<
 interface Props {
   search: string | undefined;
   muscleGroup: ExerciseMuscleGroup | undefined;
+  history: HistoryOption;
   className?: string;
   searchChanged: (search: string | undefined) => void;
   muscleGroupChanged: (muscleGroup: ExerciseMuscleGroup | undefined) => void;
+  historyChanged: (option: HistoryOption) => void;
   onSelect?: (exerciseId: string) => void;
 }
 
@@ -51,8 +63,12 @@ export default function ExerciseSearch(props: Props) {
     const searchParams = new URLSearchParams();
     !!props.search && searchParams.set('search', props.search);
     !!props.muscleGroup && searchParams.set('muscleGroup', props.muscleGroup);
+    props.history === 'only_performed' &&
+      searchParams.set('onlyPerformed', '1');
+    props.history === 'not_performed' &&
+      searchParams.set('onlyNotPerformed', '1');
     return searchParams;
-  }, [props.muscleGroup, props.search]);
+  }, [props.muscleGroup, props.search, props.history]);
 
   const [isPending, startTransaction] = useTransition();
 
@@ -84,11 +100,13 @@ interface ExerciseSearchContentProps extends Props {
 
 function ExerciseSearchContent({
   exercisesResponse,
+  className,
   search,
   muscleGroup,
-  className,
   searchChanged,
   muscleGroupChanged,
+  history,
+  historyChanged,
   onSelect,
 }: ExerciseSearchContentProps) {
   const itemsRef = useRef<HTMLDivElement>(null);
@@ -103,14 +121,17 @@ function ExerciseSearchContent({
     setExercises(exs);
     setMoreExercises(exs.length >= 10);
     setPage(2);
+    itemsRef?.current?.scrollTo({ top: 0 });
   }, [exercisesResponse]);
 
   const searchParams = useMemo(() => {
     const searchParams = new URLSearchParams();
     !!search && searchParams.set('search', search);
     !!muscleGroup && searchParams.set('muscleGroup', muscleGroup);
+    history === 'only_performed' && searchParams.set('onlyPerformed', '1');
+    history === 'not_performed' && searchParams.set('onlyNotPerformed', '1');
     return searchParams;
-  }, [muscleGroup, search]);
+  }, [muscleGroup, search, history]);
 
   const loadMore = useCallback(async () => {
     const params = new URLSearchParams(searchParams);
@@ -163,15 +184,17 @@ function ExerciseSearchContent({
             )}
           </div>
         </div>
-        <div className={styles.filtersMuscleGroup}>
+        <div className={styles.filtersOthers}>
           <label>Muscle Group:</label>
           <MuscleGroupPicker
             value={muscleGroup}
             valueChanged={muscleGroupChanged}
           />
+          <label>History:</label>
+          <HistoryPicker value={history} valueChanged={historyChanged} />
         </div>
       </div>
-      <div className={styles.items}>
+      <div className={styles.items} ref={itemsRef}>
         <InfiniteScroll
           //@ts-ignore
           className={styles.itemsInfiniteScroll}
@@ -241,3 +264,36 @@ const ExerciseButton = ({ exercise, onSelect }: ExerciseButtonProps) => {
     );
   }
 };
+interface HistoryPickerProps {
+  value: HistoryOption;
+  valueChanged: (value: HistoryOption) => void;
+}
+
+function HistoryPicker({ value, valueChanged }: HistoryPickerProps) {
+  return (
+    <select
+      className={styles.historyPicker}
+      value={value}
+      onChange={(e) => valueChanged(e.target.value as HistoryOption)}
+    >
+      {(['all', 'not_performed', 'only_performed'] as HistoryOption[]).map(
+        (option) => (
+          <option key={option} value={option}>
+            {getHistoryPickerTextValue(option)}
+          </option>
+        )
+      )}
+    </select>
+  );
+}
+
+function getHistoryPickerTextValue(option: HistoryOption) {
+  switch (option) {
+    case 'all':
+      return 'Show All';
+    case 'not_performed':
+      return 'Show Never Performed';
+    case 'only_performed':
+      return 'Show Previously Performed';
+  }
+}

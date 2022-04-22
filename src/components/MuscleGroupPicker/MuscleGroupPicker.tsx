@@ -3,12 +3,9 @@ import {
   ExerciseMuscleGroups,
 } from '@dgoudie/isometric-types';
 
-import MuscleGroupTag from '../MuscleGroupTag/MuscleGroupTag';
 import React from 'react';
 import classNames from 'classnames';
 import styles from './MuscleGroupPicker.module.scss';
-import { useCallback } from 'react';
-import { useDetails } from '@primer/react';
 
 interface Props {
   className?: string;
@@ -16,7 +13,6 @@ interface Props {
   valueChanged?: (value?: ExerciseMuscleGroup) => void;
   disabled?: boolean;
   required?: boolean;
-  align?: 'right' | 'left' | 'middle';
 }
 export default function MuscleGroupPicker({
   className,
@@ -24,54 +20,22 @@ export default function MuscleGroupPicker({
   valueChanged,
   required = false,
   disabled,
-  align = 'middle',
 }: Props) {
-  const { getDetailsProps, setOpen } = useDetails({
-    closeOnOutsideClick: true,
-  });
-
-  const onClick = useCallback(
-    (group: ExerciseMuscleGroup | undefined) => {
-      setOpen(false);
-      valueChanged && valueChanged(group);
-    },
-    [setOpen, valueChanged]
-  );
-
-  const onDetailsClick = useCallback<React.MouseEventHandler>(
-    (event) => {
-      if (!!disabled) {
-        event.preventDefault();
-      }
-    },
-    [disabled]
-  );
-
   return (
-    <details
-      {...getDetailsProps()}
-      onClick={onDetailsClick}
-      className={classNames(className, styles.root, styles[align])}
+    <select
+      required={required}
+      disabled={disabled}
+      className={classNames(styles.root, className)}
+      value={value}
+      onChange={(e) =>
+        valueChanged &&
+        valueChanged((e.target.value as ExerciseMuscleGroup) ?? undefined)
+      }
     >
-      <summary>
-        <MuscleGroupTag muscleGroup={value} />
-        {!disabled && !required && !!value && (
-          <button
-            className={styles.clear}
-            type='button'
-            onClick={() => onClick(undefined)}
-          >
-            <i className='fa-solid fa-xmark'></i>
-          </button>
-        )}
-      </summary>
-      <div className={styles.body}>
-        {ExerciseMuscleGroups.map((group) => (
-          <button key={group} type='button' onClick={() => onClick(group)}>
-            <MuscleGroupTag muscleGroup={group} />
-          </button>
-        ))}
-      </div>
-    </details>
+      <option value={''}>N/A</option>
+      {ExerciseMuscleGroups.map((group) => (
+        <option key={group}>{group}</option>
+      ))}
+    </select>
   );
 }

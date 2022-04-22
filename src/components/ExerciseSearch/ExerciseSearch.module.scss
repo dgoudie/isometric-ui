@@ -30,9 +30,12 @@
       color: var(--accent-color);
     }
   }
-  &MuscleGroup {
-    display: flex;
-    gap: 0.5rem;
+  &Others {
+    display: grid;
+    grid-template-columns: max-content auto;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    justify-content: start;
   }
 }
 .items {
@@ -75,5 +78,25 @@
     padding-bottom: 0.5rem;
     justify-self: stretch;
     border-bottom: 1px solid var(--divider);
+  }
+}
+
+.historyPicker {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none; /* Remove default arrow */
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--color);
+  border: 2px solid var(--color);
+  border-radius: 8px;
+  padding: 0.1rem 0.4rem;
+  font-family: 'Permanent Marker', cursive;
+  background: inherit;
+  outline: none;
+
+  option {
+    background: var(--background-alt-2);
   }
 }

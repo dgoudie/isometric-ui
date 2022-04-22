@@ -6,12 +6,10 @@ import MuscleGroupPicker from '../MuscleGroupPicker/MuscleGroupPicker';
 import React from 'react';
 
 export default function MuscleGroupPickerField({
-  align,
   className,
   ...props
 }: FieldHookConfig<ExerciseMuscleGroup | undefined> & {
   className?: string;
-  align?: 'right' | 'left' | 'middle';
 }) {
   const [_field, meta, helpers] = useField<ExerciseMuscleGroup | undefined>(
     props
@@ -21,7 +19,6 @@ export default function MuscleGroupPickerField({
   return (
     <MuscleGroupPicker
       className={className}
-      align={align}
       value={value}
       valueChanged={setValue}
       disabled={props.disabled}

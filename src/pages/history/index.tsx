@@ -26,6 +26,7 @@ import SetView from '../../components/SetView/SetView';
 import classNames from 'classnames';
 import { secondsToMilliseconds } from 'date-fns/esm';
 import styles from './index.module.scss';
+import { useDetails } from '@primer/react';
 
 const format = new Intl.DateTimeFormat('en-US', {
   dateStyle: 'medium',
@@ -88,27 +89,28 @@ function HistoryContent({ resource }: HistoryContentProps) {
     const params = new URLSearchParams();
     params.set('page', page.toString());
     const nextPage = await fetchFromApi<IWorkout[]>(`/api/workouts`, params);
-    if (!nextPage.length) {
+    if (nextPage.length < 10) {
       setMoreWorkouts(false);
-    } else {
-      setWorkouts([...workouts, ...nextPage]);
     }
+    setWorkouts([...workouts, ...nextPage]);
     setPage(page + 1);
   }, [workouts, page]);
 
   return (
     <div className={styles.root}>
       <h1>Workout History</h1>
-      <InfiniteScroll
-        //@ts-ignore
-        className={styles.workouts}
-        pageStart={1}
-        loadMore={loadMore}
-        hasMore={moreWorkouts}
-        useWindow={false}
-      >
-        {items}
-      </InfiniteScroll>
+      <div className={styles.workouts}>
+        <InfiniteScroll
+          //@ts-ignore
+          className={styles.workoutsInner}
+          pageStart={1}
+          loadMore={loadMore}
+          hasMore={moreWorkouts}
+          useWindow={false}
+        >
+          {items}
+        </InfiniteScroll>
+      </div>
     </div>
   );
 }
@@ -156,6 +158,8 @@ function Workout({ workout }: WorkoutProps) {
     [workout]
   );
 
+  const { getDetailsProps, open } = useDetails({});
+
   return (
     <div className={classNames(styles.workout, 'fade-in')}>
       <div className={styles.item}>
@@ -170,7 +174,18 @@ function Workout({ workout }: WorkoutProps) {
         <label>Duration</label>
         <div>{duration}</div>
       </div>
-      <div className={styles.exercises}>{exercises}</div>
+      <details {...getDetailsProps()}>
+        <summary
+          className={classNames(
+            'standard-button outlined',
+            open && 'highlighted'
+          )}
+        >
+          <i className='fa-solid fa-person-walking'></i>
+          <span>{open ? 'Hide' : 'Show'} Exercises</span>
+        </summary>
+        <div className={styles.exercises}>{exercises}</div>
+      </details>
     </div>
   );
 }

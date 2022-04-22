@@ -217,7 +217,6 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
               <MuscleGroupPickerField
                 name='primaryMuscleGroup'
                 disabled={isSubmitting}
-                align='left'
                 className={styles.muscleGroupPicker}
               />
               <ErrorMessage
@@ -229,13 +228,11 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
               <MuscleGroupPickerField
                 name='secondaryMuscleGroups[0]'
                 disabled={isSubmitting}
-                align='left'
                 className={styles.muscleGroupPicker}
               />
               <MuscleGroupPickerField
                 name='secondaryMuscleGroups[1]'
                 disabled={isSubmitting}
-                align='left'
                 className={styles.muscleGroupPicker}
               />
               <ErrorMessage

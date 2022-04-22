@@ -109,6 +109,9 @@ h2 {
 summary {
   outline: none;
   -webkit-tap-highlight-color: transparent;
+  &::-webkit-details-marker {
+    display: none;
+  }
 }
 
 @import './scss/button.scss';
