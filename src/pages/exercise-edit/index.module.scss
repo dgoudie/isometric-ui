@@ -18,7 +18,10 @@
   display: block;
   position: absolute;
   background: var(--background);
-  width: 100%;
+  margin: 0;
+  font-family: inherit;
+  height: 1.4rem;
+  overflow: hidden;
 }
 
 .repetitions {
@@ -30,6 +33,7 @@
 
 .muscleGroupPicker + .muscleGroupPicker {
   margin-top: 0.5rem;
+  display: block;
 }
 
 .buttonBar {

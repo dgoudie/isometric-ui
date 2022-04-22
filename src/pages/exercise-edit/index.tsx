@@ -7,17 +7,26 @@ import {
   emptyReadableResource,
   fetchFromApiAsReadableResource,
 } from '../../utils/fetch-from-api';
-import { Suspense, useEffect, useMemo, useState, useTransition } from 'react';
+import {
+  Suspense,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
+import DurationInputField from '../../components/DurationInputField/DurationInputField';
 import ExerciseTypePickerField from '../../components/ExerciseTypePickerField/ExerciseTypePickerField';
 import MuscleGroupPickerField from '../../components/MuscleGroupPickerField/MuscleGroupPickerField';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
 import SetCountPickerField from '../../components/SetCountPickerField/SetCountPickerField';
+import { SnackbarContext } from '../../providers/Snackbar/Snackbar';
 import classNames from 'classnames';
 import { getFormikInitiallyTouchedFields } from '../../utils/formik-initially-touched';
 import styles from './index.module.scss';
-import { useParams } from 'react-router-dom';
 
 Yup.addMethod(Yup.array, 'unique', function (message, mapper = (a: any) => a) {
   return this.test('unique', message, (list: any[] | undefined) => {
@@ -34,7 +43,6 @@ Yup.addMethod(Yup.array, 'unique', function (message, mapper = (a: any) => a) {
 const ExerciseSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   breakTimeInSeconds: Yup.number()
-    .integer('Break Time must be a whole number')
     .positive('Break Time must be more than zero')
     .max(300, 'Break Time must be less than 5 minutes')
     .required('Break Time is required'),
@@ -51,23 +59,12 @@ const ExerciseSchema = Yup.object().shape({
           .optional()
           .notOneOf(
             [primaryMuscleGroup],
-            !!primaryMuscleGroup ? 'All muscle groups must be unique' : ''
+            !!primaryMuscleGroup ? 'All muscle groups must be unique\n' : ''
           )
       );
     })
     //@ts-ignore
-    .unique('All muscle groups must be unique'),
-  // secondaryMuscleGroups: Yup.array()
-  //   .of(
-  //     Yup.string()
-  //       .notOneOf(
-  //         [Yup.ref('parent.primaryMuscleGroup')],
-  //         'All muscle groups must be unique'
-  //       )
-  //       .optional()
-  //   )
-  //   //@ts-ignore
-  //   .unique('All muscle groups must be unique'),
+    .unique('All muscle groups must be unique\n'),
   minimumRecommendedRepetitions: Yup.number()
     .integer('Minimum must be a number')
     .positive('Minimum must be more than zero')
@@ -98,6 +95,19 @@ const ExerciseSchema = Yup.object().shape({
       (exerciseType: ExerciseType, schema: Yup.NumberSchema) => {
         if (exerciseType === 'assisted' || exerciseType === 'weighted') {
           schema = schema.required('Maximum is required');
+        }
+        return schema;
+      }
+    ),
+  timePerSetInSeconds: Yup.number()
+    .positive('Time Per Set must be more than zero')
+    .max(18000, 'Time Per Set must be less than 5 hours')
+    .when(
+      ['exerciseType'],
+      //@ts-ignore
+      (exerciseType: ExerciseType, schema: Yup.NumberSchema) => {
+        if (exerciseType === 'timed') {
+          schema = schema.required('Time Per Set is required');
         }
         return schema;
       }
@@ -144,13 +154,36 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
     () => classNames('standard-form-input', styles.input),
     []
   );
+
+  const { openSnackbar } = useContext(SnackbarContext);
+
+  const navigate = useNavigate();
+
   return (
     <div className={styles.root}>
       <Formik
         initialTouched={getFormikInitiallyTouchedFields(exercise)}
         initialValues={exercise}
         validationSchema={ExerciseSchema}
-        onSubmit={(values) => {
+        onSubmit={async (values) => {
+          values.secondaryMuscleGroups = values.secondaryMuscleGroups?.filter(
+            (group) => !!group
+          );
+          if (
+            values.exerciseType === 'timed' ||
+            values.exerciseType === 'rep_based'
+          ) {
+            delete values.minimumRecommendedRepetitions;
+            delete values.maximumRecommendedRepetitions;
+          }
+          await fetch(`/api/exercise`, {
+            method: 'PUT',
+            body: JSON.stringify(values),
+            headers: { 'content-type': 'application/json' },
+            credentials: 'same-origin',
+          });
+          openSnackbar('Exercise saved successfully.');
+          navigate('/exercises');
           console.log(values);
         }}
       >
@@ -173,6 +206,10 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
               setFieldValue('maximumRecommendedRepetitions', '');
               validateForm();
             }
+            if (values.exerciseType !== 'timed') {
+              setFieldValue('timePerSetInSeconds', undefined);
+              validateForm();
+            }
           }, [values.exerciseType]);
 
           return (
@@ -191,16 +228,9 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
                 className={styles.errorMessage}
               />
               <label htmlFor='breakTimeInSeconds'>
-                Break Time Between Sets (In Seconds)
+                Break Time Between Sets
               </label>
-              <Field
-                type='number'
-                inputMode='decimal'
-                id='breakTimeInSeconds'
-                name='breakTimeInSeconds'
-                className={standardFormInputStyles}
-                disabled={isSubmitting}
-              />
+              <DurationInputField name='breakTimeInSeconds' />
               <ErrorMessage
                 name='breakTimeInSeconds'
                 component='span'
@@ -237,17 +267,17 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
               />
               <ErrorMessage
                 name='secondaryMuscleGroups'
-                component='span'
+                component='pre'
                 className={styles.errorMessage}
               />
               <ErrorMessage
                 name='secondaryMuscleGroups[0]'
-                component='span'
+                component='pre'
                 className={styles.errorMessage}
               />
               <ErrorMessage
                 name='secondaryMuscleGroups[1]'
-                component='span'
+                component='pre'
                 className={styles.errorMessage}
               />
               <label htmlFor='exerciseType'>Exercise Type</label>
@@ -287,6 +317,17 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
                   />
                   <ErrorMessage
                     name='minimumRecommendedRepetitions'
+                    component='span'
+                    className={styles.errorMessage}
+                  />
+                </>
+              )}
+              {formik.values.exerciseType === 'timed' && (
+                <>
+                  <label htmlFor='timePerSetInSeconds'>Time Per Set</label>
+                  <DurationInputField name='timePerSetInSeconds' />
+                  <ErrorMessage
+                    name='timePerSetInSeconds'
                     component='span'
                     className={styles.errorMessage}
                   />

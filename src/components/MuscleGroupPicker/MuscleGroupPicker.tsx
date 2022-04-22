@@ -3,9 +3,11 @@ import {
   ExerciseMuscleGroups,
 } from '@dgoudie/isometric-types';
 
+import MuscleGroupTag from '../MuscleGroupTag/MuscleGroupTag';
 import React from 'react';
 import classNames from 'classnames';
 import styles from './MuscleGroupPicker.module.scss';
+import { useMuscleGroupStyles } from '../../utils/muscle-group-tag-styling';
 
 interface Props {
   className?: string;
@@ -21,11 +23,14 @@ export default function MuscleGroupPicker({
   required = false,
   disabled,
 }: Props) {
+  const muscleGroupStyles = useMuscleGroupStyles(value);
+
   return (
     <select
       required={required}
       disabled={disabled}
       className={classNames(styles.root, className)}
+      style={muscleGroupStyles}
       value={value}
       onChange={(e) =>
         valueChanged &&
@@ -33,7 +38,7 @@ export default function MuscleGroupPicker({
       }
     >
       <option value={''}>N/A</option>
-      {ExerciseMuscleGroups.map((group) => (
+      {[...ExerciseMuscleGroups].sort().map((group) => (
         <option key={group}>{group}</option>
       ))}
     </select>

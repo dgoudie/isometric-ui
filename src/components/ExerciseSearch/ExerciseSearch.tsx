@@ -81,7 +81,7 @@ export default function ExerciseSearch(props: Props) {
         params
       );
       setExercisesResponse(newResource);
-      if (Object.keys(params).length === 1) {
+      if (Array.from(params.entries()).length === 1) {
         initialExercisesResponse = newResource;
       }
     });

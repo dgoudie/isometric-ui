@@ -7,6 +7,7 @@ import chroma, { contrast } from 'chroma-js';
 import classNames from 'classnames';
 import styles from './MuscleGroupTag.module.scss';
 import { useMemo } from 'react';
+import { useMuscleGroupStyles } from '../../utils/muscle-group-tag-styling';
 
 const colorScale = chroma
   .scale([
@@ -27,25 +28,11 @@ interface Props {
 }
 
 export default function MuscleGroupTag({ muscleGroup, className }: Props) {
-  const backgroundColor = useMemo(
-    () =>
-      muscleGroup
-        ? colorScale[ExerciseMuscleGroups.indexOf(muscleGroup)]
-        : 'var(--background-color)',
-    [muscleGroup]
-  );
-  let color = 'black';
-  let borderColor = 'transparent';
-  if (!muscleGroup) {
-    color = 'var(--color)';
-    borderColor = 'var(--color)';
-  } else if (contrast(backgroundColor, color) < 7) {
-    color = 'white';
-  }
+  const muscleGroupStyles = useMuscleGroupStyles(muscleGroup);
   return (
     <div
       className={classNames(className, styles.item)}
-      style={{ backgroundColor, color, borderColor }}
+      style={muscleGroupStyles}
     >
       {muscleGroup ? muscleGroup.toUpperCase() : 'N/A'}
     </div>
