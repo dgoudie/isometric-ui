@@ -127,17 +127,19 @@ function Workout({ workout }: WorkoutProps) {
       }),
     [workout]
   );
-  const duration = useMemo(
-    () =>
-      formatDuration(
+  const duration = useMemo(() => {
+    if (workout.durationInSeconds! < 60) {
+      return `${workout.durationInSeconds!} seconds`;
+    } else {
+      return formatDuration(
         intervalToDuration({
           start: 0,
           end: secondsToMilliseconds(workout.durationInSeconds!),
         }),
         { format: ['hours', 'minutes'] }
-      ),
-    [workout]
-  );
+      );
+    }
+  }, [workout]);
 
   const exercises = useMemo(
     () =>
