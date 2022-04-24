@@ -7,6 +7,7 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import SettingsProvider from './providers/Settings/Settings';
 import SnackbarProvider from './providers/Snackbar/Snackbar';
 import WorkoutProvider from './providers/Workout/Workout';
 import reportWebVitals from './reportWebVitals';
@@ -16,13 +17,15 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <BrowserRouter>
-    <SnackbarProvider>
-      <WorkoutProvider>
-        <AfterExerciseTimerProvider>
-          <App />
-        </AfterExerciseTimerProvider>
-      </WorkoutProvider>
-    </SnackbarProvider>
+    <SettingsProvider>
+      <SnackbarProvider>
+        <WorkoutProvider>
+          <AfterExerciseTimerProvider>
+            <App />
+          </AfterExerciseTimerProvider>
+        </WorkoutProvider>
+      </SnackbarProvider>
+    </SettingsProvider>
   </BrowserRouter>
 );
 
