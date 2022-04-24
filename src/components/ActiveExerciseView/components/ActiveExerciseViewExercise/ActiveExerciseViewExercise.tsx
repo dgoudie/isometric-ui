@@ -8,9 +8,11 @@ import {
   useMemo,
   useRef,
   useState,
+  useTransition,
 } from 'react';
 import {
   ReadableResource,
+  emptyReadableResource,
   fetchFromApiAsReadableResource,
 } from '../../../../utils/fetch-from-api';
 
@@ -38,6 +40,8 @@ interface Props {
 
 const format = new Intl.DateTimeFormat('en-US');
 
+let initialInstancesResponse = emptyReadableResource();
+
 export default function ActiveExerciseViewExercise({
   exercise: exerciseUnmemoized,
   data,
@@ -54,11 +58,20 @@ export default function ActiveExerciseViewExercise({
     }
   }, [exerciseUnmemoized]);
 
-  const instancesResource = useMemo(() => {
-    return fetchFromApiAsReadableResource<IWorkoutExercise[]>(
-      `/api/workout-instances/${exercise.name}`
-    );
-  }, [exercise]);
+  const [instancesResource, setInstancesResource] = useState<
+    ReadableResource<IWorkoutExercise[]>
+  >(initialInstancesResponse);
+
+  const [_isPending, startTransaction] = useTransition();
+
+  useEffect(() => {
+    startTransaction(() => {
+      const updatedInstancesResource = fetchFromApiAsReadableResource<
+        IWorkoutExercise[]
+      >(`/api/workout-instances/${exercise.name}`);
+      setInstancesResource(updatedInstancesResource);
+    });
+  }, [exercise.name]);
 
   const { show, showAfterLastExercise, showAfterLastSet, cancel } = useContext(
     AfterExerciseTimerContext

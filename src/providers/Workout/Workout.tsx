@@ -10,6 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 import equal from 'deep-equal';
+import produce from 'immer';
 import { requestNotificationPermission } from '../../utils/notification';
 import { usePageVisibility } from 'react-page-visibility';
 import { verifyType } from '../../utils/verify-type';
@@ -82,6 +83,11 @@ export default function WorkoutProvider({
           exerciseIndex,
           setIndex,
           complete,
+        })
+      );
+      setWorkout(
+        produce((draft) => {
+          draft.exercises[exerciseIndex].sets[setIndex].complete = complete;
         })
       );
     },
