@@ -85,11 +85,12 @@ export default function WorkoutProvider({
           complete,
         })
       );
-      setWorkout(
-        produce((draft) => {
-          draft.exercises[exerciseIndex].sets[setIndex].complete = complete;
-        })
-      );
+      if (complete)
+        setWorkout(
+          produce((draft) => {
+            draft.exercises[exerciseIndex].sets[setIndex].complete = complete;
+          })
+        );
     },
     [sendJsonMessage]
   );

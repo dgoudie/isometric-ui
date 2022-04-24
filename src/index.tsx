@@ -15,15 +15,15 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  <SnackbarProvider>
-    <AfterExerciseTimerProvider>
-      <BrowserRouter>
-        <WorkoutProvider>
+  <BrowserRouter>
+    <SnackbarProvider>
+      <WorkoutProvider>
+        <AfterExerciseTimerProvider>
           <App />
-        </WorkoutProvider>
-      </BrowserRouter>
-    </AfterExerciseTimerProvider>
-  </SnackbarProvider>
+        </AfterExerciseTimerProvider>
+      </WorkoutProvider>
+    </SnackbarProvider>
+  </BrowserRouter>
 );
 
 // If you want your app to work offline and load faster, you can change

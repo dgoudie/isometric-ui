@@ -11,7 +11,7 @@
 
   .modal {
     background: var(--background-alt);
-    width: 250px;
+    min-width: 250px;
     max-width: calc(100vw - 4rem);
     display: grid;
     gap: 0.5rem;
@@ -26,6 +26,17 @@
     .time {
       text-align: center;
       font-size: 2rem;
+    }
+
+    label {
+      margin-bottom: 0;
+    }
+
+    .nextExercise {
+      display: flex;
+      justify-content: space-between;
+      align-content: center;
+      gap: 1rem;
     }
   }
 

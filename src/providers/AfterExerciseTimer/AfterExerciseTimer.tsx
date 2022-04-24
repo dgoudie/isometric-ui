@@ -2,6 +2,7 @@ import React, {
   ReactNode,
   createContext,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -17,7 +18,10 @@ import {
 
 import { CSSTransition } from 'react-transition-group';
 import { ExerciseMuscleGroup } from '@dgoudie/isometric-types';
+import FocusTrap from 'focus-trap-react';
+import MuscleGroupTag from '../../components/MuscleGroupTag/MuscleGroupTag';
 import { Portal } from '@primer/react';
+import { WorkoutContext } from '../Workout/Workout';
 import { showNotification } from '../../utils/notification';
 import styles from './AfterExerciseTimer.module.scss';
 
@@ -50,6 +54,9 @@ export default function AfterExerciseTimerProvider({
   const [type, setType] = useState<
     'AFTER_SET' | 'AFTER_EXERCISE' | 'END_OF_WORKOUT'
   >('AFTER_SET');
+  const [nextExerciseName, setNextExerciseName] = useState('');
+  const [nextExerciseMuscleGroup, setNextExerciseMuscleGroup] =
+    useState<ExerciseMuscleGroup>('cardio');
   const [millisecondsRemaining, setMillisecondsRemaining] = useState(0);
   const [intervalId, setIntervalId] = useState<number>();
 
@@ -114,6 +121,8 @@ export default function AfterExerciseTimerProvider({
       const millis = secondsToMilliseconds(durationInSeconds);
       setDurationInMilliSeconds(millis);
       setMillisecondsRemaining(millis);
+      setNextExerciseName(nextName);
+      setNextExerciseMuscleGroup(nextMuscleGroup);
       setType('AFTER_EXERCISE');
       return buildPromise();
     },
@@ -140,6 +149,65 @@ export default function AfterExerciseTimerProvider({
 
   const rootRef = useRef<HTMLDivElement>(null);
 
+  const { endWorkout } = useContext(WorkoutContext);
+
+  let body = (
+    <>
+      <div className={styles.time}>{formattedTime}</div>
+      <button
+        type='button'
+        className={'standard-button primary'}
+        onClick={() => setDurationInMilliSeconds(0)}
+      >
+        <i className='fa-solid fa-xmark'></i>
+        Dismiss
+      </button>
+    </>
+  );
+
+  if (type === 'AFTER_EXERCISE') {
+    body = (
+      <>
+        <div className={styles.time}>{formattedTime}</div>
+        <label>Next Exercise</label>
+        <div className={styles.nextExercise}>
+          <div>{nextExerciseName}</div>
+          <MuscleGroupTag muscleGroup={nextExerciseMuscleGroup} />
+        </div>
+        <button
+          type='button'
+          className={'standard-button primary'}
+          onClick={() => setDurationInMilliSeconds(0)}
+        >
+          <i className='fa-solid fa-xmark'></i>
+          Dismiss
+        </button>
+      </>
+    );
+  } else if (type === 'END_OF_WORKOUT') {
+    body = (
+      <>
+        <div className={styles.time}>{formattedTime}</div>
+        <button
+          type='button'
+          className={'standard-button primary'}
+          onClick={() => endWorkout()}
+        >
+          <i className='fa-solid fa-save'></i>
+          Save Workout and End
+        </button>
+        <button
+          type='button'
+          className={'standard-button outlined'}
+          onClick={() => setDurationInMilliSeconds(0)}
+        >
+          <i className='fa-solid fa-xmark'></i>
+          Dismiss
+        </button>
+      </>
+    );
+  }
+
   return (
     <AfterExerciseTimerContext.Provider
       value={{ show, showAfterLastExercise, showAfterLastSet, cancel }}
@@ -163,17 +231,9 @@ export default function AfterExerciseTimerProvider({
           onExited={onFinished}
         >
           <div ref={rootRef} className={styles.root}>
-            <div className={styles.modal}>
-              <div className={styles.time}>{formattedTime}</div>
-              <button
-                type='button'
-                className={'standard-button primary'}
-                onClick={() => setDurationInMilliSeconds(0)}
-              >
-                <i className='fa-solid fa-xmark'></i>
-                Dismiss
-              </button>
-            </div>
+            <FocusTrap>
+              <div className={styles.modal}>{body}</div>
+            </FocusTrap>
           </div>
         </CSSTransition>
       </Portal>
