@@ -45,6 +45,7 @@ export default function BottomSheet<T>({
       event.stopPropagation();
       if (!locked) {
         result.current = undefined;
+        paneRef.current?.preventDismiss(false);
         paneRef.current?.hide();
         paneRef.current?.destroy({ animate: true });
       }
@@ -52,13 +53,18 @@ export default function BottomSheet<T>({
     [onResult, locked, paneRef]
   );
 
-  const paneDismissed = useCallback(() => {
-    !locked && onResult(result.current);
-  }, [locked, onResult]);
+  const paneDismissed = useRef<() => void>(() => null);
+
+  useEffect(() => {
+    paneDismissed.current = () => {
+      onResult(result.current as T);
+    };
+  }, [onResult]);
 
   const onClosedWithResult = useCallback(
     (_result: T) => {
       result.current = _result;
+      paneRef.current?.preventDismiss(false);
       paneRef.current?.hide();
       paneRef.current?.destroy({ animate: true });
     },
@@ -77,7 +83,7 @@ export default function BottomSheet<T>({
       cssClass: styles.pane,
       dragBy: [`.${styles.sheetHeader}`],
       bottomOffset: 0,
-      onDidDismiss: paneDismissed,
+      onDidDismiss: paneDismissed.current,
     });
     paneRef.current.present({ animate: true });
     if (!!locked) {
