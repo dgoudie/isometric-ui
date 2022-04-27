@@ -59,6 +59,7 @@ export default function ActiveExerciseViewExerciseSet(props: Props) {
 
 function WeightedSet({
   set,
+  setSelected,
   data,
   exerciseSelected,
   exerciseIndex,
@@ -132,6 +133,7 @@ function WeightedSet({
         <span className={styles.setInputSuffix}>reps</span>
       </div>
       <button
+        disabled={!setSelected && !set.complete}
         type='button'
         onClick={() =>
           persistSetComplete(exerciseIndex, setIndex, !set.complete)
@@ -144,7 +146,7 @@ function WeightedSet({
   );
 }
 
-function TimedSet({ set, data, exerciseIndex, setIndex }: Props) {
+function TimedSet({ set, data, exerciseIndex, setIndex, setSelected }: Props) {
   const { persistSetComplete } = useContext(WorkoutContext);
 
   const millisecondsPerSet = useMemo(
@@ -231,6 +233,7 @@ function TimedSet({ set, data, exerciseIndex, setIndex }: Props) {
           setPaused(true);
           persistSetComplete(exerciseIndex, setIndex, !set.complete);
         }}
+        disabled={!setSelected && !set.complete}
         className={classNames(styles.setButton, styles.setButtonCompleted)}
       >
         <i className='fa-solid fa-check'></i>
@@ -241,7 +244,7 @@ function TimedSet({ set, data, exerciseIndex, setIndex }: Props) {
 
 function RepBasedSet({
   set,
-  data,
+  setSelected,
   exerciseSelected,
   exerciseIndex,
   setIndex,
@@ -288,6 +291,7 @@ function RepBasedSet({
         onClick={() =>
           persistSetComplete(exerciseIndex, setIndex, !set.complete)
         }
+        disabled={!setSelected && !set.complete}
         className={classNames(styles.setButton, styles.setButtonCompleted)}
       >
         <i className='fa-solid fa-check'></i>
