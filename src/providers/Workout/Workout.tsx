@@ -85,12 +85,6 @@ export default function WorkoutProvider({
           complete,
         })
       );
-      if (complete)
-        setWorkout(
-          produce((draft) => {
-            draft.exercises[exerciseIndex].sets[setIndex].complete = complete;
-          })
-        );
     },
     [sendJsonMessage]
   );
