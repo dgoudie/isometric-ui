@@ -14,7 +14,9 @@ import {
 
 import ActiveExerciseView from '../../components/ActiveExerciseView/ActiveExerciseView';
 import EndWorkoutBottomSheet from '../../components/BottomSheet/components/EndWorkoutBottomSheet/EndWorkoutBottomSheet';
+import ExercisePickerBottomSheet from '../../components/BottomSheet/components/ExercisePickerBottomSheet/ExercisePickerBottomSheet';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
+import { SnackbarContext } from '../../providers/Snackbar/Snackbar';
 import SwipeDeadZone from '../../components/SwipeDeadZone/SwipeDeadZone';
 import { WorkoutContext } from '../../providers/Workout/Workout';
 import WorkoutExercisesBottomSheet from '../../components/BottomSheet/components/WorkoutExercisesBottomSheet/WorkoutExercisesBottomSheet';
@@ -47,7 +49,10 @@ export default function Workout() {
   useEffect(() => {
     document.title = `Workout | ISOMETRIC`;
   }, []);
-  const { workout, endWorkout, discardWorkout } = useContext(WorkoutContext);
+  const { workout, endWorkout, discardWorkout, addExercise } =
+    useContext(WorkoutContext);
+
+  const { openSnackbar } = useContext(SnackbarContext);
 
   const [showEndWorkoutBottomSheet, setShowEndWorkoutBottomSheet] =
     useState(false);
@@ -80,12 +85,28 @@ export default function Workout() {
   const [showWorkoutExercisesBottomSheet, setShowWorkoutExercisesBottomSheet] =
     useState(false);
 
-  const onExeciseSelected = useCallback((index?: number) => {
-    if (typeof index !== 'undefined') {
+  const [showAddExerciseBottomSheet, setShowAddExerciseBottomSheet] =
+    useState(false);
+
+  const onExeciseSelected = useCallback((index?: number | 'add') => {
+    if (typeof index === 'number') {
       setActiveExercise({ index, scrollIntoView: true });
+    } else if (index === 'add') {
+      setShowAddExerciseBottomSheet(true);
     }
     setShowWorkoutExercisesBottomSheet(false);
   }, []);
+
+  const onExeciseAdded = useCallback(
+    (exerciseId: string | undefined) => {
+      if (typeof exerciseId !== 'undefined') {
+        addExercise(exerciseId, exerciseIndexInView + 1);
+        openSnackbar('Exercise Added.');
+      }
+      setShowAddExerciseBottomSheet(false);
+    },
+    [exerciseIndexInView]
+  );
 
   if (!workout) {
     return <RouteLoader />;
@@ -145,6 +166,9 @@ export default function Workout() {
           exercises={workout.exercises}
           onResult={onExeciseSelected}
         />
+      )}
+      {showAddExerciseBottomSheet && (
+        <ExercisePickerBottomSheet onResult={onExeciseAdded} />
       )}
     </div>
   );

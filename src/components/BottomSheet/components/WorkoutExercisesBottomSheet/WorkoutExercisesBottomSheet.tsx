@@ -10,7 +10,7 @@ import styles from './WorkoutExercisesBottomSheet.module.scss';
 
 interface Props {
   exercises: IWorkoutExercise[];
-  onResult: (resultIndex: number | undefined) => void;
+  onResult: (resultIndex: number | undefined | 'add') => void;
 }
 
 export default function WorkoutExercisesBottomSheet({
@@ -35,7 +35,7 @@ export default function WorkoutExercisesBottomSheet({
 
 interface WorkoutExercisesBottomSheetContentProps
   extends Omit<Props, 'onResult'> {
-  onResult: (resultIndex: number) => void;
+  onResult: (resultIndex: number | 'add') => void;
 }
 
 function WorkoutExercisesBottomSheetContent({
@@ -62,5 +62,13 @@ function WorkoutExercisesBottomSheetContent({
     );
   });
 
-  return <div className={styles.items}>{exerciseElements}</div>;
+  return (
+    <div className={styles.items}>
+      {exerciseElements}
+      <button className={styles.item} onClick={() => onResult('add')}>
+        <i className={classNames('fa-solid', 'fa-plus')}></i>
+        <div className={styles.itemText}>Add</div>
+      </button>
+    </div>
+  );
 }

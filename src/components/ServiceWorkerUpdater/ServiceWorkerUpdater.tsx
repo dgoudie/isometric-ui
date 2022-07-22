@@ -1,62 +1,64 @@
-import { useCallback, useEffect, useState } from 'react';
+export {};
 
-import ConfirmationBottomSheet from '../BottomSheet/components/ConfirmationBottomSheet/ConfirmationBottomSheet';
-import { swRegistration } from '../..';
-import { usePageVisibility } from 'react-page-visibility';
+// import { useCallback, useEffect, useState } from 'react';
 
-export default function ServiceWorkerUpdater() {
-  const [showUpdateAvailablePrompt, setShowUpdateAvailablePrompt] =
-    useState(false);
+// import ConfirmationBottomSheet from '../BottomSheet/components/ConfirmationBottomSheet/ConfirmationBottomSheet';
+// import { swRegistration } from '../..';
+// import { usePageVisibility } from 'react-page-visibility';
 
-  const [serviceWorkerRegistration, setServiceWorkerRegistration] = useState<
-    ServiceWorkerRegistration | undefined
-  >();
+// export default function ServiceWorkerUpdater() {
+//   const [showUpdateAvailablePrompt, setShowUpdateAvailablePrompt] =
+//     useState(false);
 
-  const onUpdateAvailable = useCallback(() => {
-    console.log('serviceWorkerRegistration', serviceWorkerRegistration);
-    if (serviceWorkerRegistration?.active) {
-      setShowUpdateAvailablePrompt(true);
-    }
-  }, [serviceWorkerRegistration]);
+//   const [serviceWorkerRegistration, setServiceWorkerRegistration] = useState<
+//     ServiceWorkerRegistration | undefined
+//   >();
 
-  useEffect(() => {
-    swRegistration.then((registration) => {
-      setServiceWorkerRegistration(registration);
-    });
-  }, []);
+//   const onUpdateAvailable = useCallback(() => {
+//     console.log('serviceWorkerRegistration', serviceWorkerRegistration);
+//     if (serviceWorkerRegistration?.active) {
+//       setShowUpdateAvailablePrompt(true);
+//     }
+//   }, [serviceWorkerRegistration]);
 
-  useEffect(() => {
-    !!serviceWorkerRegistration &&
-      (serviceWorkerRegistration.onupdatefound = onUpdateAvailable);
-    return () => {
-      !!serviceWorkerRegistration &&
-        (serviceWorkerRegistration.onupdatefound = null);
-    };
-  }, [onUpdateAvailable, serviceWorkerRegistration]);
+//   useEffect(() => {
+//     swRegistration.then((registration) => {
+//       setServiceWorkerRegistration(registration);
+//     });
+//   }, []);
 
-  const pageVisible = usePageVisibility();
+//   useEffect(() => {
+//     !!serviceWorkerRegistration &&
+//       (serviceWorkerRegistration.onupdatefound = onUpdateAvailable);
+//     return () => {
+//       !!serviceWorkerRegistration &&
+//         (serviceWorkerRegistration.onupdatefound = null);
+//     };
+//   }, [onUpdateAvailable, serviceWorkerRegistration]);
 
-  useEffect(() => {
-    if (!!pageVisible && !!serviceWorkerRegistration) {
-      serviceWorkerRegistration.update();
-    }
-  }, [pageVisible, serviceWorkerRegistration]);
+//   const pageVisible = usePageVisibility();
 
-  const onPromptResult = useCallback((result: boolean) => {
-    if (!!result) {
-      window.location.reload();
-    }
-    setShowUpdateAvailablePrompt(false);
-  }, []);
+//   useEffect(() => {
+//     if (!!pageVisible && !!serviceWorkerRegistration) {
+//       serviceWorkerRegistration.update();
+//     }
+//   }, [pageVisible, serviceWorkerRegistration]);
 
-  if (showUpdateAvailablePrompt) {
-    return (
-      <ConfirmationBottomSheet
-        onResult={onPromptResult}
-        prompt='A new version of this app is available. Would you like to reload now?'
-      />
-    );
-  }
+//   const onPromptResult = useCallback((result: boolean) => {
+//     if (!!result) {
+//       window.location.reload();
+//     }
+//     setShowUpdateAvailablePrompt(false);
+//   }, []);
 
-  return null;
-}
+//   if (showUpdateAvailablePrompt) {
+//     return (
+//       <ConfirmationBottomSheet
+//         onResult={onPromptResult}
+//         prompt='A new version of this app is available. Would you like to reload now?'
+//       />
+//     );
+//   }
+
+//   return null;
+// }

@@ -1,10 +1,9 @@
 import './App.scss';
 
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import React, { FC, Suspense } from 'react';
 
 import RouteLoader from './components/RouteLoader/RouteLoader';
-import ServiceWorkerUpdater from './components/ServiceWorkerUpdater/ServiceWorkerUpdater';
 
 const Settings = React.lazy(() => import('./pages/settings'));
 const WorkoutPlan = React.lazy(() => import('./pages/workout-plan'));
@@ -85,7 +84,7 @@ export default function App() {
         />
         <Route path='*' element={<Navigate replace to='/home' />} />
       </Routes>
-      <ServiceWorkerUpdater />
+      {/* <ServiceWorkerUpdater /> */}
     </>
   );
 }
