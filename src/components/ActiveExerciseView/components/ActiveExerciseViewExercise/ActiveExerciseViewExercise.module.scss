@@ -27,7 +27,7 @@
   padding: 1rem 1.25rem;
   height: 100%;
   scroll-snap-align: center;
-
+  overflow-y: auto;
   display: grid;
   grid-template-rows: auto max-content;
 
@@ -38,7 +38,7 @@
     gap: 0.5rem;
     transition: opacity 200ms;
     opacity: 0;
-
+    margin-top: 0.75rem;
     &Visible {
       opacity: 1;
     }
@@ -104,7 +104,11 @@
   margin-top: 0.5rem;
 }
 
-.replaceExercise {
-  float: right;
+.exerciseActions {
+  display: flex;
+  gap: 0.75rem;
   margin-top: 0.75rem;
+  .replaceExercise {
+    flex: 1;
+  }
 }

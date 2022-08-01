@@ -37,6 +37,7 @@ export const WorkoutContext = createContext<{
   ) => void;
   replaceExercise: (exericiseIndex: number, newExerciseId: string) => void;
   addExercise: (exerciseId: string, index: number) => void;
+  deleteExercise: (index: number) => void;
 }>({
   workout: null,
   startWorkout: () => undefined,
@@ -47,6 +48,7 @@ export const WorkoutContext = createContext<{
   persistSetResistance: () => undefined,
   replaceExercise: () => undefined,
   addExercise: () => undefined,
+  deleteExercise: () => undefined,
 });
 
 export default function WorkoutProvider({
@@ -114,6 +116,17 @@ export default function WorkoutProvider({
     },
     [sendJsonMessage]
   );
+  const deleteExercise = useCallback(
+    (index: number) => {
+      sendJsonMessage(
+        verifyType<WSWorkoutUpdate>({
+          type: 'DELETE_EXERCISE',
+          index,
+        })
+      );
+    },
+    [sendJsonMessage]
+  );
   const persistSetRepetitions = useCallback(
     (
       exerciseIndex: number,
@@ -173,6 +186,7 @@ export default function WorkoutProvider({
         persistSetResistance,
         replaceExercise,
         addExercise,
+        deleteExercise,
       }}
     >
       {children}

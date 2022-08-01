@@ -93,6 +93,7 @@ export default function ActiveExerciseView({
           exercise={exercise}
           nextExercise={nextNoncompleteExercise?.exerciseData}
           exerciseIndex={index}
+          exerciseCount={exercises.length}
           onSelected={onSelected}
           onCompleted={onCompleted}
         />

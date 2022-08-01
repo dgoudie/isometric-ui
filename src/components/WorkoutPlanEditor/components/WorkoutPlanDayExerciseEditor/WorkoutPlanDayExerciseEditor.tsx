@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { MouseEvent, useCallback } from 'react';
 
 import { Draggable } from 'react-beautiful-dnd';
 import { IExercise } from '@dgoudie/isometric-types';
@@ -22,7 +22,7 @@ export default function WorkoutPlanDayExerciseEditor({
   dayReorderModeEnabled,
 }: Props) {
   const deleteExerciseWrapped = useCallback(
-    (event) => {
+    (event: MouseEvent) => {
       event.stopPropagation();
       onDelete();
     },

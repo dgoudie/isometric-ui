@@ -1,7 +1,5 @@
 import './index.css';
 
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-
 import AfterExerciseTimerProvider from './providers/AfterExerciseTimer/AfterExerciseTimer';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
@@ -12,8 +10,7 @@ import SnackbarProvider from './providers/Snackbar/Snackbar';
 import WorkoutProvider from './providers/Workout/Workout';
 import reportWebVitals from './reportWebVitals';
 
-//@ts-ignore
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 root.render(
   <BrowserRouter>

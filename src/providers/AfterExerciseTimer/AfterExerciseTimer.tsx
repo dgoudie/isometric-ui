@@ -213,6 +213,7 @@ export default function AfterExerciseTimerProvider({
       value={{ show, showAfterLastExercise, showAfterLastSet, cancel }}
     >
       {children}
+      {/* @ts-ignore */}
       <Portal>
         <CSSTransition
           in={!!durationInMilliSeconds}

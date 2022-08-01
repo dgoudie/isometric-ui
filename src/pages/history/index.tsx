@@ -176,6 +176,7 @@ function Workout({ workout }: WorkoutProps) {
         <label>Duration</label>
         <div>{duration}</div>
       </div>
+      {/* @ts-ignore */}
       <details {...getDetailsProps()}>
         <summary
           className={classNames(

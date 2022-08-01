@@ -56,6 +56,7 @@ export default function SnackbarProvider({
     <SnackbarContext.Provider value={{ openSnackbar, closeSnackbar }}>
       {children}
 
+      {/* @ts-ignore */}
       <Portal>
         <CSSTransition
           in={open}

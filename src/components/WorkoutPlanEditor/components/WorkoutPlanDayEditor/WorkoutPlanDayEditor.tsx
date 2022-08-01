@@ -5,7 +5,7 @@ import {
   Droppable,
 } from 'react-beautiful-dnd';
 import { IExercise, IScheduleDay } from '@dgoudie/isometric-types';
-import React, { useCallback, useState } from 'react';
+import { MouseEvent, useCallback, useState } from 'react';
 import {
   deleteItemFromArray,
   moveItemInArray,
@@ -56,7 +56,7 @@ export default function WorkoutPlanDayEditor({
   );
 
   const deleteDayWrapped = useCallback(
-    (event) => {
+    (event: MouseEvent) => {
       event.stopPropagation();
       onDelete();
     },

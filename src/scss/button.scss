@@ -36,6 +36,12 @@
     }
   }
 
+  &.danger {
+    background-color: var(--error);
+    color: white;
+    border-color: var(--error);
+  }
+
   &:disabled {
     background-color: rgba(128, 128, 128, 0.2);
     color: rgba(128, 128, 128);

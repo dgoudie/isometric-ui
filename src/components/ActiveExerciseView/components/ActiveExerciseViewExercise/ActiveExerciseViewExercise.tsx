@@ -1,6 +1,10 @@
 import { IExerciseExtended, IWorkoutExercise } from '@dgoudie/isometric-types';
 import {
-  ReactNode,
+  ReadableResource,
+  emptyReadableResource,
+  fetchFromApiAsReadableResource,
+} from '../../../../utils/fetch-from-api';
+import {
   Suspense,
   useCallback,
   useContext,
@@ -10,19 +14,16 @@ import {
   useState,
   useTransition,
 } from 'react';
-import {
-  ReadableResource,
-  emptyReadableResource,
-  fetchFromApiAsReadableResource,
-} from '../../../../utils/fetch-from-api';
 
 import ActiveExerciseViewExerciseSet from '../ActiveExerciseViewExerciseSet/ActiveExerciseViewExerciseSet';
 import { AfterExerciseTimerContext } from '../../../../providers/AfterExerciseTimer/AfterExerciseTimer';
+import ConfirmationBottomSheet from '../../../BottomSheet/components/ConfirmationBottomSheet/ConfirmationBottomSheet';
 import ExerciseMetadata from '../../../ExerciseMetadata/ExerciseMetadata';
 import ExercisePickerBottomSheet from '../../../BottomSheet/components/ExercisePickerBottomSheet/ExercisePickerBottomSheet';
 import Loader from '../../../Loader/Loader';
 import MuscleGroupTag from '../../../MuscleGroupTag/MuscleGroupTag';
 import SetView from '../../../SetView/SetView';
+import { SnackbarContext } from '../../../../providers/Snackbar/Snackbar';
 import { WorkoutContext } from '../../../../providers/Workout/Workout';
 import classNames from 'classnames';
 import equal from 'deep-equal';
@@ -34,6 +35,7 @@ interface Props {
   data: IExerciseExtended;
   nextExercise: IExerciseExtended | undefined;
   exerciseIndex: number;
+  exerciseCount: number;
   onSelected: (i: number) => void;
   onCompleted: () => void;
 }
@@ -47,6 +49,7 @@ export default function ActiveExerciseViewExercise({
   data,
   exerciseIndex,
   nextExercise,
+  exerciseCount,
   onSelected,
   onCompleted,
 }: Props) {
@@ -138,9 +141,14 @@ export default function ActiveExerciseViewExercise({
     };
   }, [inView, onSelected, exerciseIndex, sectionInnerRef]);
 
-  const { replaceExercise } = useContext(WorkoutContext);
+  const { replaceExercise, deleteExercise } = useContext(WorkoutContext);
 
   const [showExercisePicker, setShowExercisePicker] = useState(false);
+
+  const [
+    showDeleteExeciseConfirmationBottomSheet,
+    setShowDeleteExeciseConfirmationBottomSheet,
+  ] = useState(false);
 
   const newExerciseSelected = useCallback(
     (exerciseId: string | undefined) => {
@@ -148,6 +156,19 @@ export default function ActiveExerciseViewExercise({
         replaceExercise(exerciseIndex, exerciseId);
       }
       setShowExercisePicker(false);
+    },
+    [exerciseIndex]
+  );
+
+  const { openSnackbar } = useContext(SnackbarContext);
+
+  const removeExercise = useCallback(
+    (removalConfirmed: boolean) => {
+      if (!!removalConfirmed) {
+        deleteExercise(exerciseIndex);
+        openSnackbar(`Exercise removed.`, 2000);
+      }
+      setShowDeleteExeciseConfirmationBottomSheet(false);
     },
     [exerciseIndex]
   );
@@ -182,21 +203,40 @@ export default function ActiveExerciseViewExercise({
                 />
               ))}
             </div>
-            <button
-              type='button'
-              onClick={() => setShowExercisePicker(true)}
-              className={classNames(
-                'standard-button outlined',
-                styles.replaceExercise
+            <div className={styles.exerciseActions}>
+              <button
+                type='button'
+                onClick={() => setShowExercisePicker(true)}
+                className={classNames(
+                  'standard-button outlined',
+                  styles.replaceExercise
+                )}
+              >
+                <i className='fa-solid fa-dumbbell'></i>
+                Replace Exercise
+              </button>
+              {exerciseCount > 1 && (
+                <button
+                  type='button'
+                  onClick={() =>
+                    setShowDeleteExeciseConfirmationBottomSheet(true)
+                  }
+                  className={classNames('standard-button danger')}
+                >
+                  <i className='fa-solid fa-trash'></i>
+                </button>
               )}
-            >
-              <i className='fa-solid fa-dumbbell'></i>
-              Replace Exercise
-            </button>
+            </div>
             {showExercisePicker && (
               <ExercisePickerBottomSheet
                 muscleGroup={data.primaryMuscleGroup}
                 onResult={newExerciseSelected}
+              />
+            )}
+            {showDeleteExeciseConfirmationBottomSheet && (
+              <ConfirmationBottomSheet
+                prompt="Are you sure you'd like to remove this exercise from your workout?"
+                onResult={removeExercise}
               />
             )}
           </div>

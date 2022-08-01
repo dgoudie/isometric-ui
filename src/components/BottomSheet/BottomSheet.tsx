@@ -92,6 +92,7 @@ export default function BottomSheet<T>({
   }, []);
 
   return (
+    //@ts-ignore
     <Portal>
       <div onClick={onClosedNoResult} className={styles.backdrop}>
         <FocusLock>
