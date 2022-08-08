@@ -190,25 +190,12 @@ export default function ActiveExerciseViewExercise({
             {!!data.lastPerformed && (
               <ExerciseMetadata className={styles.metadata} exercise={data} />
             )}
-            <div className={styles.sets}>
-              {exercise.sets.map((set, index) => (
-                <ActiveExerciseViewExerciseSet
-                  key={index}
-                  set={set}
-                  data={data}
-                  exerciseSelected={inView}
-                  setSelected={numberOfCompletedSets === index}
-                  exerciseIndex={exerciseIndex}
-                  setIndex={index}
-                />
-              ))}
-            </div>
             <div className={styles.exerciseActions}>
               <button
                 type='button'
                 onClick={() => setShowExercisePicker(true)}
                 className={classNames(
-                  'standard-button outlined',
+                  'standard-button slim outlined',
                   styles.replaceExercise
                 )}
               >
@@ -221,11 +208,24 @@ export default function ActiveExerciseViewExercise({
                   onClick={() =>
                     setShowDeleteExeciseConfirmationBottomSheet(true)
                   }
-                  className={classNames('standard-button danger')}
+                  className={classNames('standard-button slim danger')}
                 >
                   <i className='fa-solid fa-trash'></i>
                 </button>
               )}
+            </div>
+            <div className={styles.sets}>
+              {exercise.sets.map((set, index) => (
+                <ActiveExerciseViewExerciseSet
+                  key={index}
+                  set={set}
+                  data={data}
+                  exerciseSelected={inView}
+                  setSelected={numberOfCompletedSets === index}
+                  exerciseIndex={exerciseIndex}
+                  setIndex={index}
+                />
+              ))}
             </div>
             {showExercisePicker && (
               <ExercisePickerBottomSheet

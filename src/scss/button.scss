@@ -47,6 +47,11 @@
     color: rgba(128, 128, 128);
     cursor: default;
   }
+
+  &.slim {
+    border-radius: 1000px;
+    min-height: 2.5rem;
+  }
 }
 
 .standard-button:not(:disabled) {
