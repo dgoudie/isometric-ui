@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import {
-  addMilliseconds,
+  addSeconds,
   differenceInMilliseconds,
   intervalToDuration,
   millisecondsToSeconds,
@@ -38,6 +38,7 @@ type AfterExerciseTimerContextType = {
     onFinished?: () => void
   ) => void;
   cancel: () => void;
+  isOpenAndMinimized: boolean;
 };
 
 export const AfterExerciseTimerContext =
@@ -46,6 +47,7 @@ export const AfterExerciseTimerContext =
     showAfterLastSet: () => undefined,
     showAfterLastExercise: () => undefined,
     cancel: () => undefined,
+    isOpenAndMinimized: false,
   });
 
 const TIMEOUT = 250;
@@ -53,7 +55,9 @@ const TIMEOUT = 250;
 export default function AfterExerciseTimerProvider({
   children,
 }: React.PropsWithChildren<{}>) {
-  const [durationInMilliSeconds, setDurationInMilliSeconds] = useState(0);
+  // const [durationInMilliSeconds, setDurationInMilliSeconds] = useState(0);
+  const previousEndDate = useRef<Date | undefined>();
+  const [endDate, setEndDate] = useState<Date | undefined>();
   const [minimized, setMinimized] = useState(false);
   const [onFinishedCallbacks, setOnFinishedCallbacks] = useState<
     (() => void)[]
@@ -69,40 +73,46 @@ export default function AfterExerciseTimerProvider({
 
   useEffect(() => {
     clearInterval(intervalId);
-    if (!!durationInMilliSeconds) {
-      const endDate = addMilliseconds(new Date(), millisecondsRemaining);
+    if (!!endDate) {
       setIntervalId(
         setInterval(() => {
           const remaining = differenceInMilliseconds(endDate, new Date());
           if (remaining > 0) {
             setMillisecondsRemaining(remaining);
           } else {
-            setMillisecondsRemaining(0);
-            setDurationInMilliSeconds(0);
             showNotification('Time is up...');
+            setEndDate(undefined);
           }
         }, 100) as unknown as number
       );
-    } else {
-      onFinishedCallbacks.forEach((onFinished) => onFinished());
-      setOnFinishedCallbacks([]);
     }
     return () => {
       clearInterval(intervalId);
     };
-  }, [durationInMilliSeconds]);
+  }, [endDate]);
+
+  useEffect(() => {
+    if (!!previousEndDate.current && !endDate) {
+      if (onFinishedCallbacks.length) {
+        onFinishedCallbacks.forEach((onFinished) => onFinished());
+        setOnFinishedCallbacks([]);
+      }
+    }
+  }, [endDate, onFinishedCallbacks]);
+
+  useEffect(() => {
+    previousEndDate.current = endDate;
+  }, [endDate]);
+
+  const isOpenAndMinimized = useMemo(
+    () => !!endDate && minimized,
+    [endDate, minimized]
+  );
 
   const secondsRemaining = useMemo(
     () => millisecondsToSeconds(millisecondsRemaining),
     [millisecondsRemaining]
   );
-
-  useEffect(() => {
-    if (!secondsRemaining && onFinishedCallbacks.length) {
-      onFinishedCallbacks.forEach((onFinished) => onFinished());
-      setOnFinishedCallbacks([]);
-    }
-  }, [secondsRemaining, onFinishedCallbacks]);
 
   const formattedTime = useMemo(() => {
     const duration = intervalToDuration({
@@ -116,9 +126,7 @@ export default function AfterExerciseTimerProvider({
 
   const commonShow = useCallback(
     (durationInSeconds: number, onFinished?: () => void) => {
-      const millis = secondsToMilliseconds(durationInSeconds);
-      setDurationInMilliSeconds(millis);
-      setMillisecondsRemaining(millis);
+      setEndDate(addSeconds(new Date(), durationInSeconds));
       setMinimized(false);
       if (!!onFinished) {
         setOnFinishedCallbacks([...onFinishedCallbacks, onFinished]);
@@ -158,7 +166,7 @@ export default function AfterExerciseTimerProvider({
   );
 
   const cancel = useCallback(() => {
-    setDurationInMilliSeconds(0);
+    setEndDate(undefined);
     setOnFinishedCallbacks([]);
   }, []);
 
@@ -182,7 +190,7 @@ export default function AfterExerciseTimerProvider({
         <button
           type='button'
           className={classNames('standard-button primary', styles.flex)}
-          onClick={() => setDurationInMilliSeconds(0)}
+          onClick={() => setEndDate(undefined)}
         >
           <i className='fa-solid fa-xmark'></i>
           Dismiss
@@ -211,7 +219,7 @@ export default function AfterExerciseTimerProvider({
           <button
             type='button'
             className={classNames('standard-button primary', styles.flex)}
-            onClick={() => setDurationInMilliSeconds(0)}
+            onClick={() => setEndDate(undefined)}
           >
             <i className='fa-solid fa-xmark'></i>
             Dismiss
@@ -234,7 +242,7 @@ export default function AfterExerciseTimerProvider({
         <button
           type='button'
           className={'standard-button outlined'}
-          onClick={() => setDurationInMilliSeconds(0)}
+          onClick={() => setEndDate(undefined)}
         >
           <i className='fa-solid fa-xmark'></i>
           Dismiss
@@ -245,12 +253,18 @@ export default function AfterExerciseTimerProvider({
 
   return (
     <AfterExerciseTimerContext.Provider
-      value={{ show, showAfterLastExercise, showAfterLastSet, cancel }}
+      value={{
+        show,
+        showAfterLastExercise,
+        showAfterLastSet,
+        cancel,
+        isOpenAndMinimized,
+      }}
     >
       {children}
       <Portal>
         <CSSTransition
-          in={!!durationInMilliSeconds && !minimized}
+          in={!!endDate && !minimized}
           nodeRef={backdropRef}
           timeout={TIMEOUT}
           mountOnEnter
@@ -260,7 +274,7 @@ export default function AfterExerciseTimerProvider({
           <div ref={backdropRef} className={styles.backdrop}></div>
         </CSSTransition>
         <CSSTransition
-          in={!!durationInMilliSeconds && !minimized}
+          in={!!endDate && !minimized}
           nodeRef={expandedModalRef}
           timeout={TIMEOUT}
           mountOnEnter
@@ -274,7 +288,7 @@ export default function AfterExerciseTimerProvider({
           </div>
         </CSSTransition>
         <CSSTransition
-          in={!!durationInMilliSeconds && !!minimized}
+          in={!!endDate && !!minimized}
           nodeRef={minimizedModalRef}
           timeout={TIMEOUT}
           mountOnEnter
@@ -294,7 +308,7 @@ export default function AfterExerciseTimerProvider({
               <button
                 type='button'
                 className={classNames('standard-button primary', styles.flex)}
-                onClick={() => setDurationInMilliSeconds(0)}
+                onClick={() => setEndDate(undefined)}
               >
                 <i className='fa-solid fa-xmark'></i>
                 Dismiss

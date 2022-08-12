@@ -14,6 +14,7 @@ import React, {
 
 import { ActiveExercise } from '../../pages/workout';
 import ActiveExerciseViewExercise from './components/ActiveExerciseViewExercise/ActiveExerciseViewExercise';
+import { AfterExerciseTimerContext } from '../../providers/AfterExerciseTimer/AfterExerciseTimer';
 import { ReadableResource } from '../../utils/fetch-from-api';
 import classNames from 'classnames';
 import styles from './ActiveExerciseView.module.scss';
@@ -84,8 +85,20 @@ export default function ActiveExerciseView({
       });
     }
   }, [nextNoncompleteExercise, focusedExerciseChanged]);
+
+  const { isOpenAndMinimized: timerIsOpenAndMinimized } = React.useContext(
+    AfterExerciseTimerContext
+  );
+
   return (
-    <div className={classNames(styles.root, 'fade-in')} ref={rootRef}>
+    <div
+      className={classNames(
+        styles.root,
+        timerIsOpenAndMinimized && styles.shrunk,
+        'fade-in'
+      )}
+      ref={rootRef}
+    >
       {exercises.map((exercise, index) => (
         <ActiveExerciseViewExercise
           key={index}

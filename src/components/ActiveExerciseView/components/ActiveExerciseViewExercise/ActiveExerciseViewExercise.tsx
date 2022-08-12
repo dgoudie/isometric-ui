@@ -241,12 +241,7 @@ export default function ActiveExerciseViewExercise({
               />
             )}
           </div>
-          <div
-            className={classNames(
-              styles.mainFooter,
-              inView && styles.mainFooterVisible
-            )}
-          >
+          <div className={classNames(styles.mainFooter)}>
             <i className='fa-solid fa-chevron-up'></i>
             <span>Swipe up to view history</span>
           </div>

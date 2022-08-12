@@ -6,4 +6,10 @@
   gap: 1rem;
   margin-bottom: 1rem;
   flex: 1;
+  // transition: margin-bottom 200ms;
+  will-change: margin-bottom;
+
+  &.shrunk {
+    margin-bottom: 5.75rem;
+  }
 }
