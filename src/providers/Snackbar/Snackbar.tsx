@@ -1,7 +1,7 @@
 import React, { createContext, useState } from 'react';
 
 import { CSSTransition } from 'react-transition-group';
-import { Portal } from '@primer/react';
+import Portal from '../../components/Portal/Portal';
 import styles from './Snackbar.module.scss';
 
 // Snackbar default values

@@ -9,7 +9,7 @@ import React, {
 
 import { CupertinoPane } from 'cupertino-pane';
 import FocusLock from 'react-focus-lock';
-import { Portal } from '@primer/react';
+import Portal from '../../components/Portal/Portal';
 import styles from './BottomSheet.module.scss';
 
 type PropsLocked<T> = {
@@ -92,7 +92,6 @@ export default function BottomSheet<T>({
   }, []);
 
   return (
-    //@ts-ignore
     <Portal>
       <div onClick={onClosedNoResult} className={styles.backdrop}>
         <FocusLock>

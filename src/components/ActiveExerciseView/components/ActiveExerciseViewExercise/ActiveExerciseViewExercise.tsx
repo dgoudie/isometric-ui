@@ -97,8 +97,9 @@ export default function ActiveExerciseViewExercise({
           showAfterLastSet(
             data.breakTimeInSeconds,
             nextExercise.name,
-            nextExercise.primaryMuscleGroup
-          ).then(onCompleted);
+            nextExercise.primaryMuscleGroup,
+            onCompleted
+          );
         } else {
           showAfterLastExercise(data.breakTimeInSeconds);
         }

@@ -13,6 +13,7 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 root.render(
+  // <React.StrictMode>
   <BrowserRouter>
     <SettingsProvider>
       <SnackbarProvider>
@@ -24,6 +25,7 @@ root.render(
       </SnackbarProvider>
     </SettingsProvider>
   </BrowserRouter>
+  //</React.StrictMode>
 );
 
 // If you want your app to work offline and load faster, you can change

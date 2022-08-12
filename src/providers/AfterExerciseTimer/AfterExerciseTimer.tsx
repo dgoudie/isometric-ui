@@ -1,5 +1,4 @@
 import React, {
-  ReactNode,
   createContext,
   useCallback,
   useContext,
@@ -20,27 +19,32 @@ import { CSSTransition } from 'react-transition-group';
 import { ExerciseMuscleGroup } from '@dgoudie/isometric-types';
 import FocusTrap from 'focus-trap-react';
 import MuscleGroupTag from '../../components/MuscleGroupTag/MuscleGroupTag';
-import { Portal } from '@primer/react';
+import Portal from '../../components/Portal/Portal';
 import { WorkoutContext } from '../Workout/Workout';
+import classNames from 'classnames';
 import { showNotification } from '../../utils/notification';
 import styles from './AfterExerciseTimer.module.scss';
 
 type AfterExerciseTimerContextType = {
-  show: (durationInSeconds: number) => Promise<void>;
+  show: (durationInSeconds: number, onFinished?: () => void) => void;
   showAfterLastSet: (
     durationInSeconds: number,
     nextExerciseName: string,
-    nextExerciseMuscleGroup: ExerciseMuscleGroup
-  ) => Promise<void>;
-  showAfterLastExercise: (durationInSeconds: number) => Promise<void>;
+    nextExerciseMuscleGroup: ExerciseMuscleGroup,
+    onFinished?: () => void
+  ) => void;
+  showAfterLastExercise: (
+    durationInSeconds: number,
+    onFinished?: () => void
+  ) => void;
   cancel: () => void;
 };
 
 export const AfterExerciseTimerContext =
   createContext<AfterExerciseTimerContextType>({
-    show: () => Promise.resolve(),
-    showAfterLastSet: () => Promise.resolve(),
-    showAfterLastExercise: () => Promise.resolve(),
+    show: () => undefined,
+    showAfterLastSet: () => undefined,
+    showAfterLastExercise: () => undefined,
     cancel: () => undefined,
   });
 
@@ -50,7 +54,10 @@ export default function AfterExerciseTimerProvider({
   children,
 }: React.PropsWithChildren<{}>) {
   const [durationInMilliSeconds, setDurationInMilliSeconds] = useState(0);
-  const [onFinished, setOnFinished] = useState<() => void>();
+  const [minimized, setMinimized] = useState(false);
+  const [onFinishedCallbacks, setOnFinishedCallbacks] = useState<
+    (() => void)[]
+  >([]);
   const [type, setType] = useState<
     'AFTER_SET' | 'AFTER_EXERCISE' | 'END_OF_WORKOUT'
   >('AFTER_SET');
@@ -59,13 +66,6 @@ export default function AfterExerciseTimerProvider({
     useState<ExerciseMuscleGroup>('cardio');
   const [millisecondsRemaining, setMillisecondsRemaining] = useState(0);
   const [intervalId, setIntervalId] = useState<number>();
-
-  const buildPromise = useCallback(() => {
-    if (typeof onFinished !== 'undefined') {
-      onFinished();
-    }
-    return new Promise<void>((resolve) => setOnFinished(() => resolve));
-  }, [setOnFinished, onFinished]);
 
   useEffect(() => {
     clearInterval(intervalId);
@@ -77,11 +77,15 @@ export default function AfterExerciseTimerProvider({
           if (remaining > 0) {
             setMillisecondsRemaining(remaining);
           } else {
+            setMillisecondsRemaining(0);
             setDurationInMilliSeconds(0);
             showNotification('Time is up...');
           }
         }, 100) as unknown as number
       );
+    } else {
+      onFinishedCallbacks.forEach((onFinished) => onFinished());
+      setOnFinishedCallbacks([]);
     }
     return () => {
       clearInterval(intervalId);
@@ -93,6 +97,13 @@ export default function AfterExerciseTimerProvider({
     [millisecondsRemaining]
   );
 
+  useEffect(() => {
+    if (!secondsRemaining && onFinishedCallbacks.length) {
+      onFinishedCallbacks.forEach((onFinished) => onFinished());
+      setOnFinishedCallbacks([]);
+    }
+  }, [secondsRemaining, onFinishedCallbacks]);
+
   const formattedTime = useMemo(() => {
     const duration = intervalToDuration({
       start: 0,
@@ -103,65 +114,80 @@ export default function AfterExerciseTimerProvider({
       .padStart(2, '0')}`;
   }, [secondsRemaining]);
 
-  const show = useCallback<AfterExerciseTimerContextType['show']>(
-    (durationInSeconds) => {
+  const commonShow = useCallback(
+    (durationInSeconds: number, onFinished?: () => void) => {
       const millis = secondsToMilliseconds(durationInSeconds);
       setDurationInMilliSeconds(millis);
       setMillisecondsRemaining(millis);
-      setType('AFTER_SET');
-      return buildPromise();
+      setMinimized(false);
+      if (!!onFinished) {
+        setOnFinishedCallbacks([...onFinishedCallbacks, onFinished]);
+      }
     },
-    [buildPromise]
+    [onFinishedCallbacks]
+  );
+
+  const show = useCallback<AfterExerciseTimerContextType['show']>(
+    (durationInSeconds, onFinished) => {
+      commonShow(durationInSeconds, onFinished);
+      setType('AFTER_SET');
+    },
+    [commonShow]
   );
 
   const showAfterLastSet = useCallback<
     AfterExerciseTimerContextType['showAfterLastSet']
   >(
-    (durationInSeconds, nextName, nextMuscleGroup) => {
-      const millis = secondsToMilliseconds(durationInSeconds);
-      setDurationInMilliSeconds(millis);
-      setMillisecondsRemaining(millis);
+    (durationInSeconds, nextName, nextMuscleGroup, onFinished) => {
+      commonShow(durationInSeconds, onFinished);
       setNextExerciseName(nextName);
       setNextExerciseMuscleGroup(nextMuscleGroup);
       setType('AFTER_EXERCISE');
-      return buildPromise();
     },
-    [buildPromise]
+    [commonShow]
   );
 
   const showAfterLastExercise = useCallback<
     AfterExerciseTimerContextType['showAfterLastExercise']
   >(
-    (durationInSeconds) => {
-      const millis = secondsToMilliseconds(durationInSeconds);
-      setDurationInMilliSeconds(millis);
-      setMillisecondsRemaining(millis);
+    (durationInSeconds, onFinished) => {
+      commonShow(durationInSeconds, onFinished);
       setType('END_OF_WORKOUT');
-      return buildPromise();
     },
-    [buildPromise]
+    [commonShow]
   );
 
   const cancel = useCallback(() => {
     setDurationInMilliSeconds(0);
-    setOnFinished(undefined);
+    setOnFinishedCallbacks([]);
   }, []);
 
-  const rootRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
+  const expandedModalRef = useRef<HTMLDivElement>(null);
+  const minimizedModalRef = useRef<HTMLDivElement>(null);
 
   const { endWorkout } = useContext(WorkoutContext);
 
   let body = (
     <>
       <div className={styles.time}>{formattedTime}</div>
-      <button
-        type='button'
-        className={'standard-button primary'}
-        onClick={() => setDurationInMilliSeconds(0)}
-      >
-        <i className='fa-solid fa-xmark'></i>
-        Dismiss
-      </button>
+      <div className={styles.buttonBar}>
+        <button
+          type='button'
+          className={'standard-button outlined'}
+          onClick={() => setMinimized(true)}
+        >
+          <i className='fa-solid fa-down-left-and-up-right-to-center'></i>
+        </button>
+        <button
+          type='button'
+          className={classNames('standard-button primary', styles.flex)}
+          onClick={() => setDurationInMilliSeconds(0)}
+        >
+          <i className='fa-solid fa-xmark'></i>
+          Dismiss
+        </button>
+      </div>
     </>
   );
 
@@ -174,14 +200,23 @@ export default function AfterExerciseTimerProvider({
           <div>{nextExerciseName}</div>
           <MuscleGroupTag muscleGroup={nextExerciseMuscleGroup} />
         </div>
-        <button
-          type='button'
-          className={'standard-button primary'}
-          onClick={() => setDurationInMilliSeconds(0)}
-        >
-          <i className='fa-solid fa-xmark'></i>
-          Dismiss
-        </button>
+        <div className={styles.buttonBar}>
+          <button
+            type='button'
+            className={'standard-button outlined'}
+            onClick={() => setMinimized(true)}
+          >
+            <i className='fa-solid fa-down-left-and-up-right-to-center'></i>
+          </button>
+          <button
+            type='button'
+            className={classNames('standard-button primary', styles.flex)}
+            onClick={() => setDurationInMilliSeconds(0)}
+          >
+            <i className='fa-solid fa-xmark'></i>
+            Dismiss
+          </button>
+        </div>
       </>
     );
   } else if (type === 'END_OF_WORKOUT') {
@@ -213,28 +248,58 @@ export default function AfterExerciseTimerProvider({
       value={{ show, showAfterLastExercise, showAfterLastSet, cancel }}
     >
       {children}
-      {/* @ts-ignore */}
       <Portal>
         <CSSTransition
-          in={!!durationInMilliSeconds}
-          nodeRef={rootRef}
+          in={!!durationInMilliSeconds && !minimized}
+          nodeRef={backdropRef}
           timeout={TIMEOUT}
           mountOnEnter
           unmountOnExit
-          classNames={{
-            enter: styles.enter,
-            enterActive: styles.enterActive,
-            enterDone: styles.enterDone,
-            exit: styles.exit,
-            exitActive: styles.exitActive,
-            exitDone: styles.exitDone,
-          }}
-          onExited={onFinished}
+          classNames={styles}
         >
-          <div ref={rootRef} className={styles.root}>
+          <div ref={backdropRef} className={styles.backdrop}></div>
+        </CSSTransition>
+        <CSSTransition
+          in={!!durationInMilliSeconds && !minimized}
+          nodeRef={expandedModalRef}
+          timeout={TIMEOUT}
+          mountOnEnter
+          unmountOnExit
+          classNames={styles}
+        >
+          <div ref={expandedModalRef} className={styles.expandedModal}>
             <FocusTrap>
-              <div className={styles.modal}>{body}</div>
+              <div className={styles.body}>{body}</div>
             </FocusTrap>
+          </div>
+        </CSSTransition>
+        <CSSTransition
+          in={!!durationInMilliSeconds && !!minimized}
+          nodeRef={minimizedModalRef}
+          timeout={TIMEOUT}
+          mountOnEnter
+          unmountOnExit
+          classNames={styles}
+        >
+          <div ref={minimizedModalRef} className={styles.minimizedModal}>
+            <div className={styles.time}>{formattedTime}</div>
+            <div className={styles.buttonBar}>
+              <button
+                type='button'
+                className={'standard-button outlined'}
+                onClick={() => setMinimized(false)}
+              >
+                <i className='fa-solid fa-up-right-and-down-left-from-center'></i>
+              </button>
+              <button
+                type='button'
+                className={classNames('standard-button primary', styles.flex)}
+                onClick={() => setDurationInMilliSeconds(0)}
+              >
+                <i className='fa-solid fa-xmark'></i>
+                Dismiss
+              </button>
+            </div>
           </div>
         </CSSTransition>
       </Portal>

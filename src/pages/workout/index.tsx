@@ -100,12 +100,12 @@ export default function Workout() {
   const onExeciseAdded = useCallback(
     (exerciseId: string | undefined) => {
       if (typeof exerciseId !== 'undefined') {
-        addExercise(exerciseId, exerciseIndexInView + 1);
+        addExercise(exerciseId, activeExercise.index + 1);
         openSnackbar('Exercise Added.');
       }
       setShowAddExerciseBottomSheet(false);
     },
-    [exerciseIndexInView]
+    [activeExercise]
   );
 
   if (!workout) {

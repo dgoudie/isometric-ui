@@ -1,15 +1,41 @@
-.root {
+.backdrop {
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
   transition: background-color 250ms;
+  &.enterActive,
+  &.enterDone {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+}
+
+.time {
+  text-align: center;
+  font-size: 2rem;
+}
+
+.buttonBar {
+  display: flex;
+  gap: 0.75rem;
+
+  .flex {
+    flex: 1;
+  }
+}
+
+.expandedModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  .modal {
+  .body {
     background: var(--background-alt);
     min-width: 250px;
     max-width: calc(100vw - 4rem);
@@ -22,11 +48,6 @@
     transform: scale(0.9);
     filter: blur(3px);
     transition: all 250ms;
-
-    .time {
-      text-align: center;
-      font-size: 2rem;
-    }
 
     label {
       margin-bottom: 0;
@@ -42,12 +63,34 @@
 
   &.enterActive,
   &.enterDone {
-    background-color: rgba(0, 0, 0, 0.7);
-
-    .modal {
+    .body {
       opacity: 1;
       transform: scale(1);
       filter: blur(0);
     }
+  }
+}
+
+.minimizedModal {
+  background: var(--background-alt);
+  position: fixed;
+  bottom: 2rem;
+  left: 1rem;
+  right: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 8px;
+  opacity: 0;
+  transform: scale(0.9);
+  filter: blur(3px);
+  transition: all 150ms;
+
+  &.enterActive,
+  &.enterDone {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
   }
 }

@@ -1,9 +1,9 @@
 import {
-  IExerciseExtended,
-  IWorkout,
-  IWorkoutExercise,
-} from '@dgoudie/isometric-types';
-import React, {
+  ReadableResource,
+  fetchFromApi,
+  fetchFromApiAsReadableResource,
+} from '../../utils/fetch-from-api';
+import {
   Suspense,
   useCallback,
   useEffect,
@@ -11,14 +11,10 @@ import React, {
   useState,
   useTransition,
 } from 'react';
-import {
-  ReadableResource,
-  fetchFromApi,
-  fetchFromApiAsReadableResource,
-} from '../../utils/fetch-from-api';
 import { formatDistance, formatDuration, intervalToDuration } from 'date-fns';
 
 import AppBarWithAppHeaderLayout from '../../components/AppBarWithAppHeaderLayout/AppBarWithAppHeaderLayout';
+import { IWorkout } from '@dgoudie/isometric-types';
 import InfiniteScroll from '../../components/InfiniteScroll/InfiniteScroll';
 import MuscleGroupTag from '../../components/MuscleGroupTag/MuscleGroupTag';
 import RouteLoader from '../../components/RouteLoader/RouteLoader';
@@ -26,7 +22,6 @@ import SetView from '../../components/SetView/SetView';
 import classNames from 'classnames';
 import { secondsToMilliseconds } from 'date-fns/esm';
 import styles from './index.module.scss';
-import { useDetails } from '@primer/react';
 
 const format = new Intl.DateTimeFormat('en-US', {
   dateStyle: 'medium',
@@ -160,7 +155,7 @@ function Workout({ workout }: WorkoutProps) {
     [workout]
   );
 
-  const { getDetailsProps, open } = useDetails({});
+  const [open, setOpen] = useState(false);
 
   return (
     <div className={classNames(styles.workout, 'fade-in')}>
@@ -176,8 +171,9 @@ function Workout({ workout }: WorkoutProps) {
         <label>Duration</label>
         <div>{duration}</div>
       </div>
-      {/* @ts-ignore */}
-      <details {...getDetailsProps()}>
+      <details
+        onToggle={(event) => setOpen((event.target as HTMLDetailsElement).open)}
+      >
         <summary
           className={classNames(
             'standard-button outlined',

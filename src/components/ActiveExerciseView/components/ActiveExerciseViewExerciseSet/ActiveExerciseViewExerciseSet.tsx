@@ -47,7 +47,6 @@ export default function ActiveExerciseViewExerciseSet(props: Props) {
     <div
       className={classNames(
         styles.root,
-        props.exerciseSelected && styles.selected,
         props.setSelected && styles.highlighted,
         props.set.complete && styles.completed
       )}
