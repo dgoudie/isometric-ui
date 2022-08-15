@@ -27,9 +27,6 @@ class RouteWrapper extends Component<RouteWrapperProps, RouteWrapperState> {
   static getDerivedStateFromError(error: Error): Partial<RouteWrapperState> {
     return { error };
   }
-  componentDidCatch(error: Error, errorInfo: any) {
-    console.log(JSON.stringify(error));
-  }
   render() {
     if (!!this.state.error) {
       return <ErrorView error={this.state.error} />;
