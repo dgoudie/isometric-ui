@@ -1,8 +1,9 @@
 import './App.scss';
 
 import { Navigate, Route, Routes } from 'react-router-dom';
-import React, { FC, Suspense } from 'react';
+import React, { Component, Suspense } from 'react';
 
+import ErrorView from './components/ErrorView/ErrorView';
 import RouteLoader from './components/RouteLoader/RouteLoader';
 
 const Settings = React.lazy(() => import('./pages/settings'));
@@ -14,6 +15,31 @@ const Exercise = React.lazy(() => import('./pages/exercise'));
 const ExerciseEdit = React.lazy(() => import('./pages/exercise-edit'));
 const Workout = React.lazy(() => import('./pages/workout'));
 
+type RouteWrapperProps = React.PropsWithChildren<{}>;
+type RouteWrapperState = { error?: Error };
+
+class RouteWrapper extends Component<RouteWrapperProps, RouteWrapperState> {
+  constructor(props: RouteWrapperProps) {
+    super(props);
+    this.state = {};
+  }
+
+  static getDerivedStateFromError(error: Error): Partial<RouteWrapperState> {
+    return { error };
+  }
+  componentDidCatch(error: Error, errorInfo: any) {
+    console.log(JSON.stringify(error));
+  }
+  render() {
+    if (!!this.state.error) {
+      return <ErrorView error={this.state.error} />;
+    }
+    return (
+      <Suspense fallback={<RouteLoader />}>{this.props.children}</Suspense>
+    );
+  }
+}
+
 export default function App() {
   return (
     <>
@@ -21,65 +47,65 @@ export default function App() {
         <Route
           path='home'
           element={
-            <Suspense fallback={<RouteLoader />}>
+            <RouteWrapper>
               <Home />
-            </Suspense>
+            </RouteWrapper>
           }
         />
         <Route
           path='exercises'
           element={
-            <Suspense fallback={<RouteLoader />}>
+            <RouteWrapper>
               <Exercises />
-            </Suspense>
+            </RouteWrapper>
           }
         />
         <Route
           path='exercises/:exerciseName/edit'
           element={
-            <Suspense fallback={<RouteLoader />}>
+            <RouteWrapper>
               <ExerciseEdit />
-            </Suspense>
+            </RouteWrapper>
           }
         />
         <Route
           path='exercises/:exerciseName'
           element={
-            <Suspense fallback={<RouteLoader />}>
+            <RouteWrapper>
               <Exercise />
-            </Suspense>
+            </RouteWrapper>
           }
         />
         <Route
           path='history'
           element={
-            <Suspense fallback={<RouteLoader />}>
+            <RouteWrapper>
               <History />
-            </Suspense>
+            </RouteWrapper>
           }
         />
         <Route
           path='settings'
           element={
-            <Suspense fallback={<RouteLoader />}>
+            <RouteWrapper>
               <Settings />
-            </Suspense>
+            </RouteWrapper>
           }
         />
         <Route
           path='workout-plan'
           element={
-            <Suspense fallback={<RouteLoader />}>
+            <RouteWrapper>
               <WorkoutPlan />
-            </Suspense>
+            </RouteWrapper>
           }
         />
         <Route
           path='workout'
           element={
-            <Suspense fallback={<RouteLoader />}>
+            <RouteWrapper>
               <Workout />
-            </Suspense>
+            </RouteWrapper>
           }
         />
         <Route path='*' element={<Navigate replace to='/home' />} />
