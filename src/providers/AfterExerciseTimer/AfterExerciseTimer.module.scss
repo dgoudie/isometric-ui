@@ -11,11 +11,6 @@
   }
 }
 
-.time {
-  text-align: center;
-  font-size: 2rem;
-}
-
 .buttonBar {
   display: flex;
   gap: 0.75rem;
@@ -61,6 +56,11 @@
     }
   }
 
+  .time {
+    text-align: center;
+    font-size: 2rem;
+  }
+
   &.enterActive,
   &.enterDone {
     .body {
@@ -86,6 +86,11 @@
   transform: scale(0.9);
   filter: blur(3px);
   transition: all 150ms;
+
+  .time {
+    text-align: center;
+    font-size: 1.5rem;
+  }
 
   &.enterActive,
   &.enterDone {

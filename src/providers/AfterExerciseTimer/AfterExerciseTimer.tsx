@@ -182,14 +182,14 @@ export default function AfterExerciseTimerProvider({
       <div className={styles.buttonBar}>
         <button
           type='button'
-          className={'standard-button outlined'}
+          className={'standard-button outlined slim'}
           onClick={() => setMinimized(true)}
         >
           <i className='fa-solid fa-down-left-and-up-right-to-center'></i>
         </button>
         <button
           type='button'
-          className={classNames('standard-button primary', styles.flex)}
+          className={classNames('standard-button primary slim', styles.flex)}
           onClick={() => setEndDate(undefined)}
         >
           <i className='fa-solid fa-xmark'></i>
@@ -211,14 +211,14 @@ export default function AfterExerciseTimerProvider({
         <div className={styles.buttonBar}>
           <button
             type='button'
-            className={'standard-button outlined'}
+            className={'standard-button outlined slim'}
             onClick={() => setMinimized(true)}
           >
             <i className='fa-solid fa-down-left-and-up-right-to-center'></i>
           </button>
           <button
             type='button'
-            className={classNames('standard-button primary', styles.flex)}
+            className={classNames('standard-button primary slim', styles.flex)}
             onClick={() => setEndDate(undefined)}
           >
             <i className='fa-solid fa-xmark'></i>
@@ -233,7 +233,7 @@ export default function AfterExerciseTimerProvider({
         <div className={styles.time}>{formattedTime}</div>
         <button
           type='button'
-          className={'standard-button primary'}
+          className={'standard-button primary slim'}
           onClick={() => endWorkout()}
         >
           <i className='fa-solid fa-save'></i>
@@ -241,7 +241,7 @@ export default function AfterExerciseTimerProvider({
         </button>
         <button
           type='button'
-          className={'standard-button outlined'}
+          className={'standard-button outlined slim'}
           onClick={() => setEndDate(undefined)}
         >
           <i className='fa-solid fa-xmark'></i>
@@ -300,14 +300,17 @@ export default function AfterExerciseTimerProvider({
             <div className={styles.buttonBar}>
               <button
                 type='button'
-                className={'standard-button outlined'}
+                className={'standard-button outlined slim'}
                 onClick={() => setMinimized(false)}
               >
                 <i className='fa-solid fa-up-right-and-down-left-from-center'></i>
               </button>
               <button
                 type='button'
-                className={classNames('standard-button primary', styles.flex)}
+                className={classNames(
+                  'standard-button primary slim',
+                  styles.flex
+                )}
                 onClick={() => setEndDate(undefined)}
               >
                 <i className='fa-solid fa-xmark'></i>

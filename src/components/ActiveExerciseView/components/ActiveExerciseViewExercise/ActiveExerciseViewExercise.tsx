@@ -126,13 +126,17 @@ export default function ActiveExerciseViewExercise({
 
   const timeoutId = useRef<number>();
 
+  const scrollToTop = useCallback(() => {
+    sectionInnerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [sectionInnerRef]);
+
   useEffect(() => {
     if (inView) {
       onSelected(exerciseIndex);
     } else if (!inView && wasInViewPreviously.current) {
       clearTimeout(timeoutId.current);
       timeoutId.current = setTimeout(
-        () => sectionInnerRef.current?.scrollTo({ top: 0, behavior: 'smooth' }),
+        () => scrollToTop(),
         1000
       ) as unknown as number;
     }
@@ -140,7 +144,7 @@ export default function ActiveExerciseViewExercise({
     return () => {
       clearTimeout(timeoutId.current);
     };
-  }, [inView, onSelected, exerciseIndex, sectionInnerRef]);
+  }, [inView, onSelected, exerciseIndex, scrollToTop]);
 
   const { replaceExercise, deleteExercise } = useContext(WorkoutContext);
 
@@ -155,6 +159,7 @@ export default function ActiveExerciseViewExercise({
     (exerciseId: string | undefined) => {
       if (!!exerciseId) {
         replaceExercise(exerciseIndex, exerciseId);
+        scrollToTop();
       }
       setShowExercisePicker(false);
     },
@@ -191,30 +196,6 @@ export default function ActiveExerciseViewExercise({
             {!!data.lastPerformed && (
               <ExerciseMetadata className={styles.metadata} exercise={data} />
             )}
-            <div className={styles.exerciseActions}>
-              <button
-                type='button'
-                onClick={() => setShowExercisePicker(true)}
-                className={classNames(
-                  'standard-button slim outlined',
-                  styles.replaceExercise
-                )}
-              >
-                <i className='fa-solid fa-dumbbell'></i>
-                Replace Exercise
-              </button>
-              {exerciseCount > 1 && (
-                <button
-                  type='button'
-                  onClick={() =>
-                    setShowDeleteExeciseConfirmationBottomSheet(true)
-                  }
-                  className={classNames('standard-button slim danger')}
-                >
-                  <i className='fa-solid fa-trash'></i>
-                </button>
-              )}
-            </div>
             <div className={styles.sets}>
               {exercise.sets.map((set, index) => (
                 <ActiveExerciseViewExerciseSet
@@ -243,12 +224,38 @@ export default function ActiveExerciseViewExercise({
           </div>
           <div className={classNames(styles.mainFooter)}>
             <i className='fa-solid fa-chevron-up'></i>
-            <span>Swipe up to view history</span>
+            <span>Swipe up to view options & history</span>
           </div>
         </div>
-        <Suspense fallback={<Loader />}>
-          <Instances instancesResource={instancesResource} />
-        </Suspense>
+        <div className={styles.footer}>
+          <div className={styles.exerciseActions}>
+            <button
+              type='button'
+              onClick={() => setShowExercisePicker(true)}
+              className={classNames(
+                'standard-button slim outlined',
+                styles.replaceExercise
+              )}
+            >
+              <i className='fa-solid fa-dumbbell'></i>
+              Replace Exercise
+            </button>
+            {exerciseCount > 1 && (
+              <button
+                type='button'
+                onClick={() =>
+                  setShowDeleteExeciseConfirmationBottomSheet(true)
+                }
+                className={classNames('standard-button slim danger')}
+              >
+                <i className='fa-solid fa-trash'></i>
+              </button>
+            )}
+          </div>
+          <Suspense fallback={<Loader />}>
+            <Instances instancesResource={instancesResource} />
+          </Suspense>
+        </div>
       </div>
     </section>
   );
