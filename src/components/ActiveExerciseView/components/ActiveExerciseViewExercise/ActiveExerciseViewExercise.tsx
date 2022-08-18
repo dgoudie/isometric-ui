@@ -159,6 +159,7 @@ export default function ActiveExerciseViewExercise({
     (exerciseId: string | undefined) => {
       if (!!exerciseId) {
         replaceExercise(exerciseIndex, exerciseId);
+        openSnackbar(`Exercise replaced.`, 2000);
         scrollToTop();
       }
       setShowExercisePicker(false);
@@ -173,6 +174,7 @@ export default function ActiveExerciseViewExercise({
       if (!!removalConfirmed) {
         deleteExercise(exerciseIndex);
         openSnackbar(`Exercise removed.`, 2000);
+        scrollToTop();
       }
       setShowDeleteExeciseConfirmationBottomSheet(false);
     },
