@@ -33,6 +33,8 @@ export default function Home() {
     initialScheduleResponse
   );
 
+  const [loading, setLoading] = useState(true);
+
   const [_isPending, startTransaction] = useTransition();
 
   useEffect(() => {
@@ -42,6 +44,7 @@ export default function Home() {
           `/api/schedule/next-day`
         );
       setScheduleResponse(updatedResponse);
+      setLoading(false);
       initialScheduleResponse = updatedResponse;
     });
   }, []);
@@ -49,7 +52,7 @@ export default function Home() {
   return (
     <AppBarWithAppHeaderLayout pageTitle='Home'>
       <Suspense fallback={<RouteLoader />}>
-        <HomeContent scheduleResponse={scheduleResponse} />
+        <HomeContent scheduleResponse={scheduleResponse} loading={loading} />
       </Suspense>
     </AppBarWithAppHeaderLayout>
   );
@@ -57,9 +60,10 @@ export default function Home() {
 
 interface HomeContentProps {
   scheduleResponse: ReadableResource<IScheduleDayWithExercises | undefined>;
+  loading: boolean;
 }
 
-function HomeContent({ scheduleResponse }: HomeContentProps) {
+function HomeContent({ scheduleResponse, loading }: HomeContentProps) {
   const schedule = scheduleResponse.read();
 
   const greeting = useMemo(() => getGreeting(), []);
@@ -113,28 +117,35 @@ function HomeContent({ scheduleResponse }: HomeContentProps) {
     <div className={styles.wrapper}>
       <h1>{greeting}</h1>
       <div className={styles.root}>
-        <div className={classNames(styles.day, 'fade-in')}>
-          <div className={styles.dayHeader}>
-            <div className={styles.dayHeaderNumber}>
-              <div>
-                Day {schedule.dayNumber + 1}/{schedule.dayCount}
+        <div className={'fade-in'}>
+          <div
+            className={classNames(styles.day, loading && 'loading', 'can-load')}
+          >
+            <div className={styles.dayHeader}>
+              <div className={styles.dayHeaderNumber}>
+                <div>
+                  Day {schedule.dayNumber + 1}/{schedule.dayCount}
+                </div>
+                <div>{schedule.nickname}</div>
               </div>
-              <div>{schedule.nickname}</div>
+              <div className={styles.dayHeaderMeta}>
+                <HeaderItem
+                  title='Duration'
+                  value={dayDurationInMinutes}
+                  suffix='mins'
+                />
+                <HeaderItem
+                  title='Exercises'
+                  value={schedule.exercises.length}
+                />
+                <HeaderItem title='Sets' value={setCount!} />
+              </div>
             </div>
-            <div className={styles.dayHeaderMeta}>
-              <HeaderItem
-                title='Duration'
-                value={dayDurationInMinutes}
-                suffix='mins'
-              />
-              <HeaderItem title='Exercises' value={schedule.exercises.length} />
-              <HeaderItem title='Sets' value={setCount!} />
+            <div className={styles.exercises}>
+              {schedule.exercises.map((exercise) => (
+                <ExerciseItem key={exercise._id} exercise={exercise} />
+              ))}
             </div>
-          </div>
-          <div className={styles.exercises}>
-            {schedule.exercises.map((exercise) => (
-              <ExerciseItem key={exercise._id} exercise={exercise} />
-            ))}
           </div>
         </div>
         <div className={styles.actions}>

@@ -112,6 +112,10 @@ function ExerciseSearchContent({
   const itemsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [inputRef]);
+
   const [exercises, setExercises] = useState(exercisesResponse.read());
   const [moreExercises, setMoreExercises] = useState(exercises.length >= 10);
   const [page, setPage] = useState(2);
@@ -159,6 +163,7 @@ function ExerciseSearchContent({
     <div className={classNames(styles.root, className)}>
       <div className={styles.filters}>
         <div className={styles.filtersInput}>
+          <i className='fa-solid fa-search'></i>
           <input
             ref={inputRef}
             autoCapitalize='none'
