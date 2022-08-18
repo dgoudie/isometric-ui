@@ -1,9 +1,4 @@
-import {
-  IExercise,
-  IExerciseExtended,
-  IWorkoutExercise,
-  IWorkoutExerciseSet,
-} from '@dgoudie/isometric-types';
+import { IExerciseExtended, IWorkoutExercise } from '@dgoudie/isometric-types';
 import React, {
   useCallback,
   useEffect,
@@ -18,6 +13,7 @@ import { AfterExerciseTimerContext } from '../../providers/AfterExerciseTimer/Af
 import { ReadableResource } from '../../utils/fetch-from-api';
 import classNames from 'classnames';
 import styles from './ActiveExerciseView.module.scss';
+import { usePageVisibility } from 'react-page-visibility';
 
 interface Props {
   exercises: IWorkoutExercise[];
@@ -48,10 +44,34 @@ export default function ActiveExerciseView({
     },
     [rootRef]
   );
+
+  const [
+    queuedExerciseIndexToScrollIntoView,
+    setQueuedExerciseIndexToScrollIntoView,
+  ] = useState<number | undefined>(undefined);
+
+  const pageVisible = usePageVisibility();
+
   useEffect(() => {
     !!focusedExercise.scrollIntoView &&
-      scrollExerciseIntoViewByIndex(focusedExercise.index);
-  }, [scrollExerciseIntoViewByIndex, focusedExercise]);
+      setQueuedExerciseIndexToScrollIntoView(focusedExercise.index);
+  }, [focusedExercise, setQueuedExerciseIndexToScrollIntoView]);
+
+  useEffect(() => {
+    if (
+      pageVisible &&
+      typeof queuedExerciseIndexToScrollIntoView !== 'undefined'
+    ) {
+      scrollExerciseIntoViewByIndex(queuedExerciseIndexToScrollIntoView);
+      setQueuedExerciseIndexToScrollIntoView(undefined);
+    }
+  }, [
+    scrollExerciseIntoViewByIndex,
+    setQueuedExerciseIndexToScrollIntoView,
+    pageVisible,
+    queuedExerciseIndexToScrollIntoView,
+  ]);
+
   const [nextNoncompleteExercise, setNextNoncompleteExercise] = useState<{
     index: number;
     exerciseData: IExerciseExtended;
@@ -74,7 +94,9 @@ export default function ActiveExerciseView({
     }
   }, [exercises, focusedExercise, exerciseMap]);
   const onSelected = useCallback(
-    (index: number) => focusedExerciseChanged({ index, scrollIntoView: false }),
+    (index: number) => {
+      focusedExerciseChanged({ index, scrollIntoView: false });
+    },
     [focusedExerciseChanged]
   );
   const onCompleted = useCallback(() => {

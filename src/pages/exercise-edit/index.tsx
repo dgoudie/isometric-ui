@@ -184,7 +184,6 @@ function ExerciseEditContent({ exerciseResponse }: ExerciseContentProps) {
           });
           openSnackbar('Exercise saved successfully.');
           navigate('/exercises');
-          console.log(values);
         }}
       >
         {(formik) => {
