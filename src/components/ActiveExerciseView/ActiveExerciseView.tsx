@@ -108,9 +108,14 @@ export default function ActiveExerciseView({
     }
   }, [nextNoncompleteExercise, focusedExerciseChanged]);
 
-  const { isOpenAndMinimized: timerIsOpenAndMinimized } = React.useContext(
-    AfterExerciseTimerContext
-  );
+  const { isOpenAndMinimized: timerIsOpenAndMinimized, cancel } =
+    React.useContext(AfterExerciseTimerContext);
+
+  useEffect(() => {
+    return () => {
+      cancel();
+    };
+  }, []);
 
   return (
     <div

@@ -110,12 +110,6 @@ export default function ActiveExerciseViewExercise({
     previousNumberOfCompletedSets.current = numberOfCompletedSets;
   }, [exercise, nextExercise]);
 
-  useEffect(() => {
-    return () => {
-      cancel();
-    };
-  }, []);
-
   const { ref, inView } = useInView({
     threshold: 0.55,
   });

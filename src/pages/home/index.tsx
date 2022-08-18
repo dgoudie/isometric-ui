@@ -117,35 +117,28 @@ function HomeContent({ scheduleResponse, loading }: HomeContentProps) {
     <div className={styles.wrapper}>
       <h1>{greeting}</h1>
       <div className={styles.root}>
-        <div className={'fade-in'}>
-          <div
-            className={classNames(styles.day, loading && 'loading', 'can-load')}
-          >
-            <div className={styles.dayHeader}>
-              <div className={styles.dayHeaderNumber}>
-                <div>
-                  Day {schedule.dayNumber + 1}/{schedule.dayCount}
-                </div>
-                <div>{schedule.nickname}</div>
+        <div className={classNames(styles.day, 'fade-in')}>
+          <div className={styles.dayHeader}>
+            <div className={styles.dayHeaderNumber}>
+              <div>
+                Day {schedule.dayNumber + 1}/{schedule.dayCount}
               </div>
-              <div className={styles.dayHeaderMeta}>
-                <HeaderItem
-                  title='Duration'
-                  value={dayDurationInMinutes}
-                  suffix='mins'
-                />
-                <HeaderItem
-                  title='Exercises'
-                  value={schedule.exercises.length}
-                />
-                <HeaderItem title='Sets' value={setCount!} />
-              </div>
+              <div>{schedule.nickname}</div>
             </div>
-            <div className={styles.exercises}>
-              {schedule.exercises.map((exercise) => (
-                <ExerciseItem key={exercise._id} exercise={exercise} />
-              ))}
+            <div className={styles.dayHeaderMeta}>
+              <HeaderItem
+                title='Duration'
+                value={dayDurationInMinutes}
+                suffix='mins'
+              />
+              <HeaderItem title='Exercises' value={schedule.exercises.length} />
+              <HeaderItem title='Sets' value={setCount!} />
             </div>
+          </div>
+          <div className={styles.exercises}>
+            {schedule.exercises.map((exercise) => (
+              <ExerciseItem key={exercise._id} exercise={exercise} />
+            ))}
           </div>
         </div>
         <div className={styles.actions}>
