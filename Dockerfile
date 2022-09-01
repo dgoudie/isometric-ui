@@ -11,7 +11,7 @@ COPY tsconfig*.json ./
 COPY ./src ./src
 COPY ./public ./public
 
-ENV REACT_APP_WS=wss://isometric.goudie.dev/api/workout/ws
+ENV REACT_APP_WS=wss://isometric-old.goudie.dev/api/workout/ws
 
 RUN npm ci --quiet && npm run build
 
